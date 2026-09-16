@@ -1,13 +1,13 @@
 # ================================================================================
-# ÉTAPE 1 : charger le tableau de données et repérer les bonnes colonnes
-# (les noms de colonnes varient parfois légèrement selon les mises à jour,
-# donc ce script les retrouve automatiquement au lieu de les coder en dur)
+# STEP 1: load the data table and find the right columns
+# (column names sometimes vary slightly between updates, so this
+# script finds them automatically instead of hard-coding them)
 # ================================================================================
 cat("\n================================================================================\n")
 cat("PART 1: LOADING AND PREPARING DATA\n")
 cat("================================================================================\n\n")
 pterosaur_data <- read.csv("data/pteros_main_data.csv", sep=";", stringsAsFactors = FALSE)
-# Cherche les colonnes contenant certains mots-clés (surface alaire, masse, etc.)
+# Look for columns containing certain keywords (wing area, mass, etc.)
 wing_area_cols <- grep("Wing.area...cm2..EWM..", colnames(pterosaur_data), ignore.case = TRUE, value = TRUE)
 war_cols <- grep("war|aspect", colnames(pterosaur_data), ignore.case = TRUE, value = TRUE)
 wingspan_cols <- grep("wingspan", colnames(pterosaur_data), ignore.case = TRUE, value = TRUE)
@@ -19,7 +19,7 @@ cat("WAR/Aspect ratio columns:", paste(war_cols, collapse = ", "), "\n")
 cat("Wingspan columns:", paste(wingspan_cols, collapse = ", "), "\n")
 cat("Mass columns:", paste(mass_cols, collapse = ", "), "\n")
 cat("Flight category columns:", paste(flight_cat_cols, collapse = ", "), "\n\n")
-# Garde la première colonne trouvée pour chaque variable recherchée
+# Keep the first matching column found for each variable
 wing_area_col <- if (length(wing_area_cols) > 0) wing_area_cols[1] else NULL
 war_col <- if (length(war_cols) > 0) war_cols[length(war_cols)] else NULL
 wingspan_col <- if (length(wingspan_cols) > 0) wingspan_cols[1] else NULL
@@ -31,7 +31,7 @@ cat("WAR:", war_col, "\n")
 cat("Wingspan:", wingspan_col, "\n")
 cat("Mass:", mass_col, "\n")
 cat("Flight category:", flight_cat_col, "\n\n")
-# Liste des mesures anatomiques utilisées pour l'analyse
+# List of anatomical measurements used for the analysis
 key_vars <- c(
   "Wing.length...cm.",
   "measured.hind.limbs..cm.",
@@ -43,14 +43,14 @@ key_vars <- c(
   "Wg.ph.3",
   "Wg.ph.4"
 )
-# Ajoute les colonnes trouvées automatiquement ci-dessus
+# Add the columns found automatically above
 if (!is.null(wingspan_col)) key_vars <- c(key_vars, wingspan_col)
 if (!is.null(wing_area_col)) key_vars <- c(key_vars, wing_area_col)
 if (!is.null(war_col)) key_vars <- c(key_vars, war_col)
 if (!is.null(mass_col)) key_vars <- c(key_vars, mass_col)
-# Ne garde que les colonnes qui existent réellement dans le tableau
+# Keep only the columns that actually exist in the table
 existing_vars <- key_vars[key_vars %in% colnames(pterosaur_data)]
-# Colonnes d'identification et de contexte à conserver
+# Identification and context columns to keep
 select_cols <- c("SPECIES..Pegas.", "Image_files_names", "Order", "clade", "family",
                  "Environment", "Depositional.settings.paleoenvironment",
                  "Diet.1", "Diet.2", "Midpoint", "Period.Name")
@@ -59,7 +59,7 @@ if (flight_cat_col %in% colnames(pterosaur_data)) {
 }
 morph_data <- pterosaur_data %>%
   dplyr::select(all_of(select_cols), everything())
-# Crée des noms de colonnes simples et fixes, faciles à réutiliser ensuite
+# Create simple, fixed column names, easy to reuse later
 if (!is.null(wingspan_col)) morph_data$Wingspan_cm <- morph_data[[wingspan_col]]
 if (!is.null(wing_area_col)) morph_data$Wing_area_cm2 <- morph_data[[wing_area_col]]
 if (!is.null(war_col)) morph_data$WAR <- morph_data[[war_col]]
@@ -67,14 +67,14 @@ if (!is.null(mass_col)) morph_data$Mass_kg <- morph_data[[mass_col]]
 if (flight_cat_col %in% colnames(morph_data)) {
   morph_data$Flight_category <- trimws(morph_data[[flight_cat_col]])
 }
-# Nettoie les espaces superflus dans les colonnes de texte
+# Remove extra spaces in the text columns
 morph_data$Environment <- trimws(as.character(morph_data$Environment))
 morph_data$Depositional.settings.paleoenvironment <- trimws(as.character(morph_data$Depositional.settings.paleoenvironment))
 morph_data$Diet.1 <- trimws(as.character(morph_data$Diet.1))
 morph_data$Diet.2 <- trimws(as.character(morph_data$Diet.2))
-# S'assure que la colonne d'âge (Midpoint) est bien numérique
+# Make sure the age column (Midpoint) is numeric
 morph_data$Midpoint <- as.numeric(morph_data$Midpoint)
-# Ne garde que les spécimens ayant assez de données mesurées (moins de 70% de valeurs manquantes)
+# Keep only specimens with enough measured data (less than 70% missing values)
 threshold_na <- length(existing_vars) * 0.7
 complete_data <- morph_data %>%
   rowwise() %>%

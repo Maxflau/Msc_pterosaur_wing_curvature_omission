@@ -1,16 +1,16 @@
 if (file.exists("data/Pterosaur_Outlines_Clean.nts")) {
   cat("Loading extracted outlines...\n")
-  # Ce fichier contient les contours (silhouettes) des ailes déjà extraits.
-  # Sa 1ère ligne indique : nombre de points par contour, puis nombre de spécimens.
+  # This file contains the already-extracted wing outlines (silhouettes).
+  # Its 1st line gives: number of points per outline, then number of specimens.
   lines <- readLines("data/Pterosaur_Outlines_Clean.nts")
   header <- as.numeric(strsplit(lines[1], " ")[[1]])
   num_points <- header[1]
   num_specimens <- header[3]
-  # Juste après l'en-tête viennent les noms des spécimens, un par ligne
+  # Right after the header come the specimen names, one per line
   name_start <- 3
   name_end <- name_start + num_specimens - 1
   specimen_names_nts <- lines[name_start:name_end]
-  # Puis, pour chaque spécimen, les coordonnées (x, y) de son contour
+  # Then, for each specimen, the (x, y) coordinates of its outline
   outlines_list <- list()
   current_line <- name_end + 1
   for (i in 1:num_specimens) {

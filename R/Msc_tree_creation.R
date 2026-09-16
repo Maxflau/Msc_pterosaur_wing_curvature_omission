@@ -1,13 +1,13 @@
 # ============================================================
-# Construit un arbre phylogénétique complet à partir de l'arbre
-# de référence "Henry", en y ajoutant les espèces manquantes.
-# Chaque espèce manquante est ajoutée selon 1 de ces 4 méthodes :
-#    (A) ORTHOGRAPHIE      -> renomme une pointe déjà existante
-#    (B) MÊME GENRE        -> placée à côté d'une espèce du même genre
-#    (C) ARBRES DE RÉFÉRENCE -> placée d'après Pegas ou Andres (précis)
-#    (D) CLADE DE SECOURS  -> utilisé si l'espèce est absente de tout
-#  Ne pas modifier les noms d'espèces ci-dessous : ce sont des
-#  correspondances taxonomiques précises établies manuellement.
+# Builds a complete phylogenetic tree from the "Henry" reference
+# tree, adding the missing species. Each missing species is added
+# using one of these 4 methods:
+#    (A) SPELLING FIX     -> rename an existing tip
+#    (B) SAME GENUS       -> placed next to a same-genus species
+#    (C) REFERENCE TREES  -> placed based on Pegas or Andres (precise)
+#    (D) FALLBACK CLADE   -> used if the species is missing from all refs
+#  Do not change the species names below: these are precise
+#  taxonomic matches established manually.
 # ============================================================
 library(phytools)
 tr <- read.nexus("data/phylogenetics/Henry")

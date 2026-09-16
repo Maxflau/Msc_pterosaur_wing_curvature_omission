@@ -1,30 +1,30 @@
 # ============================================================
-# Ce script charge tous les "packages" (extensions R) nécessaires
-# à la pipeline. Il faut les avoir installés au moins une fois
-# avec install.packages("nom_du_package").
+# This script loads all the R "packages" (extensions) needed by
+# the pipeline. They must be installed at least once with
+# install.packages("package_name").
 # ============================================================
-library(dplyr)      # manipuler des tableaux de données
-library(ggplot2)     # créer des graphiques
-library(tidyr)       # remettre en forme des tableaux
-library(magick)       # lire/traiter des images
-library(parallel)     # calculs en parallèle (plus rapide)
-library(readr)        # lire des fichiers texte/CSV
-library(ggpubr)       # graphiques statistiques
-# --- Morphométrie (analyse de forme) ---
+library(dplyr)      # handle data tables
+library(ggplot2)     # create plots
+library(tidyr)       # reshape data tables
+library(magick)       # read/process images
+library(parallel)     # run calculations in parallel (faster)
+library(readr)        # read text/CSV files
+library(ggpubr)       # statistical plots
+# --- Morphometrics (shape analysis) ---
 library(Momocs)
 library(sfsmisc)
 library(geomorph)
 library(morphospace)
 library(mvMORPH)
-# --- Phylogénie (arbres évolutifs) ---
+# --- Phylogenetics (evolutionary trees) ---
 library(ape)
 library(phytools)
 library(nlme)
-# --- Analyse fonctionnelle ---
+# --- Functional analysis ---
 library(alphahull)
 library(pracma)
 library(MASS)
-# --- Statistiques ---
+# --- Statistics ---
 library(dunn.test)
 library(pairwiseAdonis)
 library(knitr)
@@ -32,7 +32,7 @@ library(tibble)
 library(randomForest)
 library(pls)
 library(forcats)
-# --- Graphiques ---
+# --- Plotting ---
 library(gridExtra)
 library(grid)
 library(RColorBrewer)
@@ -48,6 +48,6 @@ library(patchwork)
 library(viridisLite)
 
 cat("✓ All libraries loaded\n\n")
-# Charge les fonctions maison utilisées pour extraire les contours des ailes
+# Load the custom functions used to extract wing outlines
 source("R/MorphometricExtraction_Functions.r")
 source("R/MorphoFiles_Function.r")
