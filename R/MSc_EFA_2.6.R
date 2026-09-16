@@ -1,11 +1,11 @@
 PTERODACT <- c("Azhdarchoidea","Ctenochasmatoidea","Dsungaripteroidea",
                "Ornithocheiromorpha","Pteranodontia","basal pterodactyloidea")
 
-if (!file.exists("Henry_updated.nex")) {
+if (!file.exists("data/phylogenetics/Henry_updated.nex")) {
   stop("Henry_updated.nex not found - phylomorphospace cannot proceed.")
 }
 
-all_trees  <- ape::read.nexus("Henry_updated.nex")
+all_trees  <- ape::read.nexus("data/phylogenetics/Henry_updated.nex")
 ptero_tree <- if (inherits(all_trees, "multiPhylo")) all_trees[[1]] else all_trees
 cat(sprintf("Tree: %d tips, %d nodes\n", ape::Ntip(ptero_tree), ape::Nnode(ptero_tree)))
 tip_clean <- gsub("_", " ", ptero_tree$tip.label)

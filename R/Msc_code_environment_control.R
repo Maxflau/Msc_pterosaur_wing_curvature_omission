@@ -24,7 +24,7 @@ library(patchwork)
 # ------ 1. Patch in deposition/env from CSV if missing -----------------------
 if(!("Environment" %in% colnames(performance_data_clean)) ||
    !("Depositional.settings.paleoenvironment" %in% colnames(performance_data_clean))) {
-  master_df <- read.csv("pteros_main_data.csv", sep=";", stringsAsFactors=FALSE, check.names=FALSE)
+  master_df <- read.csv("data/pteros_main_data.csv", sep=";", stringsAsFactors=FALSE, check.names=FALSE)
   colnames(master_df) <- trimws(colnames(master_df))
   patch <- master_df %>% transmute(
     species = trimws(as.character(`SPECIES (Pegas)`)),

@@ -46,6 +46,6 @@ parse_nts <- function(filepath) {
 }
 
 
-nts_data    <- parse_nts("Pterosaur_Outlines_Clean.nts")
+nts_data    <- parse_nts("data/Pterosaur_Outlines_Clean.nts")
 
 outlines_list <- nts_data$outlines

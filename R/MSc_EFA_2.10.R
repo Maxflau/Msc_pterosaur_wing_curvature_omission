@@ -35,8 +35,8 @@ if (!exists("shape_perf")) {
   # written by the old pipeline lists second_moment and stress_root, so
   # projecting the new metrics through it would silently produce wrong scores.
   use_loadings <- FALSE
-  if (file.exists("pca_loadings.csv")) {
-    loadings_df <- read.csv("pca_loadings.csv", stringsAsFactors = FALSE)
+  if (file.exists("data/pca_loadings.csv")) {
+    loadings_df <- read.csv("data/pca_loadings.csv", stringsAsFactors = FALSE)
     rownames(loadings_df) <- loadings_df$variable
     if (all(PCA_VARS %in% rownames(loadings_df))) {
       use_loadings <- TRUE
@@ -81,8 +81,8 @@ if (!exists("shape_perf")) {
   cat("  Recovering missing columns:\n")
   
   # 1. Taxonomy and flight category, from the master database
-  if (file.exists("pteros_main_data.csv")) {
-    raw_db <- read.csv("pteros_main_data.csv", sep = ";", stringsAsFactors = FALSE)
+  if (file.exists("data/pteros_main_data.csv")) {
+    raw_db <- read.csv("data/pteros_main_data.csv", sep = ";", stringsAsFactors = FALSE)
     sp_col <- grep("^SPECIES", names(raw_db), value = TRUE)[1]
     if (!is.na(sp_col)) {
       raw_db$species <- trimws(raw_db[[sp_col]])
@@ -177,7 +177,7 @@ if (!exists("shape_perf")) {
   if (exists("pca_performance")) {
     write.csv(data.frame(variable = rownames(pca_performance$rotation),
                          pca_performance$rotation[, 1:2]),
-              "pca_loadings.csv", row.names = FALSE)
+              "data/pca_loadings.csv", row.names = FALSE)
     cat("  pca_loadings.csv refreshed from the current PCA.\n")
   }
 }

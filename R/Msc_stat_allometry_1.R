@@ -2,7 +2,7 @@ cat("\n--- POSTCRANIAL DATA PREPARATION ---\n\n")
 
 if (!exists("write_supp")) stop("Source Msc_stats_00_setup.R first.")
 
-MAIN_CSV <- "pteros_main_data.csv"
+MAIN_CSV <- "data/pteros_main_data.csv"
 if (!file.exists(MAIN_CSV)) stop("'", MAIN_CSV, "' not found in the working directory.")
 
 raw <- read.csv(MAIN_CSV, sep = ";", stringsAsFactors = FALSE)

@@ -1,8 +1,8 @@
-if (file.exists("Pterosaur_Outlines_Clean.nts")) {
+if (file.exists("data/Pterosaur_Outlines_Clean.nts")) {
   
   cat("Loading extracted outlines...\n")
   
-  lines <- readLines("Pterosaur_Outlines_Clean.nts")
+  lines <- readLines("data/Pterosaur_Outlines_Clean.nts")
   header <- as.numeric(strsplit(lines[1], " ")[[1]])
   num_points <- header[1]
   num_specimens <- header[3]

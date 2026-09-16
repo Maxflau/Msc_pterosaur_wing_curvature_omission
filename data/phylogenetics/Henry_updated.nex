@@ -1,0 +1,551 @@
+#NEXUS
+[R-package APE, Thu Sep 10 11:51:58 2026]
+
+BEGIN TAXA;
+	DIMENSIONS NTAX = 269;
+	TAXLABELS
+		Euparkeria_capensis
+		Ornithosuchus_woodwardi
+		Postosuchus_kirkpatricki
+		Lagosuchus_talampayensis
+		Herrerasaurus_ischigualastensis
+		Coelophysis_bauri
+		Scleromochlus_taylori
+		Dromomeron_romeri
+		Lagerpeton_chanarensis
+		Ixalerpeton_polesinensis
+		Venetoraptor_gassenae
+		Preondactylus_buffarinii
+		Austriadactylus_cristatus
+		Seazzadactylus_venieri
+		Eotephradactylus_mcintirae
+		Bergamodactylus_wildi
+		Carniadactylus_rosenfeldi
+		MCSNB_8950
+		Eudimorphodon_ranzii
+		Yelaphomte_praderioi
+		Caviramus_schesaplanensis
+		Raeticodactylus_filisurensis
+		Pachagnathus_benitoi
+		Austriadraco_dallavecchiai
+		Arcticodactylus_cromptonellus
+		Peteinosaurus_zambellii
+		Rhamphinion_jenkinsi
+		Dimorphodon_macronyx
+		Caelestiventus_hanseni
+		Dimorphodon_weintraubi
+		Allkaruen_koi
+		Campylognathoides_liasicus
+		Campylognathoides_zitteli
+		Orientognathus_chaoyangensis
+		Parapsicephalus_purdoni
+		Dorygnathus_banthensis
+		Klobiodon_rochei
+		Bellubrunnus_rothgaengeri
+		Qinglongopterus_guoi
+		Rhamphorhynchus_muensteri
+		Rhamphorhynchus_etchesi
+		Nesodactylus_hesperius
+		Cacibupteryx_caribensis
+		Sericipterus_wucaiwanensis
+		Angustinaripterus_longicephalus
+		Dearc_sgiathanach
+		Rhamphorhynchus_depressirostris
+		Sordes_pilosus
+		Harpactognathus_gentryii
+		Scaphognathus_crassirostris
+		Jianchangnathus_robustus
+		Fenghuangopterus_lii
+		Batrachognathus_volans
+		Sinomacrops_bondei
+		Dendrorhynchoides_curvidentatus
+		Luopterus_mutoudengensis
+		Jeholopterus_ningchengensis
+		Cascocauda_rong
+		Anurognathus_ammoni
+		Vesperopterylus_lamadongensis
+		Jianchangopterus_zhaoianus
+		Archaeoistiodactylus_linglongtaensis
+		Ceoptera_evansae
+		Kunpengopterus_antipollicatus
+		Pterorhynchus_wellnhoferi
+		Darwinopterus_robustodens
+		Darwinopterus_modularis
+		Cuspicephalus_scarfii
+		Wukongopterus_lii
+		Darwinopterus_linglongtaensis
+		Kunpengopterus_sinensis
+		IVPP_V_23674
+		Kryptodrakon_progenitor
+		Changchengopterus_pani
+		Laueropterus_vitriolus
+		Skiphosoura_bavarica
+		Makrodactylus_oligodontus
+		Douzhanopterus_zhengi
+		Rhamphodactylus
+		Propterodactylus_frankerlae
+		Diopecephalus_kochi
+		Germanodactylus_cristatus
+		Germanodactylus_rhamphastinus
+		Pterodactylus_antiquus
+		Petrodactyle_wellnhoferi
+		Normannognathus_wellnhoferi
+		Cycnorhamphus_suevicus
+		Cycnorhamphus_canjuersensis
+		Aerodactylus_scolopaciceps
+		Aurorazhdarcho_micronyx
+		Ardeadactylus_longicollum
+		Kepodactylus_insperatus
+		'MTCO_21.269'
+		Huanhepterus_quingyangensis
+		CAMSM_J5340
+		Elanodactylus_prolatus
+		Forfexopterus_jeholensis
+		Gladocephaloideus_jingangshanensis
+		Feilongus_youngi
+		Moganopterus_zhuianus
+		Liaodactylus_primus
+		Cathayopterus_grabaui
+		Pterofiltrus_qiui
+		Balaenognathus_maeuseri
+		Plataleorhynchus_streptophorodon
+		Gnathosaurus_subulatus
+		Tacuadactylus_luciae
+		Lusognathus_almadrava
+		Garudapterus_buffetauti
+		Gnathosaurus_macrurus
+		MB_R_2832
+		Quebrada_Monardes_pterosaur
+		Ctenochasma_taqueti
+		Ctenochasma_elegans
+		Ctenochasma_roemeri
+		Pterodaustro_guinazui
+		Gegepterus_changae
+		Beipiaopterus_chenianus
+		Eosipterus_yangi
+		Zhenyuanopterus_longirostris
+		Boreopterus_giganteus
+		Boreopterus_cuiae
+		Lonchodraco_giganteus
+		Ikrandraco_avatar
+		Ornithocheirus_machaerorhynchus
+		Mimodactylus_libanensis
+		Yixianopterus_jingangshanensis
+		Haopterus_gracilis
+		Linlongopterus_jennyae
+		Hongshanopterus_lacustris
+		Nurhachius_ignaciobritoi
+		Longchengopterus_zhaoi
+		Nurhachius_luei
+		Luchibang_xingzhe
+		Lingyuanopterus_camposi
+		Istiodactylus_latidens
+		Liaoxipterus_brachyognathus
+		Istiodactylus_sinensis
+		Ornithocheirus_simus
+		Targaryendraco_wiedenrothi
+		Barbosania_gracilirostris
+		Aussiedraco_molnari
+		Aetodactylus_halli
+		Camposipterus_nasutus
+		Cimoliopterus_cuvieri
+		Cimoliopterus_dunni
+		Hamipterus_tianshanensis
+		Iberodactylus_andreui
+		Tropeognathus_mesembrinus
+		Aerodraco_sedgwickii
+		Siroccopteryx_moroccensis
+		Thapunngaka_shawi
+		Ferrodraco_lentoni
+		Haliskia_peterseni
+		Mythunga_camara
+		Coloborhynchus_clavirostris
+		Uktenadactylus_wadleighi
+		Uktenadactylus_rodriguesae
+		Nicorhynchus_capito
+		Coloborhynchus_fluviferox
+		Liaoningopterus_gui
+		Anhanguera_spielbergi
+		Anhanguera_blittersdorffi
+		Anhanguera_santanae
+		Anhanguera_piscator
+		Anhanguera_robustus
+		Brasileodactylus_araripensis
+		Maaradactylus_kellneri
+		Caulkicephalus_trimicrodon
+		Ludodactylus_sibbicki
+		Guidraco_venator
+		Volgadraco_bogolubovi
+		Alamodactylus_byrdi
+		Tethydraco_regalis
+		Pteranodon_sternbergi
+		Pteranodon_longiceps
+		Cretornis_hlavaci
+		Epapatelo_otyikokolo
+		Alcione_elainus
+		Simurghia_robusta
+		Simurghia_lamegoi
+		Nyctosaurus_lamegoi
+		Nyctosaurus_gracilis
+		Nyctosaurus_nanus
+		Barbaridactylus_grandis
+		Muzquizopteryx_coahuilensis
+		Tendaguripterus_recki
+		Puntanipterus_globosus
+		Noripterus_complicidens
+		Noripterus_parvus
+		Lonchognathosaurus_acutirostris
+		Ordosipterus_planignathus
+		Dsungaripterus_weii
+		Domeykodactylus_ceciliae
+		Microtuban_altivolans
+		Tupuxuara_longicristatus
+		Tupuxuara_leonardii
+		Kariridraco_dianae
+		Thalassodromeus_sethi
+		Thalassodromeus_oberlii
+		Banguela_oberlii
+		Bennettazhia_oregonensis
+		Caupedactylus_ybaka
+		Aymberedactylus_cearensis
+		Palaeornis_cliftii
+		Europejara_olcadesorum
+		Tupandactylus_imperator
+		Tupandactylus_navigans
+		Tapejara_wellnhoferi
+		Torukjara_bandeirae
+		Caiuajara_dobruskii
+		Wightia_declivirostris
+		Afrotapejara_zouhri
+		Vectidraco_daisymorrisae
+		Huaxiadraco_corollatus
+		Sinopterus_dongi
+		Eopteranodon_lii
+		Inabtanin_alarabia
+		RGM_631745
+		Azhdarcho_lancicollis
+		Cryodrakon_boreas
+		Tsogtopteryx_mongoliensis
+		Bayshin_Tsav_azhdarchid
+		Albadraco_tharmisensis
+		Bakonydraco
+		LPB_R2395
+		Hatzegopteryx_thambema
+		LPB_R2347
+		EME_315
+		MPCA_PV_2003
+		Quetzalcoatlus_northropi
+		Thanatosdrakon_amaru
+		UCMP_114286
+		ME1_04
+		Tous_pterosaur
+		Quetzalcoatlus_lawsoni
+		FSAC_OB_14
+		Infernodrakon_hastacollis
+		Arambourgiania_philadelphiae
+		'MPPM_2000.23.1'
+		Nipponopterus_mifunensis
+		Gobiazhdarcho_tsogtbaatari
+		Burkhant_azhdarchid
+		Zhejiangopterus_linhaiensis
+		Aerotitan_sudamericanus
+		Mistralazhdarcho_maggii
+		MC_SF69
+		Aralazhdarcho_bostobensis
+		Eurazhdarcho_langendorfensis
+		Phosphatodraco_mauritanicus
+		Wellnhopterus_brevirostris
+		Montanazhdarcho_minor
+		Radiodactylus_langstoni
+		Xericeps_curvirostris
+		Leptostomia_begaeensis
+		Alanqa_saharica
+		Argentinadraco_barrealensis
+		Chaoyangopterus_zhangi
+		UFC_721
+		Jidapterus_edentus
+		Lacusovagus_magnificens
+		Ornithostoma_sedgwicki
+		Apatorhamphus_gyrostega
+		Eoazhdarcho_liaoxiensis
+		Shenzhoupterus_chaoyangensis
+		Meilifeilong_youhao
+		Meilifeilong_sanyainus
+		Keresdrakon_vilsoni
+		MN_6588_V
+	;
+END;
+BEGIN TREES;
+	TRANSLATE
+		1	Euparkeria_capensis,
+		2	Ornithosuchus_woodwardi,
+		3	Postosuchus_kirkpatricki,
+		4	Lagosuchus_talampayensis,
+		5	Herrerasaurus_ischigualastensis,
+		6	Coelophysis_bauri,
+		7	Scleromochlus_taylori,
+		8	Dromomeron_romeri,
+		9	Lagerpeton_chanarensis,
+		10	Ixalerpeton_polesinensis,
+		11	Venetoraptor_gassenae,
+		12	Preondactylus_buffarinii,
+		13	Austriadactylus_cristatus,
+		14	Seazzadactylus_venieri,
+		15	Eotephradactylus_mcintirae,
+		16	Bergamodactylus_wildi,
+		17	Carniadactylus_rosenfeldi,
+		18	MCSNB_8950,
+		19	Eudimorphodon_ranzii,
+		20	Yelaphomte_praderioi,
+		21	Caviramus_schesaplanensis,
+		22	Raeticodactylus_filisurensis,
+		23	Pachagnathus_benitoi,
+		24	Austriadraco_dallavecchiai,
+		25	Arcticodactylus_cromptonellus,
+		26	Peteinosaurus_zambellii,
+		27	Rhamphinion_jenkinsi,
+		28	Dimorphodon_macronyx,
+		29	Caelestiventus_hanseni,
+		30	Dimorphodon_weintraubi,
+		31	Allkaruen_koi,
+		32	Campylognathoides_liasicus,
+		33	Campylognathoides_zitteli,
+		34	Orientognathus_chaoyangensis,
+		35	Parapsicephalus_purdoni,
+		36	Dorygnathus_banthensis,
+		37	Klobiodon_rochei,
+		38	Bellubrunnus_rothgaengeri,
+		39	Qinglongopterus_guoi,
+		40	Rhamphorhynchus_muensteri,
+		41	Rhamphorhynchus_etchesi,
+		42	Nesodactylus_hesperius,
+		43	Cacibupteryx_caribensis,
+		44	Sericipterus_wucaiwanensis,
+		45	Angustinaripterus_longicephalus,
+		46	Dearc_sgiathanach,
+		47	Rhamphorhynchus_depressirostris,
+		48	Sordes_pilosus,
+		49	Harpactognathus_gentryii,
+		50	Scaphognathus_crassirostris,
+		51	Jianchangnathus_robustus,
+		52	Fenghuangopterus_lii,
+		53	Batrachognathus_volans,
+		54	Sinomacrops_bondei,
+		55	Dendrorhynchoides_curvidentatus,
+		56	Luopterus_mutoudengensis,
+		57	Jeholopterus_ningchengensis,
+		58	Cascocauda_rong,
+		59	Anurognathus_ammoni,
+		60	Vesperopterylus_lamadongensis,
+		61	Jianchangopterus_zhaoianus,
+		62	Archaeoistiodactylus_linglongtaensis,
+		63	Ceoptera_evansae,
+		64	Kunpengopterus_antipollicatus,
+		65	Pterorhynchus_wellnhoferi,
+		66	Darwinopterus_robustodens,
+		67	Darwinopterus_modularis,
+		68	Cuspicephalus_scarfii,
+		69	Wukongopterus_lii,
+		70	Darwinopterus_linglongtaensis,
+		71	Kunpengopterus_sinensis,
+		72	IVPP_V_23674,
+		73	Kryptodrakon_progenitor,
+		74	Changchengopterus_pani,
+		75	Laueropterus_vitriolus,
+		76	Skiphosoura_bavarica,
+		77	Makrodactylus_oligodontus,
+		78	Douzhanopterus_zhengi,
+		79	Rhamphodactylus,
+		80	Propterodactylus_frankerlae,
+		81	Diopecephalus_kochi,
+		82	Germanodactylus_cristatus,
+		83	Germanodactylus_rhamphastinus,
+		84	Pterodactylus_antiquus,
+		85	Petrodactyle_wellnhoferi,
+		86	Normannognathus_wellnhoferi,
+		87	Cycnorhamphus_suevicus,
+		88	Cycnorhamphus_canjuersensis,
+		89	Aerodactylus_scolopaciceps,
+		90	Aurorazhdarcho_micronyx,
+		91	Ardeadactylus_longicollum,
+		92	Kepodactylus_insperatus,
+		93	'MTCO_21.269',
+		94	Huanhepterus_quingyangensis,
+		95	CAMSM_J5340,
+		96	Elanodactylus_prolatus,
+		97	Forfexopterus_jeholensis,
+		98	Gladocephaloideus_jingangshanensis,
+		99	Feilongus_youngi,
+		100	Moganopterus_zhuianus,
+		101	Liaodactylus_primus,
+		102	Cathayopterus_grabaui,
+		103	Pterofiltrus_qiui,
+		104	Balaenognathus_maeuseri,
+		105	Plataleorhynchus_streptophorodon,
+		106	Gnathosaurus_subulatus,
+		107	Tacuadactylus_luciae,
+		108	Lusognathus_almadrava,
+		109	Garudapterus_buffetauti,
+		110	Gnathosaurus_macrurus,
+		111	MB_R_2832,
+		112	Quebrada_Monardes_pterosaur,
+		113	Ctenochasma_taqueti,
+		114	Ctenochasma_elegans,
+		115	Ctenochasma_roemeri,
+		116	Pterodaustro_guinazui,
+		117	Gegepterus_changae,
+		118	Beipiaopterus_chenianus,
+		119	Eosipterus_yangi,
+		120	Zhenyuanopterus_longirostris,
+		121	Boreopterus_giganteus,
+		122	Boreopterus_cuiae,
+		123	Lonchodraco_giganteus,
+		124	Ikrandraco_avatar,
+		125	Ornithocheirus_machaerorhynchus,
+		126	Mimodactylus_libanensis,
+		127	Yixianopterus_jingangshanensis,
+		128	Haopterus_gracilis,
+		129	Linlongopterus_jennyae,
+		130	Hongshanopterus_lacustris,
+		131	Nurhachius_ignaciobritoi,
+		132	Longchengopterus_zhaoi,
+		133	Nurhachius_luei,
+		134	Luchibang_xingzhe,
+		135	Lingyuanopterus_camposi,
+		136	Istiodactylus_latidens,
+		137	Liaoxipterus_brachyognathus,
+		138	Istiodactylus_sinensis,
+		139	Ornithocheirus_simus,
+		140	Targaryendraco_wiedenrothi,
+		141	Barbosania_gracilirostris,
+		142	Aussiedraco_molnari,
+		143	Aetodactylus_halli,
+		144	Camposipterus_nasutus,
+		145	Cimoliopterus_cuvieri,
+		146	Cimoliopterus_dunni,
+		147	Hamipterus_tianshanensis,
+		148	Iberodactylus_andreui,
+		149	Tropeognathus_mesembrinus,
+		150	Aerodraco_sedgwickii,
+		151	Siroccopteryx_moroccensis,
+		152	Thapunngaka_shawi,
+		153	Ferrodraco_lentoni,
+		154	Haliskia_peterseni,
+		155	Mythunga_camara,
+		156	Coloborhynchus_clavirostris,
+		157	Uktenadactylus_wadleighi,
+		158	Uktenadactylus_rodriguesae,
+		159	Nicorhynchus_capito,
+		160	Coloborhynchus_fluviferox,
+		161	Liaoningopterus_gui,
+		162	Anhanguera_spielbergi,
+		163	Anhanguera_blittersdorffi,
+		164	Anhanguera_santanae,
+		165	Anhanguera_piscator,
+		166	Anhanguera_robustus,
+		167	Brasileodactylus_araripensis,
+		168	Maaradactylus_kellneri,
+		169	Caulkicephalus_trimicrodon,
+		170	Ludodactylus_sibbicki,
+		171	Guidraco_venator,
+		172	Volgadraco_bogolubovi,
+		173	Alamodactylus_byrdi,
+		174	Tethydraco_regalis,
+		175	Pteranodon_sternbergi,
+		176	Pteranodon_longiceps,
+		177	Cretornis_hlavaci,
+		178	Epapatelo_otyikokolo,
+		179	Alcione_elainus,
+		180	Simurghia_robusta,
+		181	Simurghia_lamegoi,
+		182	Nyctosaurus_lamegoi,
+		183	Nyctosaurus_gracilis,
+		184	Nyctosaurus_nanus,
+		185	Barbaridactylus_grandis,
+		186	Muzquizopteryx_coahuilensis,
+		187	Tendaguripterus_recki,
+		188	Puntanipterus_globosus,
+		189	Noripterus_complicidens,
+		190	Noripterus_parvus,
+		191	Lonchognathosaurus_acutirostris,
+		192	Ordosipterus_planignathus,
+		193	Dsungaripterus_weii,
+		194	Domeykodactylus_ceciliae,
+		195	Microtuban_altivolans,
+		196	Tupuxuara_longicristatus,
+		197	Tupuxuara_leonardii,
+		198	Kariridraco_dianae,
+		199	Thalassodromeus_sethi,
+		200	Thalassodromeus_oberlii,
+		201	Banguela_oberlii,
+		202	Bennettazhia_oregonensis,
+		203	Caupedactylus_ybaka,
+		204	Aymberedactylus_cearensis,
+		205	Palaeornis_cliftii,
+		206	Europejara_olcadesorum,
+		207	Tupandactylus_imperator,
+		208	Tupandactylus_navigans,
+		209	Tapejara_wellnhoferi,
+		210	Torukjara_bandeirae,
+		211	Caiuajara_dobruskii,
+		212	Wightia_declivirostris,
+		213	Afrotapejara_zouhri,
+		214	Vectidraco_daisymorrisae,
+		215	Huaxiadraco_corollatus,
+		216	Sinopterus_dongi,
+		217	Eopteranodon_lii,
+		218	Inabtanin_alarabia,
+		219	RGM_631745,
+		220	Azhdarcho_lancicollis,
+		221	Cryodrakon_boreas,
+		222	Tsogtopteryx_mongoliensis,
+		223	Bayshin_Tsav_azhdarchid,
+		224	Albadraco_tharmisensis,
+		225	Bakonydraco,
+		226	LPB_R2395,
+		227	Hatzegopteryx_thambema,
+		228	LPB_R2347,
+		229	EME_315,
+		230	MPCA_PV_2003,
+		231	Quetzalcoatlus_northropi,
+		232	Thanatosdrakon_amaru,
+		233	UCMP_114286,
+		234	ME1_04,
+		235	Tous_pterosaur,
+		236	Quetzalcoatlus_lawsoni,
+		237	FSAC_OB_14,
+		238	Infernodrakon_hastacollis,
+		239	Arambourgiania_philadelphiae,
+		240	'MPPM_2000.23.1',
+		241	Nipponopterus_mifunensis,
+		242	Gobiazhdarcho_tsogtbaatari,
+		243	Burkhant_azhdarchid,
+		244	Zhejiangopterus_linhaiensis,
+		245	Aerotitan_sudamericanus,
+		246	Mistralazhdarcho_maggii,
+		247	MC_SF69,
+		248	Aralazhdarcho_bostobensis,
+		249	Eurazhdarcho_langendorfensis,
+		250	Phosphatodraco_mauritanicus,
+		251	Wellnhopterus_brevirostris,
+		252	Montanazhdarcho_minor,
+		253	Radiodactylus_langstoni,
+		254	Xericeps_curvirostris,
+		255	Leptostomia_begaeensis,
+		256	Alanqa_saharica,
+		257	Argentinadraco_barrealensis,
+		258	Chaoyangopterus_zhangi,
+		259	UFC_721,
+		260	Jidapterus_edentus,
+		261	Lacusovagus_magnificens,
+		262	Ornithostoma_sedgwicki,
+		263	Apatorhamphus_gyrostega,
+		264	Eoazhdarcho_liaoxiensis,
+		265	Shenzhoupterus_chaoyangensis,
+		266	Meilifeilong_youhao,
+		267	Meilifeilong_sanyainus,
+		268	Keresdrakon_vilsoni,
+		269	MN_6588_V
+	;
+	TREE * UNTITLED = [&R] (1:46,((2:1,3:1):44,((4:2,(5:1,6:1):1):42,(7:43,(8:42,((9:2,(10:1,11:1):1):39,((12:1,13:1):39,((((14:2.5,15:2.5):2.5,((16:1,17:1,18:1):3,(19:3,(20:2,(21:1,(22:0.5,23:0.5):0.5):1):1):1):1):1,(24:1,25:1):5):33,(26:38,((27:1,28:1,29:1):36,(30:36,(31:35,((32:1,33:1):33,(34:33,(35:2,(36:1,37:1):1):31,(((38:4,(39:3,((40:1,41:1):1,(42:1,43:1):1):1):1):1,(44:2,(45:1,46:1):1):3):27,((47:4,(48:3,((49:1,50:1):1,(51:1,52:1):1):1):1):27,(((53:1,54:1):3,((55:1,56:1):2,(57:2,(58:1,59:1,60:1):1):1):1):26,((61:5,62:5,63:5,(64:4,(((65:1,66:1):1,(67:1,68:1):1):1,(69:1,70:1):2):1):1,(71:1,72:1):4):24,(73:28,74:28,((75:13.5,76:13.5,77:13.5):13.5,(78:26,(79:25,(80:24,(((81:2,(82:1,83:1):1):9,(84:10,((85:3,(86:2,(87:1,88:1):1):1):6,(89:8,((((90:1,(91:0.5,92:0.5):0.5):2,(93:2,(94:1,95:1):1):1):1,((96:1,97:1):2,(98:2,(99:1,100:1):1):1):1):3,((101:2,(102:1,103:1):1):4,(((104:3,105:3,((106:1,107:1):1,((108:0.5,109:0.5):0.5,110:1):1):1):1,(111:1,112:1):3):1,((113:2,(114:1,115:1):1):1,(116:2,(117:1,(118:0.5,119:0.5):0.5):1):1):2):1):1):1):1):1):1):12,((((120:2,(121:1,122:1):1):10,(((123:2,(124:1,125:1):1):5,(((126:1,127:1):1,(128:1,129:1):1):4,(130:5,(((131:0.5,132:0.5):0.5,133:1):3,(134:3,(135:2,((136:0.5,137:0.5):0.5,138:1):1):1):1):1):1):1):4,(139:10,(((140:2,(141:1,142:1):1):1,((143:1,144:1):1,(145:1,146:1):1):1):6,((147:1,148:1):7,(((149:2,(150:1,151:1):1):1,(152:2,((153:0.5,154:0.5):0.5,155:1):1):1):4,((156:3,((157:1,158:1):1,(159:1,160:1):1):1):3,((161:4,((162:2,((163:0.5,164:0.5):0.5,(165:0.5,166:0.5):0.5):1):1,(167:1,168:1):2):1):1,(169:2,(170:1,171:1):1):3):1):1):1):1):1):1):1):1,((172:4,(173:3,(174:2,(175:1,176:1):1):1):1):2,(177:5,((((178:1,179:1):1,((180:0.5,181:0.5):0.5,182:1):1):1,(183:1,184:1):2):1,(185:1,186:1):3):1):1):7):9,((187:5,((188:1,189:1,190:1):3,(191:3,(192:2,(193:1,194:1):1):1):1):1):16,(((195:9,((((196:0.5,197:0.5):0.5,198:1):1,((199:0.5,200:0.5):0.5,201:1):1):6,((202:2,(203:1,204:1):1):5,(205:6,((206:4,((207:1,208:1):2,(209:2,(210:1,211:1):1):1):1):1,((212:1,213:1):3,(214:3,(215:2,(216:1,217:1):1):1):1):1):1):1):1):1):10,(218:18,(219:17,((((((220:11,((221:5,222:5):5,((223:6,(224:5,(225:4,(226:3,(227:2,(228:1,229:1):1):1):1):1):1):3,((230:7,(((231:1,232:1):4,(233:4,(234:3,(235:2,(236:1,237:1):1):1):1):1):1,(238:2,(239:1,240:1):1):4):1):1,((241:0.5,242:0.5):0.5,243:1):7):1):1):1):1,(244:3,(245:2,(246:1,247:1):1):1):9):1,(248:3,(249:2,(250:1,251:1):1):1):10):1,(252:1,253:1):13):1,((254:1,255:1):1,(256:1,257:1):1):13):1,((((258:1,259:1):1,(260:1,261:1):1):1,(262:1,263:1):2):1,(264:3,(265:2,(266:1,267:1):1):1):1):12):1):1):1):1,(268:1,269:1):19):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1):1);
+END;

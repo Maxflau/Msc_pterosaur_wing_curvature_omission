@@ -6,7 +6,7 @@ cat("\n=========================================================================
 cat("PART 1: LOADING AND PREPARING DATA\n")
 cat("================================================================================\n\n")
 
-pterosaur_data <- read.csv("pteros_main_data.csv", sep=";", stringsAsFactors = FALSE)
+pterosaur_data <- read.csv("data/pteros_main_data.csv", sep=";", stringsAsFactors = FALSE)
 
 # Find columns containing key terms (case-insensitive)
 wing_area_cols <- grep("Wing.area...cm2..EWM..", colnames(pterosaur_data), ignore.case = TRUE, value = TRUE)

@@ -15,8 +15,8 @@ if (!exists("phy_pruned")) {
     inherits(get(x, envir = .GlobalEnv), "phylo"), logical(1))]
   if (length(cand) > 0) {
     phy_pruned <- get(cand[1]); cat("Using phylo object:", cand[1], "\n")
-  } else if (file.exists("Henry_updated.nex")) {
-    tr0 <- read.nexus("Henry_updated.nex")
+  } else if (file.exists("data/phylogenetics/Henry_updated.nex")) {
+    tr0 <- read.nexus("data/phylogenetics/Henry_updated.nex")
     phy_pruned <- if (inherits(tr0, "multiPhylo")) tr0[[1]] else tr0
     cat(sprintf("Tree read: %d tips\n", Ntip(phy_pruned)))
   } else stop("No tree available in ", getwd())

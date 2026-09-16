@@ -11,7 +11,7 @@
 # ============================================================
 library(phytools)
 
-tr <- read.nexus("Henry")
+tr <- read.nexus("data/phylogenetics/Henry")
 if (inherits(tr, "multiPhylo")) {
   tr <- tr[[1]]                       # several MPTs in file -> take the first
   attr(tr, "TipLabel") <- NULL        # drop shared-label compression metadata
@@ -110,6 +110,6 @@ fail <- added[!(added %in% tr$tip.label)]
 if (length(fail)) cat("FAILED:\n", paste(" -", fail, collapse="\n"), "\n")
 class(tr) <- "phylo"                  # ensure single-tree class before writing
 attr(tr, "TipLabel") <- NULL
-write.tree(tr, file="Henry_updated.tre") 
-write.nexus(tr, file="Henry_updated.nex")
+write.tree(tr, file="data/phylogenetics/Henry_updated.tre") 
+write.nexus(tr, file="data/phylogenetics/Henry_updated.nex")
 cat("Saved -> Henry_updated.nex (and .tre)\n")
