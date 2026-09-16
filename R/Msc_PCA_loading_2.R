@@ -1,27 +1,23 @@
-
-# Fix namespace conflicts (MASS, Momocs mask dplyr)
+# Use the dplyr versions of common helper names.
 select <- dplyr::select
 filter <- dplyr::filter
 arrange <- dplyr::arrange
 
-# --- 1. LOAD & PREPARE -------------------------------------------------------
+# --- 1. Load the PCA table and tidy the group names ---------------------------
 df <- read.csv("output/results/supplementals/performance_metrics_complete_CLADE.csv", stringsAsFactors = FALSE) %>%
   rename(Depositional = Depositional.settings.paleoenvironment,
          Palaeoenvironment = Environment, Diet_primary = Diet.1, Diet_secondary = Diet.2)
 
-# Diet_combo renamed to Diet_combined - this is what Msc_stat_prep.R actually
-# builds in the current pipeline (paste(Diet.1, Diet.2, sep=" + ")). The old
-
+# Build the combined diet label if it is missing from the table.
 if (!"Diet_combined" %in% names(df) && all(c("Diet_primary", "Diet_secondary") %in% names(df))) {
   d1 <- trimws(as.character(df$Diet_primary)); d2 <- trimws(as.character(df$Diet_secondary))
   df$Diet_combined <- ifelse(is.na(d2) | d2 == "" | d2 == d1, d1, paste(d1, d2, sep = " + "))
 }
 
-
-
 # second_moment renamed to r2_hat (non-dimensional second moment of area) -
 # wing_loading_ratio added (size-corrected, positive; replaces wing_loading
 # in the multivariate PCA itself since Msc_impossible_regions_v3.R).
+# Choose the biomechanical columns and group columns used below.
 BIO_VARS <- c("aspect_ratio","r2_hat","wing_loading_ratio",
               "von_mises_stress","wing_curvature","shape_complexity")
 GROUPS   <- c("clade","Depositional","Palaeoenvironment",
@@ -45,7 +41,8 @@ var_tbl <- data.frame(PC = names(var_exp), Var_pct = var_exp, Cumul_pct = cum_va
 cat("=== VARIANCE EXPLAINED (PC1 + PC2) ===\n"); print(var_tbl)
 write.csv(var_tbl, "output/results/supplementals/01_pca_variance_explained.csv", row.names = FALSE)
 
-# --- 2B. RECALCULATE LOADINGS FROM EXISTING PC SCORES -----------------------
+# --- 2B. Recalculate how strongly each variable lines up with the PCs ---------
+# Scale the selected measurements so they are on a comparable scale.
 bio_scaled_mat <- scale(df[, BIO_VARS])
 
 loadings_computed <- data.frame(
@@ -76,7 +73,7 @@ p_biplot <- ggplot() +
        colour = "Clade") + theme_bw()
 ggsave("output/plots_PDF/supplementals/02_biplot_PC1_PC2.pdf", p_biplot, width=12, height=8)
 
-# --- 4. PC SCORE SUMMARY BY GROUP --------------------------------------------
+# --- 4. Summarise PC1 and PC2 within each group -------------------------------
 summarise_pcs <- function(data, g) {
   data %>% group_by(across(all_of(g))) %>%
     summarise(N=n(), PC1_mean=round(mean(PC1),3), PC1_sd=round(sd(PC1),3),

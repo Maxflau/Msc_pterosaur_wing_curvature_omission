@@ -1,11 +1,12 @@
 WL_COL <- "Wing.loading..EWM."
 results_list <- vector("list", length(outlines_list))
 n_skipped <- 0
+# Go through each outline and calculate the main flight measures.
 for (i in seq_along(outlines_list)) {
-  
   specimen_name <- names(outlines_list)[i]
   outline <- outlines_list[[i]]
-  
+
+  # Match the outline to its row in the main data table.
   specimen_row <- complete_data[which(complete_data$SPECIES..Pegas. == specimen_name), ]
   if (nrow(specimen_row) == 0) { n_skipped <- n_skipped + 1; next }
   specimen_row <- specimen_row[1, ]
@@ -19,30 +20,25 @@ for (i in seq_along(outlines_list)) {
       species          = specimen_name,
       aspect_ratio     = AR,
       wing_loading     = WL,
-      
       r2_hat           = r2_hat_val,
-      
       # von_mises_stress is the ONLY stress metric in this pipeline.
       # stress_index/stress_index_DIAGNOSTIC and the old stress_root have
       # been removed entirely - no fallback, no diagnostic comparison.
       von_mises_stress = calculate_von_mises_stress(outline, MASS_KG, WSPAN_CM),
-      
+
       wing_curvature   = calculate_wing_curvature(outline),
       shape_complexity = calculate_shape_complexity(outline),
-      
       aspect_ratio_outline = calculate_aspect_ratio(outline),
-      
       second_moment_DIAGNOSTIC = calculate_second_moment_DIAGNOSTIC(outline),
-      
       stringsAsFactors = FALSE
     )
   }, error = function(e) {
     cat(paste("Error calculating metrics for", specimen_name, ":", e$message, "\n"))
     NULL
   })
-  
+
   results_list[[i]] <- metrics
-  
+
   if (i %% 20 == 0) cat(paste("Processed", i, "/", length(outlines_list), "specimens\n"))
 }
 
@@ -57,7 +53,7 @@ if (nrow(performance_data) == 0 || !"species" %in% colnames(performance_data)) {
 }
 
 # --------------------------------------------------------------------------------
-# Validation - check these numbers before running anything downstream
+# Check that the new measurements look sensible before later scripts use them.
 # --------------------------------------------------------------------------------
 cat("r2_hat (expected roughly 0.30-0.70; a spread over orders of magnitude\n")
 cat("means outlines were not span-aligned):\n")
@@ -91,7 +87,7 @@ if (sum(ok2) > 10) {
 cat("\n")
 
 # --------------------------------------------------------------------------------
-# Merge with taxonomic and palaeoenvironmental data
+# Add the taxonomic and environmental columns needed later in the pipeline.
 # --------------------------------------------------------------------------------
 join_cols <- c("SPECIES..Pegas.", "Order", "clade", "family", "Environment","Diet.1", "Diet.2", "Midpoint", "Period.Name", "Depositional.settings.paleoenvironment","Wingspan_cm", "Mass_kg", "Wing_area_cm2")
 if ("Flight_category" %in% colnames(complete_data)) {
@@ -116,19 +112,18 @@ left_join(complete_data %>% dplyr::select(all_of(join_cols)) %>% distinct(),by =
 # --------------------------------------------------------------------------------
 fix_mass_unit_errors <- function(data, mass_col = "Mass_kg", span_col = "Wingspan_cm",
                                  ratio_flag = 20, ratio_fix_tol = 5) {
-  
   ok <- is.finite(data[[mass_col]]) & data[[mass_col]] > 0 &
     is.finite(data[[span_col]]) & data[[span_col]] > 0
-  
+
   wingspan_m <- data[[span_col]] / 100
   mass_est   <- 0.2889 * wingspan_m^2.6562
-  
+
   ratio <- data[[mass_col]] / mass_est
   flagged <- ok & is.finite(ratio) & ratio > ratio_flag
-  
+
   corrected_mass <- data[[mass_col]]
   fixed <- rep(FALSE, nrow(data))
-  
+
   for (i in which(flagged)) {
     candidate <- data[[mass_col]][i] / 1000
     candidate_ratio <- candidate / mass_est[i]
@@ -137,19 +132,19 @@ fix_mass_unit_errors <- function(data, mass_col = "Mass_kg", span_col = "Wingspa
       fixed[i] <- TRUE
     }
   }
-  
+
   data[[paste0(mass_col, "_corrected")]] <- corrected_mass
   data$mass_est_kg         <- mass_est
   data$mass_unit_flagged   <- flagged
   data$mass_unit_corrected <- fixed
-  
+
   cat(sprintf("\nMass unit check (external wingspan-based estimator): %d specimens flagged (ratio > %gx)\n",
               sum(flagged), ratio_flag))
   cat(sprintf("  -> %d corrected (/1000 brought them within %gx of the estimate)\n",
               sum(fixed), ratio_fix_tol))
   cat(sprintf("  -> %d still flagged, NOT corrected - inspect manually\n",
               sum(flagged) - sum(fixed)))
-  
+
   if (sum(flagged) > 0) {
     cat("\nFlagged specimens:\n")
     print(data.frame(
@@ -162,7 +157,7 @@ fix_mass_unit_errors <- function(data, mass_col = "Mass_kg", span_col = "Wingspa
     ))
   }
   cat("\n")
-  
+
   data
 }
 
@@ -173,25 +168,24 @@ if (all(c("Mass_kg", "Wingspan_cm") %in% colnames(performance_data))) {
   performance_data$Mass_kg_corrected <- performance_data$Mass_kg
 }
 # --------------------------------------------------------------------------------
-# Wing loading residual and ratio - allometric size correction
-# (log WL ~ log Mass_kg). wing_loading_ratio = exp(residual): positive,
-# usable directly in the log-transformed PCA further down the pipeline.
+# Build a size-corrected wing loading value for later comparisons.
+# The ratio stays positive, so it can still be used in the logged PCA later on.
 # --------------------------------------------------------------------------------
 if (all(c("wing_loading", "Mass_kg") %in% colnames(performance_data))) {
   ok_wl <- is.finite(performance_data$wing_loading) & performance_data$wing_loading > 0 &
     is.finite(performance_data$Mass_kg) & performance_data$Mass_kg > 0
   if (sum(ok_wl) > 10) {
     m_wl <- lm(log(wing_loading) ~ log(Mass_kg), data = performance_data[ok_wl, ])
-    
+
     performance_data$wing_loading_resid <- NA_real_
     performance_data$wing_loading_resid[ok_wl] <- residuals(m_wl)
-    
+
     performance_data$wing_loading_ratio <- NA_real_
     performance_data$wing_loading_ratio[ok_wl] <- exp(residuals(m_wl))
-    
+
     cat("\nwing_loading_resid (additive, descriptive only, NOT in the PCA):\n")
     print(summary(performance_data$wing_loading_resid))
-    
+
     cat("\nwing_loading_ratio (multiplicative, positive, usable in the PCA):\n")
     print(summary(performance_data$wing_loading_ratio))
     cat(sprintf("Correlation with log(Mass_kg): %.4f (should be ~0)\n",

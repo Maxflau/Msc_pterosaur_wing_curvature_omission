@@ -1,5 +1,5 @@
-
 # ── 9E. BIOMECHANICAL DISTANCE ────────────────────────────────────────────────
+# Build a distance table from the biomechanical measurements.
 # Log then standardise: without it a Euclidean distance is dominated by wing
 # loading (SD 26.8) over wing curvature (SD 0.11).
 BIO_FOR_DIST <- setdiff(BIO_VARS, "pareto_rank_ratio")
@@ -19,6 +19,7 @@ write.csv(perm_bio_df, file.path(res_dir,"permanova_biomechanical.csv"), row.nam
 cat("Written: permanova_biomechanical.csv\n")
 
 # ── 9F. BETADISPER ────────────────────────────────────────────────────────────
+# Check whether groups differ in spread as well as position.
 # PERMANOVA is sensitive to unequal dispersion as well as to location, so a
 # significant result without this test cannot be read as a location difference.
 tidy_betadisp <- function(dist_mat, groups, label) {
@@ -43,6 +44,7 @@ write.csv(disp_bio, file.path(res_dir,"betadisper_biomechanical.csv"), row.names
 cat("Written: betadisper CSVs\n")
 
 # ── 9G. KRUSKAL-WALLIS + DUNN POST-HOC ───────────────────────────────────────
+# Test each measurement across the main groups and save the results.
 # Uses explicit loop + tryCatch to handle groups with < 2 unique levels
 bio_available <- BIO_VARS[BIO_VARS %in% names(stat_df)]
 bio_available <- bio_available[vapply(bio_available,
@@ -62,16 +64,16 @@ kw_safe <- function(vals, grps) {
   keep <- names(which(table(grps) >= 2))
   ok2  <- grps %in% keep
   vals <- vals[ok2]; grps <- droplevels(grps[ok2])
-  
+
   if (nlevels(grps) < 2 || length(vals) < 4)
     return(data.frame(n = length(vals), k = nlevels(grps),
                       H = NA_real_, df_kw = NA_real_, p_value = NA_real_, sig = ""))
-  
+
   res <- tryCatch(kruskal.test(vals, grps), error = function(e) NULL)
   if (is.null(res))
     return(data.frame(n = length(vals), k = nlevels(grps),
                       H = NA_real_, df_kw = NA_real_, p_value = NA_real_, sig = ""))
-  
+
   pv <- res$p.value
   data.frame(n = length(vals), k = nlevels(grps),
              H = round(unname(res$statistic), 3),

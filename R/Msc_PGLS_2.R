@@ -4,6 +4,7 @@
 
 dir.create("output/results", showWarnings = FALSE, recursive = TRUE)
 
+# Make species names easier to match between the table and the tree.
 normalise_name <- function(x) {
   tolower(gsub("[^A-Za-z0-9_]", "", gsub("[ ]+", "_", trimws(as.character(x)))))
 }
@@ -32,7 +33,7 @@ if (!all(CORE %in% names(performance_data_clean))) {
 }
 SET_NAME <- "von_mises_stress"
 
-VARS <- intersect(c(CORE, "wing_curvature","shape_complexity", "pareto_rank_ratio", 
+VARS <- intersect(c(CORE, "wing_curvature","shape_complexity", "pareto_rank_ratio",
                     "optimality_mean", "optimality_geom", "PC1", "PC2"),
                   colnames(performance_data_clean))
 cat("Metric set:", SET_NAME, "\nVariables:", paste(VARS, collapse = ", "), "\n")
@@ -48,12 +49,14 @@ d  <- d[key %in% common, ]
 tr <- drop.tip(phy_pruned, phy_pruned$tip.label[!tip %in% common])
 tr$tip.label <- normalise_name(tr$tip.label)
 d  <- d[match(tr$tip.label, normalise_name(d$species)), ]
+# Replace zero-length branches with a tiny value so the model can run.
 if (any(tr$edge.length <= 0)) tr$edge.length[tr$edge.length <= 0] <- 1e-6 * max(tr$edge.length)
 
 # ── 4. ROBUST PGLS FIT ────────────────────────────────────────────────────────
-#' corPagel optimises from a starting lambda and can fail when the true value is
-#' far from it. Starting at 1 failed for pareto_rank_ratio, whose signal lambda
-#' is 0.140. Several starts are tried, then Brownian, then OLS.
+# Try several starting values so the phylogenetic model is less likely to fail.
+# corPagel can fail when the true lambda is far from the starting value.
+# Starting at 1 failed for pareto_rank_ratio, whose signal lambda is 0.140.
+# If all starts fail, fall back to Brownian and report that clearly.
 fit_pgls <- function(df, trs, vname) {
   for (start in c(0.5, 0.9, 0.1, 0.99)) {
     m <- tryCatch(gls(y ~ Midpoint, data = df,
@@ -70,16 +73,15 @@ fit_pgls <- function(df, trs, vname) {
                     correlation = corBrownian(phy = trs, form = ~1),
                     method = "ML"), error = function(e) NULL)
   if (!is.null(m)) return(list(model = m, lambda = 1, method = "Brownian (fallback)"))
-  
+
   cat("    all PGLS attempts failed for", vname, "\n")
   list(model = NULL, lambda = NA_real_, method = "failed")
 }
 
-# ── 5. SIGNAL, OLS AND PGLS ───────────────────────────────────────────────────
+# ── 5. Measure signal and compare ordinary and phylogenetic trends ────────────
 res <- do.call(rbind, lapply(VARS, function(v) {
-  
   y <- d[[v]]
-  
+
   # Rank ratios and composites are bounded on 0-1, so their residuals cannot be
   # gaussian near the bounds: a logit puts them on an unbounded scale
   if (v %in% c("pareto_rank_ratio", "optimality_mean", "optimality_geom")) {
@@ -87,18 +89,18 @@ res <- do.call(rbind, lapply(VARS, function(v) {
   } else if (!v %in% c("PC1", "PC2") && all(y > 0, na.rm = TRUE)) {
     y <- log(y)
   }
-  
+
   ok <- is.finite(y) & is.finite(d$Midpoint)
   if (sum(ok) < 20) { cat(sprintf("%-20s skipped (n=%d)\n", v, sum(ok))); return(NULL) }
-  
+
   trs <- drop.tip(tr, tr$tip.label[!ok])
   lam <- tryCatch(phylosig(trs, setNames(y[ok], trs$tip.label),
                            method = "lambda", test = TRUE), error = function(e) NULL)
-  
+
   df <- data.frame(y = y[ok], Midpoint = d$Midpoint[ok])
   o  <- summary(lm(y ~ Midpoint, data = df))$coefficients
   f  <- fit_pgls(df, trs, v)
-  
+
   if (is.null(f$model)) {
     ps <- pse <- pp <- NA_real_
   } else {
@@ -106,10 +108,10 @@ res <- do.call(rbind, lapply(VARS, function(v) {
     ps <- tt["Midpoint","Value"]; pse <- tt["Midpoint","Std.Error"]
     pp <- tt["Midpoint","p-value"]
   }
-  
+
   cat(sprintf("%-20s n=%3d | OLS p=%.4g | PGLS p=%.4g | lambda=%.3f | %s\n",
               v, sum(ok), o[2,4], pp, f$lambda, f$method))
-  
+
   data.frame(variable = v, n = sum(ok),
              transform = if (v %in% c("pareto_rank_ratio","optimality_mean",
                                       "optimality_geom")) "logit"

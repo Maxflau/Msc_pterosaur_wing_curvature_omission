@@ -11,22 +11,23 @@ if (length(missing_time) > 0) {
   cat(sprintf("  Missing: %s — skipping Section 10.\n",
               paste(missing_time, collapse=", ")))
 } else {
-  
   # ── 10B. PREPARE DATA ─────────────────────────────────────────────────────────
+# Keep only the rows needed for the through-time figures.
   bin_order <- c("Late Triassic", "Early+Middle Jurassic", "Late Jurassic",
                  "Early Cretaceous", "Late Cretaceous")
   bin_order <- bin_order[bin_order %in% unique(shape_perf$Time_Bin)]
-  
+
   shape_temporal <- shape_perf %>%
     filter(!is.na(Time_Bin), !is.na(shapePC1), !is.na(shapePC2), !is.na(clade)) %>%
     mutate(Time_Bin = factor(Time_Bin, levels=bin_order))
-  
+
   n_bins_efa <- nlevels(droplevels(shape_temporal$Time_Bin))
   cat(sprintf("  %d specimens × %d bins: %s\n",
               nrow(shape_temporal), n_bins_efa,
               paste(levels(droplevels(shape_temporal$Time_Bin)), collapse=" | ")))
-  
+
   # ── 10C. HULLS ────────────────────────────────────────────────────────────────
+# Draw a hull around each clade inside each time bin.
   efa_hulls_time <- shape_temporal %>%
     group_by(Time_Bin, clade) %>%
     filter(n() >= 3) %>%
@@ -34,8 +35,9 @@ if (length(missing_time) > 0) {
       idx <- chull(.$shapePC1, .$shapePC2); idx <- c(idx, idx[1])
       data.frame(shapePC1=.$shapePC1[idx], shapePC2=.$shapePC2[idx])
     }) %>% ungroup()
-  
+
   # ── 10D. COLOURS ──────────────────────────────────────────────────────────────
+# Pick colours for all clades shown through time.
   clades_in_time <- sort(unique(shape_temporal$clade))
   efa_time_cols  <- CLADE_COLS[clades_in_time]
   missing_idx    <- is.na(efa_time_cols)
@@ -43,8 +45,9 @@ if (length(missing_time) > 0) {
     extra <- colorRampPalette(RColorBrewer::brewer.pal(9,"Set1"))(sum(missing_idx))
     efa_time_cols[missing_idx] <- extra
   }
-  
+
   # ── 10E. PANEL LABELS (time bin + n specimens + n clades) ─────────────────────
+# Build clear panel labels with age and sample counts.
   bin_labels <- shape_temporal %>%
     group_by(Time_Bin) %>%
     summarise(mid  = round(mean(Midpoint, na.rm=TRUE), 0),
@@ -53,16 +56,17 @@ if (length(missing_time) > 0) {
     mutate(label = paste0(as.character(Time_Bin),
                           "\n(~", mid, " Ma, n=", n,
                           ", clades=", ncl, ")"))
-  
+
   shape_temporal <- shape_temporal %>%
     left_join(bin_labels %>% select(Time_Bin, label), by="Time_Bin") %>%
     mutate(Time_label = factor(label, levels=bin_labels$label))
-  
+
   efa_hulls_time <- efa_hulls_time %>%
     left_join(bin_labels %>% select(Time_Bin, label), by="Time_Bin") %>%
     mutate(Time_label = factor(label, levels=bin_labels$label))
-  
+
   # ── 10F. GGPLOT — matching reference style ────────────────────────────────────
+# Draw the faceted plot that shows shape space through time.
   # White background, grey backdrop, semi-transparent hulls, filled solid circles
   efa_time_plot <- ggplot() +
     # 1. All specimens as small grey backdrop dots
@@ -99,8 +103,9 @@ if (length(missing_time) > 0) {
       panel.spacing    = unit(0.5, "cm"),
       plot.background  = element_rect(fill="white", colour=NA)
     )
-  
+
   # ── 10G. DISPARITY THROUGH TIME ───────────────────────────────────────────────
+# Summarise how spread-out the shapes are in each time bin.
   efa_disparity <- shape_temporal %>%
     group_by(Time_Bin) %>%
     summarise(n        = n(),
@@ -112,7 +117,7 @@ if (length(missing_time) > 0) {
               Midpoint = mean(Midpoint,        na.rm=TRUE),
               .groups  = "drop") %>%
     arrange(Midpoint)
-  
+
   disp_time_plot <- ggplot(efa_disparity, aes(x=Midpoint, y=disparity)) +
     geom_line(colour="#2980B9", linewidth=0.9) +
     geom_point(aes(size=n, fill=mean_opt), shape=21, colour="grey20", stroke=0.5) +
@@ -126,21 +131,21 @@ if (length(missing_time) > 0) {
          subtitle = "Sum of variances (shapePC1 + shapePC2)",
          y = "Disparity (SoV)") +
     theme_bw(base_size=11)
-  
+
   # ── 10H. SAVE ─────────────────────────────────────────────────────────────────
+# Save the plots and the summary table.
   n_rows_efa <- ceiling(n_bins_efa / 3)
   fig_h_efa  <- max(8, n_rows_efa * 5.2)
-  
+
   dir.create("output/plots",     showWarnings=FALSE, recursive=TRUE)
   dir.create("output/plots_PDF", showWarnings=FALSE, recursive=TRUE)
-  
+
   ggsave("output/plots_PDF/CLADE_EFA_morphospace_time.pdf",
          efa_time_plot, width=18, height=fig_h_efa, dpi=300)
 
   ggsave("output/plots_PDF/CLADE_EFA_disparity_time.pdf",
          disp_time_plot, width=10, height=6, dpi=300)
-  
+
   write.csv(efa_disparity,file.path(res_dir, "efa_disparity_through_time.csv"), row.names=FALSE)
   cat("  ✓ efa_disparity_through_time.csv\n")
-  
 } # end if required columns present

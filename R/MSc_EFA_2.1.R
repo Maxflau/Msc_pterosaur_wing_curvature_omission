@@ -13,6 +13,7 @@ CLADE_COLS <- c(
   "Rhamphorhynchidae"      = "#03240B")
 
 # ── 1. LOAD DATA ──────────────────────────────────────────────────────────────
+# Load the main results table and rebuild key fields if they are missing.
 PERF_CSV <- "output/results/performance_metrics_complete_CLADE.csv"
 
 if (exists("performance_data_clean")) {
@@ -81,7 +82,7 @@ build_shape_perf <- function() {
     select(-ends_with(".y")) %>%
     rename_with(~ str_remove(.x, "\\.x$")) %>%
     filter(!is.na(pareto_rank_ratio))
-  
+
   cat(sprintf("shape_perf: %d specimens | on Pareto front: %d | von_mises_stress: %d\n",
               nrow(sp), sum(sp$on_front, na.rm = TRUE),
               sum(is.finite(sp$von_mises_stress))))
@@ -105,6 +106,7 @@ if (all(c("Diet.1", "Diet.2") %in% names(shape_perf)) &&
   print(sort(table(shape_perf$Diet_combined), decreasing = TRUE))
 }
 # ── 3. TIME BINS ──────────────────────────────────────────────────────────────
+# Make the time groups used by the later time-based plots.
 # Section 10 skipped entirely because Time_Bin was absent from shape_perf.
 if (!"Time_Bin" %in% names(shape_perf)) {
   pcol <- intersect(c("Period.Name", "Period_Name"), names(shape_perf))[1]
@@ -126,6 +128,7 @@ if (!"Midpoint" %in% names(shape_perf)) {
 }
 
 # ── 4. DISTANCE MATRICES ──────────────────────────────────────────────────────
+# Build the distance tables used by the later comparison tests.
 # shape_dist existed; bio_dist did not, so betadisper failed on the second call.
 if (!exists("shape_dist")) {
   shape_dist <- dist(as.matrix(shape_perf[, c("shapePC1", "shapePC2")]),
@@ -137,7 +140,7 @@ if (!exists("bio_dist")) {
                               "von_mises_stress", "wing_curvature", "shape_complexity"),
                             names(shape_perf))
   M <- as.matrix(shape_perf[, BIO_FOR_DIST])
-  
+
   # Log then standardise, as for the performance PCA: without it the Euclidean
   # distance is dominated by wing loading (SD 26.8 against 0.11 for curvature)
   ok <- complete.cases(M) & apply(M > 0, 1, all)

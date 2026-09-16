@@ -1,4 +1,5 @@
 # ── K3. MORPHOSPACE EXPANSION ~ OPTIMALITY ───────────────────────────────────
+# Test whether morphospace expansion tracks optimality through time.
 cat("\n  K3: Centroid distance (morphospace expansion) ~ mean_optimality\n")
 if (nrow(time_summary) >= 4) {
   cor_exp <- cor.test(time_summary$centroid_dist, time_summary$mean_opt, method="spearman", exact=FALSE)
@@ -27,11 +28,12 @@ if (nrow(time_summary) >= 4) {
 }
 
 # ── K4. PGLS: CLADE-LEVEL OPTIMALITY ~ CLADE RICHNESS / MORPHOLOGICAL DIVERSITY
+# Test clade-level links while taking shared ancestry into account.
 cat("\n  K4: PGLS — clade optimality ~ species richness + morphological diversity\n")
 
 if (exists("pruned_tree") && "mean_optimality" %in% names(sp)) {
   library(ape); library(nlme); library(phytools)
-  
+
   # Build clade-level summary
   clade_sum <- sp %>%
     group_by(clade) %>%
@@ -44,7 +46,7 @@ if (exists("pruned_tree") && "mean_optimality" %in% names(sp)) {
       .groups       = "drop"
     ) %>%
     filter(!is.na(clade), clade != "")
-  
+
   # Match clade names to tree tip labels (use representative species per clade)
   sp_clade_rep <- sp %>%
     group_by(clade) %>%
@@ -52,13 +54,13 @@ if (exists("pruned_tree") && "mean_optimality" %in% names(sp)) {
     ungroup() %>%
     select(clade, species) %>%
     mutate(tip = gsub(" ","_", trimws(species)))
-  
+
   # Prune tree to one representative tip per clade
   keep_tips <- sp_clade_rep$tip[sp_clade_rep$tip %in% pruned_tree$tip.label]
   if (length(keep_tips) >= 4) {
     drop_tips  <- pruned_tree$tip.label[!pruned_tree$tip.label %in% keep_tips]
     clade_tree <- ape::drop.tip(pruned_tree, drop_tips)
-    
+
     # Align clade summary to tree
     clade_df <- sp_clade_rep %>%
       filter(tip %in% clade_tree$tip.label) %>%
@@ -69,7 +71,7 @@ if (exists("pruned_tree") && "mean_optimality" %in% names(sp)) {
     clade_df <- clade_df[clade_tree$tip.label[clade_tree$tip.label %in% rownames(clade_df)], ]
     clade_tree2 <- ape::drop.tip(clade_tree,
                                  clade_tree$tip.label[!clade_tree$tip.label %in% rownames(clade_df)])
-    
+
     if (nrow(clade_df) >= 4) {
       # PGLS: n_species ~ mean_opt (phylogenetic generalised least squares)
       pgls_rich <- tryCatch({
@@ -78,14 +80,14 @@ if (exists("pruned_tree") && "mean_optimality" %in% names(sp)) {
             correlation= corBrownian(phy=clade_tree2),
             method     = "ML")
       }, error=function(e) {cat("  PGLS rich failed:", e$message,"\n"); NULL})
-      
+
       pgls_disp <- tryCatch({
         gls(disparity_clade ~ mean_opt,
             data       = clade_df,
             correlation= corBrownian(phy=clade_tree2),
             method     = "ML")
       }, error=function(e) {cat("  PGLS disp failed:", e$message,"\n"); NULL})
-      
+
       k4_results <- data.frame()
       for (obj in list(pgls_rich, pgls_disp)) {
         if (!is.null(obj)) {

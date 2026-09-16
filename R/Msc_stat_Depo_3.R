@@ -1,6 +1,6 @@
-
 cat("\n--- S39-S42: TAPHONOMIC SENSITIVITY OF THE RESULTS ---\n\n")
 
+# Check whether preservation quality could be driving the main patterns.
 if (!exists("POSTCRANIAL")) stop("Source Msc_stats_06a_postcranial.R first.")
 if (!"pareto_rank_ratio" %in% colnames(performance_data_clean)) {
   stop("pareto_rank_ratio not found - run Msc_pareto_front_v3.R first.")
@@ -31,28 +31,27 @@ if (sum(d$well_preserved) < 30) {
 # the Pareto result carries a taphonomic component.
 front_rows <- NULL
 if ("on_front" %in% colnames(d)) {
-  
   ok <- is.finite(d$completeness) & !is.na(d$on_front)
   tb <- table(d$well_preserved[ok], d$on_front[ok])
-  
+
   if (all(dim(tb) == c(2, 2))) {
     ft <- fisher.test(tb)
     glmfit <- glm(on_front ~ completeness, data = d[ok, ], family = binomial)
     cf <- summary(glmfit)$coefficients
-    
+
     front_rows <- data.frame(
       test = c("Fisher: well-preserved vs on-front",
                "Logistic: on_front ~ completeness"),
       statistic = c(round(ft$estimate, 4), round(cf[2, 1], 4)),
       p_value = signif(c(ft$p.value, cf[2, 4]), 4),
       stringsAsFactors = FALSE)
-    
+
     cat("Preservation and Pareto front membership:\n")
     print(tb)
     cat(sprintf("Fisher odds ratio = %.3f, p = %.4g\n", ft$estimate, ft$p.value))
     cat(sprintf("Logistic slope on completeness = %+.4f, p = %.4g\n\n",
                 cf[2, 1], cf[2, 4]))
-    
+
     write_supp(front_rows, "S39_preservation_predicts_front")
   }
 }
@@ -95,7 +94,7 @@ if (!is.null(sens)) {
            ifelse(p_full_sample >= 0.05 & p_well_preserved >= 0.05, "null in both",
                   ifelse(p_full_sample < 0.05, "LOST in well-preserved subset",
                          "appears only in well-preserved subset")))))
-  
+
   cat("Sensitivity of the group tests to preservation:\n")
   print(table(sens$verdict))
   fragile <- sens[grepl("LOST|appears only", sens$verdict), ]
@@ -110,6 +109,7 @@ if (!is.null(sens)) {
 # --------------------------------------------------------------------------------
 # 3. Partial correlations, controlling for completeness
 # --------------------------------------------------------------------------------
+# This asks whether a correlation stays once preservation quality is held constant.
 # A metric-size relationship that vanishes once completeness is held constant
 # was a preservation artefact. Computed as the correlation of the residuals of
 # both variables on completeness.
@@ -136,7 +136,7 @@ if (!is.na(SIZE_REF)) {
                p_partial = signif(r[3], 4),
                change = round(r[2] - r[1], 4), stringsAsFactors = FALSE)
   }))
-  
+
   if (!is.null(pc_tab)) {
     pc_tab$artefact_suspected <- abs(pc_tab$change) > 0.1
     cat("\nCorrelation with", SIZE_REF, "before and after controlling for completeness:\n")

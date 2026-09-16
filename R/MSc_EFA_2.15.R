@@ -1,7 +1,10 @@
+# Link biomechanical measures to EFA shape positions and save the plots.
 allo_targets <- c("shapePC1","shapePC2","wing_curvature")
 allo_preds   <- BIO_VARS[BIO_VARS %in% names(sp)]
 
 # H1. Correlations: biomechanical metrics ↔ shape PC positions
+# H1. Correlations: biomechanical metrics ↔ shape PC positions
+# Check which measurements rise or fall with each shape axis.
 bio_mat   <- sp[, c(allo_preds,"shapePC1","shapePC2")]
 corr_mat  <- cor(bio_mat, use="pairwise.complete.obs")
 save_csv(as.data.frame(corr_mat), "EFA_biomech_shapePC_correlations")
@@ -11,6 +14,8 @@ cat("  Correlation (shapePC2):\n")
 print(round(corr_mat["shapePC2", allo_preds], 3))
 
 # H2. Linear models: each biomechanical predictor → shapePC1 and shapePC2
+# H2. Linear models: each biomechanical predictor → shapePC1 and shapePC2
+# Test one predictor at a time against each shape axis.
 lm_results <- do.call(rbind, lapply(allo_preds, function(pred) {
   do.call(rbind, lapply(c("shapePC1","shapePC2"), function(resp) {
     d <- sp[,c(resp,pred)]; d <- d[complete.cases(d),]
@@ -28,6 +33,8 @@ lm_results <- do.call(rbind, lapply(allo_preds, function(pred) {
 save_csv(lm_results, "EFA_lm_biomech_predictors_shapePC")
 
 # H3. Multiple regression: all biomechanical metrics → shapePC1 and shapePC2
+# H3. Multiple regression: all biomechanical metrics → shapePC1 and shapePC2
+# Test all measurements together for each shape axis.
 for (resp in c("shapePC1","shapePC2")) {
   d_multi <- sp[, c(resp, allo_preds)] %>% drop_na()
   if (nrow(d_multi) < 10) next
@@ -43,6 +50,8 @@ for (resp in c("shapePC1","shapePC2")) {
 }
 
 # H4. RandomForest: predict shapePC1 and shapePC2 from biomechanical metrics
+# H4. RandomForest: predict shapePC1 and shapePC2 from biomechanical metrics
+# Use a tree-based model to see which measurements matter most.
 # (clade-level analysis)
 rf_results <- list()
 for (resp in c("shapePC1","shapePC2")) {
@@ -59,7 +68,7 @@ for (resp in c("shapePC1","shapePC2")) {
     imp_df$Variable <- rownames(imp_df)
     imp_df$Response <- resp
     save_csv(imp_df, paste0("EFA_rf_importance_", resp))
-    
+
     # Variable importance plot
     p_imp <- ggplot(imp_df %>% slice_max(`%IncMSE`, n=10),
                     aes(reorder(Variable,`%IncMSE`), `%IncMSE`)) +
@@ -70,7 +79,7 @@ for (resp in c("shapePC1","shapePC2")) {
            x="Biomechanical variable", y="% Increase in MSE") +
       theme_bw(base_size=12)
     save_plot(p_imp, paste0("EFA_rf_importance_", resp), w=9, h=6)
-    
+
     # Predicted vs actual
     d_rf$predicted <- predict(rf)
     r2 <- round(cor(d_rf[[resp]], d_rf$predicted, use="complete.obs")^2, 3)
@@ -87,6 +96,8 @@ for (resp in c("shapePC1","shapePC2")) {
 }
 
 # H5. Wing curvature gap by clade (Msc_allo_3 adaptation)
+# H5. Wing curvature gap by clade (Msc_allo_3 adaptation)
+# Compare observed curvature with the value predicted from the other measures.
 if ("wing_curvature" %in% names(sp) && !is.null(rf_results$shapePC2)) {
   d_curv <- sp[, c("shapePC2","wing_curvature","clade",allo_preds)] %>% drop_na()
   rf_c <- tryCatch(
@@ -115,6 +126,8 @@ if ("wing_curvature" %in% names(sp) && !is.null(rf_results$shapePC2)) {
 }
 
 # H6. Scatter plots: biomechanical metrics vs shapePC1/shapePC2 coloured by clade
+# H6. Scatter plots: biomechanical metrics vs shapePC1/shapePC2 coloured by clade
+# Save simple plots so each relationship can be inspected by eye.
 for (pred in allo_preds) {
   for (resp in c("shapePC1","shapePC2")) {
     d_plot <- sp %>% filter(!is.na(.data[[pred]]), !is.na(.data[[resp]]))

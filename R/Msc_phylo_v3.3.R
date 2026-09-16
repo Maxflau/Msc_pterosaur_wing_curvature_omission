@@ -4,6 +4,7 @@ cat("===========================================================================
 
 library(ggplot2)
 
+# Make sure the plot folders exist before saving figures.
 for (dd in c("output/plots", "output/plots_PDF")) {
   dir.create(dd, showWarnings = FALSE, recursive = TRUE)
 }
@@ -11,6 +12,7 @@ if (!exists("phy_pruned") || !exists("phylo_data")) {
   stop("phy_pruned / phylo_data not found - source Msc_phylo_prep_v3.R first.")
 }
 
+# Use the Pareto score already stored in the main data table.
 OPT_VAR <- if ("pareto_rank_ratio" %in% colnames(performance_data_clean)) {
   "pareto_rank_ratio"
 } else stop("pareto_rank_ratio not found - run Msc_pareto_front_v3.R first.")
@@ -21,8 +23,7 @@ PTERODACT <- c("Azhdarchoidea", "Ctenochasmatoidea", "Dsungaripteroidea",
                "Ornithocheiromorpha", "Pteranodontia", "Basal pterodactyliform")
 
 # ── 1. ANCESTRAL STATES ON THE PERFORMANCE AXES ───────────────────────────────
-# Re-estimated here so the branches connect the points actually drawn, rather
-# than being carried over from a run on different axes.
+# Rebuild the tree coordinates so the branches match the plotted points.
 pd <- phylo_data[is.finite(phylo_data$PC1) & is.finite(phylo_data$PC2), ]
 tr <- drop.tip(phy_pruned,
                setdiff(phy_pruned$tip.label,
@@ -50,6 +51,7 @@ k_text <- sprintf("Blomberg's K\nPC1: K=%.3f  p=%.3f\nPC2: K=%.3f  p=%.3f",
 cat(k_text, "\n\n")
 
 # ── 2. OPTIMALITY SURFACE ─────────────────────────────────────────────────────
+# Fill a grid with smoothed Pareto values across the performance space.
 pd$opt <- performance_data_clean[[OPT_VAR]][match(pd$species,
                                                   performance_data_clean$species)]
 
@@ -58,8 +60,7 @@ e1 <- diff(r1) * 0.12; e2 <- diff(r2) * 0.12
 grid <- expand.grid(PC1 = seq(r1[1] - e1, r1[2] + e1, length.out = 90),
                     PC2 = seq(r2[1] - e2, r2[2] + e2, length.out = 90))
 
-# Kernel width scaled to the morphospace, not a hard-coded value that changes
-# meaning whenever the PCA changes
+# Set the smoothing width from the size of the morphospace itself.
 bw <- 0.10 * max(diff(r1), diff(r2))
 ok <- is.finite(pd$opt)
 grid$opt <- vapply(seq_len(nrow(grid)), function(i) {
@@ -69,6 +70,7 @@ grid$opt <- vapply(seq_len(nrow(grid)), function(i) {
 }, numeric(1))
 
 # ── 3. WING LATTICE ACROSS THE PANEL ──────────────────────────────────────────
+# Add nearby wing outlines to show what the morphospace looks like in shape terms.
 wing_perf <- NULL
 if (exists("outlines_list") && length(outlines_list) > 0) {
   gx <- seq(r1[1] - e1, r1[2] + e1, length.out = 13)

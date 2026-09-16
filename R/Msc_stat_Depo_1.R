@@ -1,5 +1,6 @@
 cat("\n--- ENVIRONMENT AND TAPHONOMY FIGURES ---\n\n")
 
+# Prepare the data used to compare depositional settings.
 library(ggplot2)
 for (dd in c("output/plots", "output/plots_PDF")) {
   dir.create(dd, showWarnings = FALSE, recursive = TRUE)
@@ -27,7 +28,7 @@ cat(sprintf("Settings with n >= %d: %d | specimens: %d\n\n", MIN_N,
             length(keep_lv), nrow(d)))
 
 # --------------------------------------------------------------------------------
-# ENV_01 — metrics by setting
+# ENV_01 — show how each metric differs across depositional settings.
 # --------------------------------------------------------------------------------
 PLOT_METRICS <- intersect(names(LABELS), colnames(d))
 
@@ -68,17 +69,16 @@ ggsave("output/plots_PDF/ENV_01_metrics_by_setting.pdf", p_env,
 cat("Written: ENV_01_metrics_by_setting\n")
 
 # --------------------------------------------------------------------------------
-# ENV_02 — morphospace occupation by setting
+# ENV_02 — show where each setting falls in the performance morphospace.
 # --------------------------------------------------------------------------------
 if (all(c("PC1", "PC2") %in% colnames(d))) {
-  
   hulls <- do.call(rbind, lapply(unique(d$setting), function(s) {
     ds <- d[d$setting == s & is.finite(d$PC1) & is.finite(d$PC2), ]
     if (nrow(ds) < 3) return(NULL)
     h <- chull(ds$PC1, ds$PC2); h <- c(h, h[1])   # close the ring
     data.frame(PC1 = ds$PC1[h], PC2 = ds$PC2[h], setting = s)
   }))
-  
+
   p_ms <- ggplot() +
     geom_point(data = performance_data_clean, aes(x = PC1, y = PC2),
                colour = "grey88", size = 0.8) +
@@ -96,7 +96,7 @@ if (all(c("PC1", "PC2") %in% colnames(d))) {
     theme_bw(base_size = 12) +
     theme(panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 0.5),
           plot.title = element_text(face = "bold", size = 13))
-  
+
   ggsave("output/plots/ENV_02_morphospace_by_setting.png", p_ms,
          width = 10, height = 7, dpi = 300)
   ggsave("output/plots_PDF/ENV_02_morphospace_by_setting.pdf", p_ms,

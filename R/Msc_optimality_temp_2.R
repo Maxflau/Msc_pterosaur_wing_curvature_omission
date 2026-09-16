@@ -1,3 +1,4 @@
+# Add bootstrap summaries for optimality and morphospace spread.
 if (!exists("write_supp")) stop("Source Msc_stats_00_setup.R first.")
 if (!"pareto_rank_ratio" %in% colnames(performance_data_clean)) {
   stop("pareto_rank_ratio not found - run Msc_pareto_front_v3.R first.")
@@ -17,7 +18,7 @@ if (!"Time_Bin" %in% colnames(d) && "Period.Name" %in% colnames(d)) {
 }
 
 ################################################################################---------------------------------------------------------------------------------
-# 1. Bootstrapped optimality and raw metrics, by group
+# 1. Bootstrap the main scores within each group
 ################################################################################--
 boot_mean <- function(x, n_boot = N_BOOT) {
   x <- x[is.finite(x)]
@@ -38,7 +39,7 @@ boot_by_group <- function(group_col) {
   if (!group_col %in% colnames(d)) return(NULL)
   g <- as.character(d[[group_col]])
   ok <- !is.na(g) & g != ""
-  
+
   do.call(rbind, lapply(unique(g[ok]), function(lv) {
     s <- d[ok & g == lv, ]
     if (nrow(s) < MIN_N) return(NULL)
@@ -64,7 +65,7 @@ for (gg in GROUPINGS) {
   if (is.null(tab)) { cat("SKIPPED", gg$col, "- absent or no group reaches n >=",
                           MIN_N, "\n"); next }
   names(tab)[1] <- gg$col
-  
+
   # Print the optimality rows only; the full table goes to the CSV
   opt <- tab[tab$metric == "pareto_rank_ratio", ]
   opt <- opt[order(-opt$observed), ]
@@ -75,18 +76,17 @@ for (gg in GROUPINGS) {
 }
 
 # --------------------------------------------------------------------------------
-# 2. True mean pairwise distance within each time bin
+# 2. Measure morphospace spread within each time bin
 # --------------------------------------------------------------------------------
 # Kept from the old 9B.4, which had already been corrected: distances are
 # computed WITHIN each bin. Averaging per-specimen precomputed values would
 # include between-bin distances and inflate the older, sparser bins.
 if (all(c("PC1", "PC2") %in% colnames(d)) && "Time_Bin" %in% colnames(d)) {
-  
   mpd_tab <- do.call(rbind, lapply(levels(d$Time_Bin), function(tb) {
     s <- d[!is.na(d$Time_Bin) & d$Time_Bin == tb &
              is.finite(d$PC1) & is.finite(d$PC2), ]
     if (nrow(s) < MIN_N) return(NULL)
-    
+
     xy <- as.matrix(s[, c("PC1", "PC2")])
     obs <- mean(dist(xy))
     bs <- replicate(N_BOOT, {
@@ -98,7 +98,7 @@ if (all(c("PC1", "PC2") %in% colnames(d)) && "Time_Bin" %in% colnames(d)) {
     boot_ci_lower = round(unname(ci[1]), 5),boot_ci_upper = round(unname(ci[2]), 5),
                boot_sd = round(sd(bs), 5), stringsAsFactors = FALSE)
   }))
-  
+
   if (!is.null(mpd_tab)) {
     mpd_tab$Time_Bin <- factor(mpd_tab$Time_Bin, levels = levels(d$Time_Bin))
     mpd_tab <- mpd_tab[order(mpd_tab$Time_Bin), ]

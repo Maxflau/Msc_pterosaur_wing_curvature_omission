@@ -1,11 +1,11 @@
+# Draw the updated temporal plots, including the alternate stress variable if needed.
 # --------------------------------------------------------------------------------
-# Figure dimensions, in inches — change here, not at each ggsave()
+# Set the figure size in one place so every saved plot stays consistent.
 # --------------------------------------------------------------------------------
 FIG_W        <- 40     # width of a 3-column figure
 FIG_H_ROW    <- 6    # height per row of panels
 FIG_DPI      <- 600
 PANEL_BORDER <- 0.9    # frame thickness around each panel
-
 
 VAR_LABELS <- c(
   aspect_ratio      = "Aspect ratio",
@@ -21,7 +21,7 @@ VAR_LABELS <- c(
   Wing_area_cm2     = "Wing area (cm2, log10)",
   pareto_rank_ratio = "Pareto rank ratio")
 
-# One colour per trait, so no two panels share a hue
+# Give each trait its own colour so the panels stay easy to scan.
 VAR_COLOURS <- c(
   aspect_ratio      = "#1F6FB4",   # blue
   r2_hat            = "#B5651D",   # ochre
@@ -42,20 +42,19 @@ CAPTION <- paste("Mean with bootstrap 95% percentile interval (2000 resamples)."
                  "so intervals are optimistic.")
 
 # --------------------------------------------------------------------------------
-# Panel builder
+# Turn any chosen variable list into one matching plot layout.
 # --------------------------------------------------------------------------------
 make_time_panel <- function(vars, title, subtitle, ncol = 3) {
-  
   d <- temporal_metrics[temporal_metrics$variable %in% vars, ]
   if (nrow(d) == 0) return(NULL)
-  
+
   keep_vars <- vars[vars %in% d$variable]
   d$label <- factor(VAR_LABELS[d$variable], levels = VAR_LABELS[keep_vars])
   d$col   <- VAR_COLOURS[d$variable]
-  
+
   ggplot(d, aes(x = Time_Bin, y = mean, group = 1)) +
-    # Shaded band and error bar show the same interval two ways: the band makes
-    # the trend readable, the bar keeps each bin's uncertainty explicit
+    # Show uncertainty as both a band and bars so the trend and the bin-level range are both clear.
+    #
     geom_ribbon(aes(ymin = lo, ymax = hi, fill = label), alpha = 0.18,
                 colour = NA) +
     geom_errorbar(aes(ymin = lo, ymax = hi, colour = label),
@@ -96,14 +95,13 @@ present <- unique(temporal_metrics$variable)
 stress_var <- intersect(c("von_mises_stress", "stress_index"), present)[1]
 
 # --------------------------------------------------------------------------------
-# Failsafe: build the stress rows here if they are absent
+# Add the stress time-bin rows here if they are missing upstream.
 # --------------------------------------------------------------------------------
 # The stress panel kept vanishing because von_mises_stress was missing from
 # temporal_metrics, and intersect() dropped it silently. Rather than depend on
 # the upstream chain, compute the bin means directly from the outlines.
 if (is.na(stress_var) && exists("temporal_data") && exists("outlines_list") &&
     exists("calculate_von_mises_stress")) {
-  
   sv <- vapply(seq_len(nrow(temporal_data)), function(i) {
     s <- temporal_data$species[i]
     o <- outlines_list[[s]]
@@ -112,7 +110,7 @@ if (is.na(stress_var) && exists("temporal_data") && exists("outlines_list") &&
     ws <- if ("Wingspan_cm" %in% colnames(temporal_data)) temporal_data$Wingspan_cm[i] else NA_real_
     tryCatch(calculate_von_mises_stress(o, mk, ws), error = function(e) NA_real_)
   }, numeric(1))
-  
+
   if (sum(is.finite(sv)) > 10) {
     boot_ci <- function(x, n_boot = 2000) {
       x <- x[is.finite(x)]
@@ -136,7 +134,7 @@ if (is.na(stress_var) && exists("temporal_data") && exists("outlines_list") &&
 }
 
 ###################################################################################
-# 1. Pareto score of the three Pareto objectives (aspect ratio, second moment
+# 1. Plot the three main Pareto score traits with the updated figure style
 #    of area, von Mises stress) - each metric's within-sample percentile
 #    (0-1), not its raw value. From Msc_pareto_front_1.R.
 ###################################################################################

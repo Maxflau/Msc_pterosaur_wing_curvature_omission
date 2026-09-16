@@ -1,14 +1,13 @@
 cat("\n=== PARETO FRONT ===\n\n")
+# Make sure the output folder exists and the input table is loaded.
 dir.create("supplementals", showWarnings = FALSE, recursive = TRUE)
 if (!exists("performance_data_clean")) stop("performance_data_clean not found.")
 
 d <- performance_data_clean
 
 # ── 1. OBJECTIVES ──────────────────────────────────────────────────────────────
-# Each metric listed ONCE. The previous version listed every metric twice
-# with contradictory max/min directions - R silently used only the first
-# match for each name, duplicating that column's weight in the dominance
-# calculation without erroring.
+# List the measures used to judge performance.
+# Each one must appear once, with the direction kept the same throughout.
 OBJECTIVES <- c(aspect_ratio = "max",aspect_ratio = "min", r2_hat = "max",r2_hat = "min",
                 von_mises_stress = "max",von_mises_stress = "min",wing_loading_ratio ="min")
 
@@ -37,6 +36,7 @@ if (!have_obj) {
 cat("Metric set: aspect_ratio, r2_hat, von_mises_stress, wing_loading_ratio\n")
 
 # ── 2. BUILD THE OBJECTIVE MATRIX ─────────────────────────────────────────────
+# Keep only rows that have usable values for every chosen measure.
 M <- as.matrix(d[, names(OBJECTIVES)])
 keep <- complete.cases(M) & apply(is.finite(M), 1, all)
 dd <- d[keep, ]; M <- M[keep, , drop = FALSE]
@@ -47,6 +47,7 @@ cat(sprintf("Specimens: %d of %d | objectives: %s\n\n", nrow(M), nrow(d),
             paste(names(OBJECTIVES), OBJECTIVES, sep = "=", collapse = ", ")))
 
 # ── 3. GOLDBERG RANKS AND PARETO RANK RATIO (Deakin et al. 2022) ──────────────
+# Find the best trade-off set, then score how close each specimen is to it.
 is_nd <- function(m) vapply(seq_len(nrow(m)), function(i) {
   ge <- sweep(m, 2, m[i, ], ">="); gt <- sweep(m, 2, m[i, ], ">")
   !any(apply(ge, 1, all) & apply(gt, 1, any))
@@ -74,6 +75,7 @@ cat(sprintf("Pareto front: %d / %d (%.1f%%) | ranks 0 to %d\n",
             sum(dd$on_front), nrow(dd), 100 * mean(dd$on_front), max(RO)))
 
 # ── 4. LIMITING OBJECTIVE AND STRATEGY ────────────────────────────────────────
+# Work out which measure holds each specimen back the most.
 pct <- apply(M, 2, function(x) rank(x, ties.method = "average") / length(x))
 colnames(pct) <- names(OBJECTIVES)
 
@@ -105,6 +107,7 @@ cat("\nStrategy:\n");           print(table(dd$strategy))
 cat("\nLimiting objective:\n"); print(table(dd$limiting_objective))
 
 # ── 5. SENSITIVITY TO THE STRESS OBJECTIVE ────────────────────────────────────
+# Check how much the front changes if stress is left out.
 stress_var <- "von_mises_stress"
 nd_no_stress <- is_nd(M[, setdiff(colnames(M), stress_var), drop = FALSE])
 cat(sprintf("\nFront with %s: %d | without: %d | agreement: %.1f%%\n",
@@ -112,6 +115,7 @@ cat(sprintf("\nFront with %s: %d | without: %d | agreement: %.1f%%\n",
             100 * mean(dd$on_front == nd_no_stress)))
 
 # ── 6. EXPORT ─────────────────────────────────────────────────────────────────
+# Save the summary table and copy the new columns back into the main data frame.
 out_cols <- intersect(c("species","clade","Order","Diet.1","Diet.2","Midpoint",
                         "Period.Name","Wingspan_cm", names(OBJECTIVES),
                         "goldberg_rank","pareto_rank_ratio","on_front",

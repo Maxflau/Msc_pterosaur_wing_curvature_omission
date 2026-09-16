@@ -1,3 +1,4 @@
+# List the measures to plot, then save the main morphospace figures.
 metrics <- list(
   list(col="aspect_ratio",      label="Aspect Ratio\n(WAR)",
        log=FALSE, pal="plasma",  rev=FALSE, brk=c(6,7.5,10,12.5,15),
@@ -16,6 +17,7 @@ metrics <- list(
        clade_col=FALSE, transp=FALSE, dark_bg=FALSE))
 
 # ── 7. PRODUCE FIGURES — one plot per data type, pipeline naming ──────────────
+# Save each finished figure in both PDF and PNG form.
 dir.create("output/plots_PDF", showWarnings=FALSE, recursive=TRUE)
 dir.create("output/plots",     showWarnings=FALSE, recursive=TRUE)
 
@@ -29,6 +31,7 @@ save_plot <- function(p, name, w=11, h=8.5) {
 }
 
 # ── 7A. METRIC MORPHOSPACE PLOTS — 1A / 1B / 1C  ─────────────────────────────
+# Draw one morphospace map for each main biomechanical measure.
 # WAR (1A) and 2MA (1B): clade border + metric fill
 # SVM (1C): dark navy bg + transparent points + clade borders
 # Others (1D-1E): black hulls, grey point border
@@ -59,6 +62,7 @@ for (i in seq_along(metrics)) {
 }
 
 # ── 7B. GROUP MORPHOSPACE PLOTS — CLADE_10 to CLADE_14 ───────────────────────
+# Draw group maps for clade, diet, and environment.
 
 make_group_morph <- function(group_var, group_cols, title, subtitle="",
                              hull_alpha=0.18, legend_bottom=FALSE) {
@@ -67,9 +71,9 @@ make_group_morph <- function(group_var, group_cols, title, subtitle="",
     mutate(grp = .data[[group_var]]) %>%
     filter(!is.na(grp))
   legend_pos <- if (legend_bottom) "bottom" else "right"
-  
+
   p <- ggplot()
-  
+
   # 1. Stress background (inverted Blues: light = high stress)
   if (!is.null(stress_bg)) {
     p <- p +
@@ -84,13 +88,13 @@ make_group_morph <- function(group_var, group_cols, title, subtitle="",
   # 2. Impossible region
   if (nrow(impossible_region) > 0)
     p <- p + geom_tile(data=impossible_region, aes(x,y), fill="grey80", alpha=0.75)
-  
+
   # 3. EFA grid — smaller (0.25) and filled white
   p <- p +
     new_scale_fill() +
     geom_polygon(data=grid_dense, aes(gx,gy,group=grid_id),
                  fill="white", colour="grey45", linewidth=0.06, alpha=0.50)
-  
+
   # 4. Convex hulls: semi-transparent coloured fill + matching border
   p <- p +
     geom_polygon(data=hulls,
@@ -98,7 +102,7 @@ make_group_morph <- function(group_var, group_cols, title, subtitle="",
                  alpha=hull_alpha, linewidth=0.60, show.legend=FALSE) +
     scale_fill_manual(values=group_cols, guide="none") +
     scale_colour_manual(values=group_cols, guide="none")
-  
+
   # 5. Specimen points: WHITE interior, group-coloured BORDER
   #    Matches reference: open circles with category-coloured outline
   #    Legend: same circles with coloured borders, white fill
@@ -116,7 +120,7 @@ make_group_morph <- function(group_var, group_cols, title, subtitle="",
                                                              fill=NA,
                                                              size=4.0,
                                                              stroke=1.0)))
-  
+
   p + labs(title=title, subtitle=subtitle, x=lab1, y=lab2) +
     coord_fixed(ratio = 0.95, expand = FALSE) + base_theme  # legend always right
 }

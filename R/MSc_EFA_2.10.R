@@ -1,4 +1,5 @@
 # ── 10H. SAVE ─────────────────────────────────────────────────────────────────
+# Save the time-based figure, then start building the specimen table.
 n_rows_efa <- ceiling(n_bins_efa / 3)
 fig_h_efa  <- max(8, n_rows_efa * 5.2)
 
@@ -16,21 +17,21 @@ cat("\n=== Section 11: EFA grid biomechanical table ===\n")
 if (!exists("shape_perf")) {
   cat("  shape_perf not found - skipping.\n")
 } else {
-  
   if (!exists("res_dir")) res_dir <- "output/results"
   dir.create(res_dir, showWarnings = FALSE, recursive = TRUE)
   cat(sprintf("  Specimens: %d\n", nrow(shape_perf)))
-  
+
   # ── 11A. EXACT PC1/PC2 VIA ROTATION MATRIX ──────────────────────────────────
+# Get the two main PCA scores for each specimen.
   PCA_VARS <- c("aspect_ratio","r2_hat","wing_loading",
                 "von_mises_stress","wing_curvature","shape_complexity")
-  
+
   missing_pca <- setdiff(PCA_VARS, names(shape_perf))
   if (length(missing_pca) > 0) {
     stop("Missing metrics: ", paste(missing_pca, collapse = ", "),
          "\n  Re-run Msc_performance_metrics_v3.R (with calculate_von_mises_stress sourced).")
   }
-  
+
   # The rotation must have been fitted on the SAME six metrics. A loadings file
   # written by the old pipeline lists second_moment and stress_root, so
   # projecting the new metrics through it would silently produce wrong scores.
@@ -44,7 +45,7 @@ if (!exists("shape_perf")) {
       cat("  pca_loadings.csv predates the metric rewrite - ignored.\n")
     }
   }
-  
+
   if (use_loadings) {
     loadings_mat <- as.matrix(loadings_df[PCA_VARS, c("PC1","PC2")])
     ref_means <- sapply(PCA_VARS, function(v) mean(shape_perf[[v]], na.rm = TRUE))
@@ -62,8 +63,7 @@ if (!exists("shape_perf")) {
   } else {
     stop("No usable loadings and no PC1/PC2 in shape_perf.")
   }
-  
-  
+
   join_missing <- function(target, path, cols, key = "species") {
     if (!file.exists(path)) return(target)
     src <- read.csv(path, stringsAsFactors = FALSE)
@@ -77,9 +77,9 @@ if (!exists("shape_perf")) {
                 paste(want, collapse = ", "), sum(!is.na(m))))
     target
   }
-  
+
   cat("  Recovering missing columns:\n")
-  
+
   # 1. Taxonomy and flight category, from the master database
   if (file.exists("data/pteros_main_data.csv")) {
     raw_db <- read.csv("data/pteros_main_data.csv", sep = ";", stringsAsFactors = FALSE)
@@ -97,7 +97,7 @@ if (!exists("shape_perf")) {
       }
     }
   }
-  
+
   # 2. Pareto and classification columns, from whichever CSV holds them
   PARETO_COLS <- c("goldberg_rank","strategy","limiting_objective",
                    "distance_to_front","on_front","pareto_rank_ratio")
@@ -107,7 +107,7 @@ if (!exists("shape_perf")) {
               "output/results/reference_specimens_for_curvature.csv")) {
     shape_perf <- join_missing(shape_perf, p, PARETO_COLS)
   }
-  
+
   # 3. Diet combination, derived rather than read
   if (!"Diet_combo" %in% names(shape_perf) &&
       all(c("Diet.1","Diet.2") %in% names(shape_perf))) {
@@ -122,7 +122,7 @@ if (!exists("shape_perf")) {
     cat(sprintf("    derived: Diet_combo (%d levels)\n",
                 length(unique(na.omit(shape_perf$Diet_combo)))))
   }
-  
+
   still_missing <- setdiff(c("family","Flight_category","goldberg_rank","strategy",
                              "limiting_objective","distance_to_front","Diet_combo"),
                            names(shape_perf))
@@ -134,6 +134,7 @@ if (!exists("shape_perf")) {
     if ("goldberg_rank" %in% still_missing) cat("    -> run Msc_pareto_front_v3.R\n")
   }
   # ── 11B. BUILD TABLE ────────────────────────────────────────────────────────
+# Assemble one output table with measurements, groups, and PC scores.
   ref_cols <- c("species","aspect_ratio","r2_hat","wing_loading",
                 "von_mises_stress","wing_curvature","shape_complexity",
                 "Order","clade","family","Environment","Diet.1","Diet.2",
@@ -142,22 +143,22 @@ if (!exists("shape_perf")) {
                 "pareto_rank_ratio","goldberg_rank","on_front","strategy",
                 "limiting_objective","distance_to_front",
                 "Diet_combo","Time_Bin")
-  
+
   base_cols <- ref_cols[ref_cols %in% names(shape_perf)]
-  
+
   # Report what is absent instead of dropping it silently: the previous version
   # wrote 18 of 34 requested columns without saying so
   dropped <- setdiff(ref_cols, base_cols)
   if (length(dropped) > 0) {
     cat("  Columns not available:", paste(dropped, collapse = ", "), "\n")
   }
-  
+
   sp_table <- shape_perf[, base_cols, drop = FALSE]
   sp_table$shapePC1 <- round(shape_perf$shapePC1, 4)
   sp_table$shapePC2 <- round(shape_perf$shapePC2, 4)
   sp_table$PC1 <- pc1_vals
   sp_table$PC2 <- pc2_vals
-  
+
   first_cols <- c("species","aspect_ratio","r2_hat","wing_loading",
                   "von_mises_stress","wing_curvature","shape_complexity",
                   "Order","clade","family","Environment","Diet.1","Diet.2",
@@ -166,13 +167,14 @@ if (!exists("shape_perf")) {
                   "shapePC1","shapePC2","PC1","PC2")
   first_cols <- first_cols[first_cols %in% names(sp_table)]
   sp_table <- sp_table[, c(first_cols, setdiff(names(sp_table), first_cols))]
-  
+
   # ── 11C. EXPORT ─────────────────────────────────────────────────────────────
+# Write the finished table and refresh the matching loadings file.
   out_path <- file.path(res_dir, "specimen_biomechanical_pca_table.csv")
   write.csv(sp_table, out_path, row.names = FALSE)
   cat(sprintf("  %d specimens x %d columns -> %s\n",
               nrow(sp_table), ncol(sp_table), out_path))
-  
+
   # Loadings written alongside, so the next run can project exactly
   if (exists("pca_performance")) {
     write.csv(data.frame(variable = rownames(pca_performance$rotation),

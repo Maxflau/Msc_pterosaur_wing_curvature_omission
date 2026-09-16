@@ -1,5 +1,6 @@
+# Draw the first set of temporal summary plots from the prepared time-bin tables.
 ###################################################################################
-# 1. Readable data
+# 1. Give each plotted variable a readable label
 ###################################################################################
 if (!exists("VAR_LABELS")) VAR_LABELS <- c(
   aspect_ratio      = "Aspect ratio",
@@ -20,12 +21,12 @@ plot_df <- temporal_metrics
 plot_df$label <- factor(VAR_LABELS[plot_df$variable], levels = VAR_LABELS[VAR_LABELS %in% VAR_LABELS[plot_df$variable]])
 
 ###################################################################################
-# 2. One faceted panel builder for any set of variables
+# 2. Make one reusable plotting function for any chosen variable set
 ###################################################################################
 make_time_panel <- function(vars, title, subtitle, ncol = 3) {
   d <- plot_df[plot_df$variable %in% vars, ]
   if (nrow(d) == 0) return(NULL)
-  
+
   ggplot(d, aes(x = Time_Bin, y = mean, group = 1)) +
     geom_ribbon(aes(ymin = lo, ymax = hi), fill = "#4292c6", alpha = 0.20) + geom_line(colour = "#08519c", linewidth = 0.9) +
     geom_point(colour = "#08519c", size = 2.6) + geom_text(aes(label = paste0("n=", n)), y = -Inf, vjust = -0.8, size = 2.7, colour = "grey40") +
@@ -40,7 +41,7 @@ CAPTION_CI <- paste("Bootstrap 95% percentile intervals.",
                     "so intervals are optimistic.")
 
 ###################################################################################
-# 3. Pareto score (per-objective percentile, 0-1) for aspect ratio, second
+# 3. Plot the three main Pareto score traits through time
 #    moment of area and von Mises stress - the three Pareto objectives.
 ###################################################################################
 p_shape <- make_time_panel(
@@ -57,7 +58,7 @@ if (!is.null(p_shape)) {
 }
 
 ###################################################################################
-# 4. Body size
+# 4. Plot the body size variables through time
 ###################################################################################
 # Size is now its own panel rather than an unacknowledged driver of the shape
 # metrics. If size rises across the Cretaceous while shape traits stay flat, that
@@ -73,7 +74,7 @@ if (!is.null(p_size)) {
 }
 
 # --------------------------------------------------------------------------------
-# 5. Disparity and optimality
+# 5. Plot disparity and Pareto rank ratio through time
 # --------------------------------------------------------------------------------
 disp_long <- rbind(
   data.frame(Time_Bin = disparity_metrics$Time_Bin, n = disparity_metrics$n,

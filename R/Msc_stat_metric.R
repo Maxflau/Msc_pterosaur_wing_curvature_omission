@@ -1,15 +1,15 @@
+# Summarise each performance metric within each main group.
 if (!exists("write_supp")) stop("Source Msc_stats_00_setup.R first.")
 
-#' Mean, SD and median of every metric within one grouping level
+# Calculate simple summary numbers for each group.
 summarise_group <- function(d, group_col) {
-  
   d <- d[!is.na(d[[group_col]]) & d[[group_col]] != "", ]
   levels_present <- unique(d[[group_col]])
-  
+
   out <- do.call(rbind, lapply(levels_present, function(lv) {
     s <- d[d[[group_col]] == lv, ]
     if (nrow(s) < MIN_N) return(NULL)
-    
+
     row <- data.frame(group = lv, n = nrow(s), stringsAsFactors = FALSE)
     for (m in METRICS) {
       x <- s[[m]][is.finite(s[[m]])]
@@ -19,14 +19,14 @@ summarise_group <- function(d, group_col) {
     }
     row
   }))
-  
+
   if (is.null(out)) return(NULL)
   out <- out[order(-out$n), ]
   names(out)[1] <- group_col
   out
 }
 
-# Diet combination joins the taxonomic scales here, so every summary table
+# Add the combined diet groups so the same kind of table is made at each level
 # exists at the same three levels
 SUMMARY_LEVELS <- intersect(c(GROUPS, "Diet_combined"),
                             colnames(performance_data_clean))
@@ -35,14 +35,14 @@ for (g in SUMMARY_LEVELS) {
   summ <- summarise_group(performance_data_clean, g)
   n_excluded <- length(unique(performance_data_clean[[g]])) -
     if (is.null(summ)) 0 else nrow(summ)
-  
+
   cat(sprintf("Summary by %s: %d groups retained, %d excluded (n < %d)\n",
               g, if (is.null(summ)) 0 else nrow(summ), n_excluded, MIN_N))
   write_supp(summ, paste0("S1_summary_statistics_by_", tolower(g)))
 }
 
 # --------------------------------------------------------------------------------
-# Sample size table — the context every other table needs
+# Sample sizes — show how many specimens support each later comparison
 # --------------------------------------------------------------------------------
 # Group sizes here are very unequal (roughly 6 to 83). A mean over six related
 # taxa is not comparable to a mean over 83, and this table is what lets a reader

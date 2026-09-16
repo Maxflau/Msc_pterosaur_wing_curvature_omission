@@ -1,3 +1,4 @@
+# Build time-bin summaries, disparity values, and hulls for the temporal figures.
 cat("\n================================================================================\n")
 cat("TEMPORAL METRICS\n")
 cat("================================================================================\n\n")
@@ -6,7 +7,7 @@ N_BOOT <- 2000
 set.seed(2026)
 
 #####################################################################################
-# 1. Time bins
+# 1. Put each specimen into the broad time bins used in the figures
 #####################################################################################
 temporal_data <- performance_data_clean %>%
   dplyr::filter(!is.na(Midpoint), !is.na(Period.Name), !is.na(clade))
@@ -22,11 +23,10 @@ temporal_data <- temporal_data %>% dplyr::filter(!is.na(Time_Bin))
 cat(sprintf("Specimens with temporal data: %d\n", nrow(temporal_data)))
 print(table(temporal_data$Time_Bin))
 
-
 cat("\nNOTE: unbalanced bins. Interpret bin means with their intervals, never alone.\n\n")
 
 ######################################################################################
-# 2. Variables tracked through time
+# 2. List every variable that will be followed through time
 ######################################################################################
 SHAPE_VARS <- intersect(c("aspect_ratio", "r2_hat", "von_mises_stress",
                           "wing_curvature", "shape_complexity",
@@ -63,7 +63,7 @@ cat("  pareto trade-off:", paste(TRADEOFF_VARS, collapse = ", "), "\n")
 cat("  size: ", paste(SIZE_VARS, collapse = ", "), "\n")
 cat("  optimality:", paste(OPT_VARS, collapse = ", "), "\n\n")
 #####################################################################################
-# 3. Bootstrap mean and percentile interval
+# 3. Calculate a mean and uncertainty range for each time bin
 #####################################################################################
 boot_mean_ci <- function(x, n_boot = N_BOOT) {
   x <- x[is.finite(x)]
@@ -76,9 +76,9 @@ boot_mean_ci <- function(x, n_boot = N_BOOT) {
 temporal_metrics <- do.call(rbind, lapply(levels(temporal_data$Time_Bin), function(tb) {
   d <- temporal_data[temporal_data$Time_Bin == tb, ]
   if (nrow(d) == 0) return(NULL)
-  
+
   do.call(rbind, lapply(TRACKED, function(v) {
-    # Size variables span orders of magnitude: summarise on the log scale
+    # Summarise size on a log scale so very large values do not dominate the mean.
     x <- d[[v]]
     if (v %in% SIZE_VARS) x <- log10(x[is.finite(x) & x > 0])
     ci <- boot_mean_ci(x)
@@ -97,7 +97,7 @@ print(temporal_metrics, digits = 4)
 cat("\n")
 
 ######################################################################################
-# 4. Disparity through time
+# 4. Measure how wide the occupied performance space is through time
 ######################################################################################
 # Sum of variance and mean pairwise distance on the performance PC plane,
 # bootstrapped as in Liu et al. Both are size-free by construction.
@@ -108,7 +108,7 @@ disparity_boot <- function(d, n_boot = 1000) {
                             mpd = NA, mpd_lo = NA, mpd_hi = NA))
   sov <- function(m) sum(apply(m, 2, var))
   mpd <- function(m) mean(dist(m))
-  
+
   bs <- replicate(n_boot, {
     idx <- sample(nrow(M), nrow(M), replace = TRUE)
     c(sov(M[idx, , drop = FALSE]), mpd(M[idx, , drop = FALSE]))
@@ -132,7 +132,7 @@ print(disparity_metrics, digits = 4)
 cat("\n")
 
 ######################################################################################
-# 5. Convex hulls per clade and bin, for the occupation figure
+# 5. Build the clade outlines used in the time-bin occupation figure
 ######################################################################################
 temporal_hulls_clade <- do.call(rbind, lapply(levels(temporal_data$Time_Bin), function(tb) {
   d <- temporal_data[temporal_data$Time_Bin == tb, ]

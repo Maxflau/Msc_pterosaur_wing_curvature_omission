@@ -1,5 +1,6 @@
 cat("\n--- S12/S13: SKELETAL ALLOMETRY ---\n\n")
 
+# Test how each bone changes as overall skeletal size increases.
 if (!exists("POSTCRANIAL")) stop("Source Msc_stats_06a_postcranial.R first.")
 
 MIN_FIT <- 10   # fewer points than this gives an unstable slope
@@ -7,20 +8,19 @@ MIN_FIT <- 10   # fewer points than this gives an unstable slope
 #' Log-log regression of one element on skeletal size, tested against isometry.
 #' Both variables are lengths, so the isometric slope is 1.
 fit_element <- function(el, d, size_var = "SkeletalSize", expected = 1) {
-  
   x <- d[[size_var]]; y <- d[[el]]
   ok <- is.finite(x) & is.finite(y) & x > 0 & y > 0
   if (sum(ok) < MIN_FIT) return(NULL)
-  
+
   m  <- lm(log(y[ok]) ~ log(x[ok]))
   cf <- summary(m)$coefficients
   slope <- cf[2, 1]; se <- cf[2, 2]
-  
+
   # Confidence interval on the slope, so isometry can be judged by eye too
   ci <- slope + c(-1, 1) * qt(0.975, sum(ok) - 2) * se
   t_iso <- (slope - expected) / se
   p_iso <- 2 * pt(abs(t_iso), df = sum(ok) - 2, lower.tail = FALSE)
-  
+
   data.frame(element = el, n = sum(ok),
              slope = round(slope, 4), se = round(se, 4),
              ci_lower = round(ci[1], 4), ci_upper = round(ci[2], 4),
@@ -33,6 +33,7 @@ fit_element <- function(el, d, size_var = "SkeletalSize", expected = 1) {
 # --------------------------------------------------------------------------------
 # 1. Global allometry of each element
 # --------------------------------------------------------------------------------
+# Fit one size relationship for each measured bone across the full sample.
 allo <- do.call(rbind, lapply(GM_ELEMENTS, fit_element, d = POSTCRANIAL))
 if (is.null(allo)) stop("No element fit succeeded - check SkeletalSize.")
 
@@ -61,24 +62,23 @@ FORE <- intersect(c("Humerus", "Ulna", "McIV", "WingPh1", "WingPh2",
 HIND <- intersect(c("Femur", "Tibia", "MtIII"), GM_ELEMENTS)
 
 if (length(FORE) >= 3 && length(HIND) >= 2) {
-  
   POSTCRANIAL$ForelimbGM <- exp(rowMeans(log(POSTCRANIAL[, FORE]), na.rm = TRUE))
   POSTCRANIAL$HindlimbGM <- exp(rowMeans(log(POSTCRANIAL[, HIND]), na.rm = TRUE))
-  
+
   ok <- is.finite(POSTCRANIAL$ForelimbGM) & is.finite(POSTCRANIAL$HindlimbGM) &
     POSTCRANIAL$ForelimbGM > 0 & POSTCRANIAL$HindlimbGM > 0
-  
+
   m <- lm(log(POSTCRANIAL$ForelimbGM[ok]) ~ log(POSTCRANIAL$HindlimbGM[ok]))
   cf <- summary(m)$coefficients
   p_iso <- 2 * pt(abs((cf[2, 1] - 1) / cf[2, 2]), df = sum(ok) - 2, lower.tail = FALSE)
-  
+
   cat(sprintf("Forelimb on hindlimb: slope = %.3f (SE %.3f), R2 = %.3f, n = %d\n",
               cf[2, 1], cf[2, 2], summary(m)$r.squared, sum(ok)))
   cat(sprintf("Against isometry (slope 1): p = %.4g -> %s\n\n", p_iso,
               ifelse(p_iso >= 0.05, "isometric",
                      ifelse(cf[2, 1] > 1, "forelimb grows faster",
                             "hindlimb grows faster"))))
-  
+
   POSTCRANIAL$ForeHindRatio <- POSTCRANIAL$ForelimbGM / POSTCRANIAL$HindlimbGM
 }
 
@@ -89,9 +89,8 @@ if (length(FORE) >= 3 && length(HIND) >= 2) {
 # size, with no clade showing that slope internally. Fitting within clades
 # separates the two.
 if ("clade" %in% colnames(POSTCRANIAL)) {
-  
   d <- POSTCRANIAL[!is.na(POSTCRANIAL$clade), ]
-  
+
   by_clade <- do.call(rbind, lapply(unique(d$clade), function(cl) {
     s <- d[d$clade == cl, ]
     if (sum(is.finite(s$SkeletalSize)) < MIN_FIT) return(NULL)
@@ -99,7 +98,7 @@ if ("clade" %in% colnames(POSTCRANIAL)) {
     if (is.null(res)) return(NULL)
     cbind(clade = cl, res)
   }))
-  
+
   if (!is.null(by_clade)) {
     by_clade$p_adjusted_BH <- signif(p.adjust(by_clade$p_vs_isometry, "BH"), 4)
     cat(sprintf("Within-clade allometry: %d clades with n >= %d\n",

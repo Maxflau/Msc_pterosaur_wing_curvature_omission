@@ -1,10 +1,10 @@
+# Build the performance morphospace and mark the observed envelope of points.
 cat("\n================================================================================\n")
 cat("PART 4: PERFORMANCE MORPHOSPACE AND EMPIRICAL ENVELOPE\n")
 cat("================================================================================\n\n")
 
-
 ################################################################################################
-#Variable preparation
+# Pick the measurements used to build the morphospace
 ################################################################################################
 CORE_VARS <- c("aspect_ratio", "r2_hat","von_mises_stress", "wing_curvature", "shape_complexity",
                "wing_loading_ratio")
@@ -21,8 +21,7 @@ if (length(missing_vars) > 0) {
 
 PERFORMANCE_VARS <- CORE_VARS
 
-
-# ── 2. MATRIX ─────────────────────────────────────────────────────────────────
+# ── 2. Build the measurement matrix used for the PCA ──────────────────────────
 performance_matrix <- performance_data %>%
   dplyr::select(all_of(PERFORMANCE_VARS)) %>%
   as.matrix()
@@ -42,7 +41,7 @@ if (any(performance_matrix_clean <= 0, na.rm = TRUE)) {
 }
 performance_matrix_log <- log(performance_matrix_clean)
 
-# ── 3. REDUNDANCY CHECK ───────────────────────────────────────────────────────
+# ── 3. Check whether any measurements are almost duplicates ───────────────────
 cm <- cor(performance_matrix_log, method = "spearman")
 high <- which(abs(cm) > 0.9 & upper.tri(cm), arr.ind = TRUE)
 if (nrow(high) > 0) {
@@ -54,7 +53,7 @@ if (nrow(high) > 0) {
   cat("Consider dropping one of each pair before interpreting the axes.\n\n")
 }
 
-# ── 4. PCA ────────────────────────────────────────────────────────────────────
+# ── 4. Run the PCA and store the first two axes ───────────────────────────────
 pca_performance <- prcomp(performance_matrix_log, scale. = TRUE, center = TRUE)
 
 cat("Performance morphospace PCA:\n")
@@ -72,7 +71,7 @@ cat("Correlation among log-transformed performance variables:\n")
 print(round(cor(performance_matrix_log), 2))
 cat("\n")
 
-# ── 5. EMPIRICAL ENVELOPE ─────────────────────────────────────────────────────
+# ── 5. Build the envelope that contains most observed specimens ───────────────
 ENVELOPE_LEVEL <- 0.95
 
 pc_plane <- cbind(performance_data_clean$PC1, performance_data_clean$PC2)
@@ -104,7 +103,7 @@ if (any(performance_data_clean$morphometric_outlier)) {
   cat("\n")
 }
 
-# ── 6. ELLIPSE POLYGON AND MEMBERSHIP TEST ────────────────────────────────────
+# ── 6. Save the ellipse shape and the inside/outside test ---------------------
 envelope_ellipse <- local({
   theta <- seq(0, 2 * pi, length.out = 200)
   circle <- cbind(cos(theta), sin(theta)) * sqrt(envelope_cut)

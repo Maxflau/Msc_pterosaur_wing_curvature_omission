@@ -1,3 +1,4 @@
+# Compare each group test with and without the phylogenetic tree correction.
 if (!exists("MV_MATRIX")) stop("Source Msc_stats_00_setup.R first.")
 if (!exists("phy_pruned")) stop("phy_pruned not found - source Msc_phylo_prep_v3.R first.")
 if (!requireNamespace("geomorph", quietly = TRUE)) {
@@ -8,7 +9,7 @@ library(geomorph)
 N_ITER <- 999
 
 # --------------------------------------------------------------------------------
-# 1. Align the performance matrix with the tree
+# 1. Keep only specimens that appear in both the data table and the tree
 # --------------------------------------------------------------------------------
 key <- normalise_name(MV_META$species)
 tip_key <- normalise_name(phy_pruned$tip.label)
@@ -31,20 +32,19 @@ meta <- meta[match(tr$tip.label, normalise_name(meta$species)), ]
 cat(sprintf("Aligned matrix: %d specimens x %d metrics\n\n", nrow(Y), ncol(Y)))
 
 # --------------------------------------------------------------------------------
-# 2. procD.pgls and procD.lm for each factor
+# 2. Run the same group test with and without phylogenetic correction
 # --------------------------------------------------------------------------------
 run_perf <- function(fac, phylogenetic) {
-  
   g <- as.character(meta[[fac]])
   ok <- !is.na(g) & g != ""
   keep_lv <- names(which(table(g[ok]) >= MIN_N))
   ok <- ok & g %in% keep_lv
   if (sum(ok) < 20 || length(unique(g[ok])) < 2) return(NULL)
-  
+
   Ysub <- Y[ok, , drop = FALSE]
   trs <- drop.tip(tr, tr$tip.label[!ok])
   gdf <- geomorph.data.frame(perf = Ysub, grp = factor(g[ok]), phy = trs)
-  
+
   fit <- tryCatch({
     if (phylogenetic) {
       procD.pgls(perf ~ grp, phy = phy, data = gdf, iter = N_ITER,
@@ -53,10 +53,10 @@ run_perf <- function(fac, phylogenetic) {
       procD.lm(perf ~ grp, data = gdf, iter = N_ITER, print.progress = FALSE)
     }
   }, error = function(e) { cat("  ", fac, "failed:", e$message, "\n"); NULL })
-  
+
   if (is.null(fit)) return(NULL)
   a <- fit$aov.table
-  
+
   data.frame(factor = fac,
              model = if (phylogenetic) "procD.pgls" else "procD.lm (OLS)",
              n = sum(ok), levels = length(unique(g[ok])), df = a$Df[1],
@@ -86,18 +86,18 @@ pgls_tab$significant <- pgls_tab$p_adjusted_BH < 0.05
 write_supp(pgls_tab, "S6b_perf_procD_pgls")
 
 # --------------------------------------------------------------------------------
-# 3. The contrast, which is the result
+# 3. Compare the corrected and uncorrected results side by side
 # --------------------------------------------------------------------------------
 # A factor significant under OLS but not under PGLS was a phylogenetic pattern,
 # not an ecological one. Stated per row so the write-up cannot quote the
 # uncorrected value alone.
 if (!is.null(ols_tab)) {
   ols_tab$p_adjusted_BH <- signif(p.adjust(ols_tab$p_value, "BH"), 4)
-  
+
   cmp <- merge(pgls_tab[, c("factor", "n", "Rsq", "p_adjusted_BH")],
                ols_tab[, c("factor", "Rsq", "p_adjusted_BH")],
                by = "factor", suffixes = c("_pgls", "_ols"))
-  
+
   cmp$verdict <- ifelse(cmp$p_adjusted_BH_pgls < 0.05,
                         "holds after phylogenetic correction",
                         ifelse(cmp$p_adjusted_BH_ols < 0.05,
@@ -105,11 +105,11 @@ if (!is.null(ols_tab)) {
                                "not significant either way"))
   cmp$Rsq_drop <- round(cmp$Rsq_ols - cmp$Rsq_pgls, 4)
   cmp <- cmp[order(-cmp$Rsq_pgls), ]
-  
+
   cat("\nOLS versus PGLS on the performance matrix:\n")
   print(cmp, row.names = FALSE)
   write_supp(cmp, "S6c_perf_ols_vs_pgls")
-  
+
   n_lost <- sum(cmp$verdict == "lost after correction - phylogenetic, not ecological")
   if (n_lost > 0) {
     cat(sprintf("\n%d factor(s) lose significance under phylogenetic correction.\n",

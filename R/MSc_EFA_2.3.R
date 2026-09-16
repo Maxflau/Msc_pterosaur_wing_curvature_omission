@@ -1,4 +1,5 @@
 # ── 4. BASE THEME ─────────────────────────────────────────────────────────────
+# Set the shared look used across the EFA figures.
 base_theme <- theme_classic(base_size = 11) +
   theme(
     plot.title        = element_text(face="bold", size=12),
@@ -20,6 +21,7 @@ base_theme <- theme_classic(base_size = 11) +
 LOG_METRICS <- c("von_mises_stress", "wing_loading_ratio")
 
 # ── 5. CORE PLOT FUNCTION ─────────────────────────────────────────────────────
+# Draw one morphospace plot for one chosen measurement.
 # border (colour) = group | interior (fill) = metric value
 make_metric_plot <- function(
     metric_col, metric_label,
@@ -38,11 +40,10 @@ make_metric_plot <- function(
     perm_factor     = "clade",
     title           = NULL,
     subtitle        = NULL) {
-  
   if (!metric_col %in% names(shape_perf)) {
     message("Column not found: ", metric_col); return(NULL)
   }
-  
+
   mvals <- as.numeric(shape_perf[[metric_col]])
   # Non-positive values are dropped, not set to 1e-9: a fabricated near-zero
   # becomes an extreme outlier once logged and stretches the whole colour ramp
@@ -52,17 +53,17 @@ make_metric_plot <- function(
   } else if (metric_log) {
     message(metric_col, " is a ratio - log ignored.")
   }
-  
+
   pt_df <- shape_perf %>% mutate(mval = mvals) %>% filter(is.finite(mval))
   if (nrow(pt_df) < 5) { message("Too few finite values: ", metric_col); return(NULL) }
-  
+
   hulls2 <- make_hulls(shape_perf, group_var)
   pv <- get_perm(perm_factor)
-  
+
   VIRIDIS_OPTIONS <- c("magma","inferno","plasma","viridis","cividis",
                        "rocket","mako","turbo")
   use_viridis <- metric_pal %in% VIRIDIS_OPTIONS
-  
+
   # Breaks outside the data range are silently dropped, so a hard-coded list
   # that no longer matches will desynchronise from its labels
   if (!is.null(metric_breaks)) {
@@ -70,7 +71,7 @@ make_metric_plot <- function(
     metric_breaks <- metric_breaks[metric_breaks >= r[1] & metric_breaks <= r[2]]
     if (length(metric_breaks) < 2) metric_breaks <- NULL
   }
-  
+
   metric_scale <- if (use_viridis) {
     scale_fill_viridis_c(option = metric_pal,
                          direction = if (metric_rev) -1 else 1,
@@ -86,9 +87,9 @@ make_metric_plot <- function(
                                                 barwidth=unit(0.32,"cm"),
                                                 title.theme=element_text(size=7, face="bold")))
   }
-  
+
   p <- ggplot()
-  
+
   # 1 ── Stress background: breaks left to ggplot, only the format is fixed
   if (!is.null(stress_bg)) {
     p <- p + geom_raster(data=stress_bg, aes(x, y, fill=z), interpolate=TRUE)
@@ -109,17 +110,17 @@ make_metric_plot <- function(
                                                   title.theme=element_text(size=7, face="bold")))
     }
   }
-  
+
   # 2 ── Region outside the occupied envelope, if the pipeline supplied one
   if (nrow(impossible_region) > 0) {
     p <- p + geom_tile(data=impossible_region, aes(x, y),
                        fill="grey80", alpha=0.75, inherit.aes=FALSE)
   }
-  
+
   # 3 ── EFA grid wings
   p <- p + geom_polygon(data=grid_dense, aes(gx, gy, group=grid_id),
                         fill="white", colour="grey40", linewidth=0.07, alpha=0.45)
-  
+
   # 4 + 5 ── Hulls and points; new_scale_fill() separates background from metric
   if (clade_colour) {
     p <- p +
@@ -152,7 +153,7 @@ make_metric_plot <- function(
                  shape=21, colour="grey15", size=2.6, stroke=0.45) +
       metric_scale
   }
-  
+
   plot_title <- if (!is.null(title)) title else paste("Wing", metric_label)
   p + labs(title=plot_title, subtitle=subtitle, x=lab1, y=lab2) +
     coord_fixed(ratio = 1.05, expand = FALSE) + base_theme

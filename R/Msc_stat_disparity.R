@@ -1,16 +1,15 @@
-
+# Measure how widely each group spreads across the PC1-PC2 performance space.
 if (!exists("write_supp")) stop("Source Msc_stats_00_setup.R first.")
 if (!all(c("PC1", "PC2") %in% colnames(performance_data_clean))) {
   stop("PC1/PC2 not found - source Msc_impossible_region_v3.R first.")
 }
 
-#' Disparity of one grouping in the PC1-PC2 plane
+# Measure how spread out one grouping is in the PC1-PC2 space.
 disparity_by <- function(d, group_col) {
-  
   d <- d[!is.na(d[[group_col]]) & d[[group_col]] != "" &
            is.finite(d$PC1) & is.finite(d$PC2), ]
   if (nrow(d) < MIN_N) return(NULL)
-  
+
   out <- do.call(rbind, lapply(unique(d[[group_col]]), function(lv) {
     s <- d[d[[group_col]] == lv, ]
     if (nrow(s) < MIN_N) return(NULL)
@@ -23,7 +22,7 @@ disparity_by <- function(d, group_col) {
                mean_pairwise_distance = round(mean(dist(cbind(s$PC1, s$PC2))), 4),
                stringsAsFactors = FALSE)
   }))
-  
+
   if (is.null(out)) return(NULL)
   out <- out[order(-out$sum_of_variance), ]
   names(out)[1] <- group_col
@@ -31,7 +30,7 @@ disparity_by <- function(d, group_col) {
 }
 
 # --------------------------------------------------------------------------------
-# 1. Taxonomic and ecological groupings
+# 1. Run the spread summary for each taxonomic and ecological grouping
 # --------------------------------------------------------------------------------
 DISP_GROUPS <- intersect(c("clade", "Order", "Diet.1", "Diet_combined",
                            "Depositional.settings.paleoenvironment", "Environment"),

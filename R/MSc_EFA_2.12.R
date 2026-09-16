@@ -1,3 +1,4 @@
+# Save loadings, variance, and test tables for the EFA shape space.
 bio_present <- BIO_VARS[BIO_VARS %in% names(sp)]
 bio_scaled  <- scale(sp[, bio_present])
 
@@ -12,6 +13,7 @@ save_csv(efa_loadings, "EFA_shape_pc_biomech_correlations")
 cat("  EFA shapePC ~ biomechanical metric correlations:\n"); print(efa_loadings)
 
 # ── True EFA PCA loadings (rotation matrix) ────────────────────────────────────
+# Save the rotation values that define the EFA shape axes.
 # Source: pca_shape object from MSc_rep.R (prcomp on z-scored EFA coefficients)
 # Matches the format of the biomechanical 00_pca_loadings_recalculated.csv
 # (variable, PC1, PC2) but for the EFA harmonic-coefficient PCA.
@@ -27,6 +29,7 @@ if (exists("pca_shape")) {
 }
 
 # ── Variance explained by each EFA shape PC axis ──────────────────────────────
+# Save how much of the total variation each axis explains.
 # Source: pca_shape object from MSc_rep.R (prcomp on z-scored EFA coefficients)
 # Column format matches the biomechanical 01_pca_variance_explained.csv
 # (PC, Var_pct, Cumul_pct — percentages, not fractions).
@@ -58,6 +61,7 @@ if (exists("pca_shape")) {
 }
 
 # Biplot
+# Draw a biplot so the main directions can be seen.
 arrow_s <- max(abs(sp[,c("shapePC1","shapePC2")])) * 0.55
 p_biplot <- ggplot() +
   geom_point(data=sp, aes(shapePC1, shapePC2, colour=clade),
@@ -76,6 +80,7 @@ save_plot(p_biplot, "EFA_biplot_loadings")
 # =============================================================================
 # SECTION C — PERMANOVA ON EFA SHAPE PC SPACE 
 # =============================================================================
+# Test how strongly the main groups differ in EFA shape space.
 cat("\n── Section C: PERMANOVA on EFA shape PC space ──\n")
 
 shape_dist <- dist(sp[,c("shapePC1","shapePC2")], method="euclidean")
@@ -109,6 +114,7 @@ extra_groups <- c("Time_Bin","Flight_category")
 all_groups   <- unique(c(avail_groups, extra_groups[extra_groups %in% names(sp)]))
 
 # ── C1: All distance matrices ─────────────────────────────────────────────────
+# Build the distance tables used for the comparison tests.
 # (a) shapePC1 + shapePC2 (already defined above)
 shape_pc_cols <- grep("^shapePC", names(sp), value=TRUE)
 cat(sprintf("  Shape PC axes available: %s\n", paste(shape_pc_cols, collapse=", ")))

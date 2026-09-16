@@ -1,3 +1,4 @@
+# Summarise how much wing curvature is present and how much is lost in hulls.
 if (!exists("write_supp")) stop("Source Msc_stats_00_setup.R first.")
 if (!exists("outlines_list")) stop("outlines_list not found.")
 
@@ -6,7 +7,7 @@ for (d in c("output/plots", "output/plots_PDF")) {
 }
 
 #####################################################################################
-# 1. Distribution of measured curvature
+# 1. Summarise the measured curvature values
 #####################################################################################
 d <- performance_data_clean[is.finite(performance_data_clean$wing_curvature), ]
 cat(sprintf("Specimens with a curvature value: %d of %d\n",
@@ -30,7 +31,7 @@ dist_tab <- do.call(rbind, lapply(CURV_LEVELS, function(g) {
 write_supp(dist_tab, "S23_curvature_distribution")
 
 ##########################################################################################
-# 2. Curvature-free baseline: the convex hull of each outline
+# 2. Compare each outline with its curvature-free hull
 #############################################
 # chull() removes every concavity, so the hull IS a curvature-free
 # reconstruction of the same wing. Measuring both with the same functions makes
@@ -84,7 +85,7 @@ if (all(abs(cmp$curvature_lost[ok]) < 1e-8)) {
 write_supp(cmp, "S24_curvature_free_comparison")
 
 ##########################################################################################
-# 3. Figures
+# 3. Save the summary figures
 ##########################################################################################
 p1 <- ggplot(d, aes(x = wing_curvature)) +
   geom_histogram(bins = 30, fill = "#2E8B57", colour = "grey30", linewidth = 0.25) +
@@ -111,7 +112,7 @@ if ("clade" %in% colnames(d)) {
          y = "Wing curvature (camber ratio)") +
     theme_bw(base_size = 12) +
     theme(panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 0.5))
-  
+
   ggsave("output/plots/CURVATURE_02_free_vs_measured.png", p2, width = 9, height = 6, dpi = 300)
   ggsave("output/plots_PDF/CURVATURE_02_free_vs_measured.pdf", p2,width = 9, height = 6)
 }

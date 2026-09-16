@@ -1,4 +1,5 @@
 # ── K0. Build time-bin summary (requires Time_Bin and Midpoint) ───────────────
+# Check whether the time fields are available before running the next tests.
 if (!"Time_Bin" %in% names(sp) || !"Midpoint" %in% names(sp)) {
   cat("  Time_Bin / Midpoint not in shape_perf — some K analyses skipped.\n")
   has_time <- FALSE
@@ -7,9 +8,10 @@ if (!"Time_Bin" %in% names(sp) || !"Midpoint" %in% names(sp)) {
 }
 
 # ── K1. TEMPORAL CO-VARIATION: richness ~ pareto_rank_ratio per Time_Bin ────────
+# Summarise each time bin and test simple through-time links.
 if (has_time && "pareto_rank_ratio" %in% names(sp)) {
   cat("\n  K1: Temporal richness ~ pareto_rank_ratio\n")
-  
+
   time_summary <- sp %>%
     filter(!is.na(Time_Bin), !is.na(pareto_rank_ratio)) %>%
     group_by(Time_Bin) %>%
@@ -38,7 +40,7 @@ if (has_time && "pareto_rank_ratio" %in% names(sp)) {
     )
   save_csv(time_summary, "EFA_K_time_bin_summary")
   cat(sprintf("  %d time bins analysed.\n", nrow(time_summary)))
-  
+
   # Spearman: n_species ~ mean_opt
   if (nrow(time_summary) >= 4) {
     cor_rich_opt  <- cor.test(time_summary$n_species, time_summary$mean_opt,
@@ -49,7 +51,7 @@ if (has_time && "pareto_rank_ratio" %in% names(sp)) {
                               method="spearman", exact=FALSE)
     cor_clade_opt <- cor.test(time_summary$n_clades, time_summary$mean_opt,
                               method="spearman", exact=FALSE)
-    
+
     k1_results <- data.frame(
       Test        = c("n_species ~ pareto_rank_ratio",
                       "n_species ~ mean_WAR",
@@ -67,13 +69,14 @@ if (has_time && "pareto_rank_ratio" %in% names(sp)) {
     cat("  K1 results:\n"); print(k1_results)
   }
   # ── K2. DISPARITY ~ MEAN_OPTIMALITY regression ──────────────────────────────
+# Fit small models that link disparity to optimality and flight measures.
   cat("\n  K2: Disparity ~ mean_optimality + WAR regression\n")
   if (nrow(time_summary) >= 4) {
     lm_disp_opt <- lm(disparity ~ mean_opt, data=time_summary)
     lm_disp_war <- lm(disparity ~ mean_war, data=time_summary)
     lm_disp_all <- lm(disparity ~ mean_opt + mean_war + mean_svm,
                       data=time_summary)
-    
+
     k2_results <- rbind( data.frame(Model="disparity ~ mean_opt", R2=round(summary(lm_disp_opt)$r.squared,4),Adj_R2=round(summary(lm_disp_opt)$adj.r.squared,4), F=round(summary(lm_disp_opt)$fstatistic[1],3),
                                     p_value=round(pf(summary(lm_disp_opt)$fstatistic[1],
                                                      summary(lm_disp_opt)$fstatistic[2],

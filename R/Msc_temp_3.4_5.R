@@ -1,5 +1,6 @@
+# Finish the larger temporal figure set with size and disparity panels.
 ###################################################################################
-# 2. Body size
+# 2. Plot the body size variables with the shared large layout
 ###################################################################################
 # Size as its own subject rather than an unacknowledged driver of the shape
 # metrics. If size rises across the Cretaceous while shape traits stay flat,
@@ -11,7 +12,7 @@ p_size <- make_time_panel(size_vars, "Body size through the Mesozoic",
 save_fig(p_size, "TEMPORAL_02_body_size", length(size_vars))
 
 ###################################################################################
-# 3. Disparity and optimality
+# 3. Plot disparity and Pareto rank ratio with the shared large layout
 ###################################################################################
 disp_long <- rbind(
   data.frame(Time_Bin = disparity_metrics$Time_Bin, n = disparity_metrics$n,

@@ -1,3 +1,4 @@
+# Build the shared data objects that all later statistics scripts use.
 cat("\n================================================================================\n")
 cat("STATISTICS - SHARED SETUP\n")
 cat("================================================================================\n\n")
@@ -13,7 +14,7 @@ MIN_N  <- 3
 N_PERM <- 9999
 set.seed(2026)
 
-#' Write a table to supplementals/ and report it
+# Save one table to the supplement folder and print what was written.
 write_supp <- function(x, name) {
   if (is.null(x) || nrow(x) == 0) {
     cat(sprintf("  SKIPPED %s - no rows\n", name)); return(invisible(NULL))
@@ -23,20 +24,19 @@ write_supp <- function(x, name) {
 }
 
 # --------------------------------------------------------------------------------
-# Metrics and grouping levels
+# Check that the shared table exists, then list the metrics and groups to use
 # --------------------------------------------------------------------------------
 if (!exists("performance_data_clean")) {
   stop("performance_data_clean not found - source the pipeline up to ", "Msc_impossible_region_v3.R first.")
 }
 
 #################################################################################
-# von_mises_stress: computed here if missing upstream
+# Add the stress column here if an earlier script has not made it yet
 #################################################################################
-# Rather than warn and continue with five metrics, build the column directly
+# If the stress column is missing, rebuild it here instead of skipping it.
 # from the outlines. calculate_von_mises_stress() needs
 # calculate_second_moment_DIAGNOSTIC() from the same functions script.
 if (!"von_mises_stress" %in% colnames(performance_data_clean)) {
-  
   if (exists("calculate_von_mises_stress") && exists("outlines_list")) {
     sv <- vapply(seq_len(nrow(performance_data_clean)), function(i) {
       s <- performance_data_clean$species[i]
@@ -48,7 +48,7 @@ if (!"von_mises_stress" %in% colnames(performance_data_clean)) {
         performance_data_clean$Wingspan_cm[i] else NA_real_
       tryCatch(calculate_von_mises_stress(o, mk, ws), error = function(e) NA_real_)
     }, numeric(1))
-    
+
     if (sum(is.finite(sv)) > 10) {
       performance_data_clean$von_mises_stress <- sv
       cat(sprintf("von_mises_stress computed here for %d / %d specimens\n",
@@ -56,7 +56,6 @@ if (!"von_mises_stress" %in% colnames(performance_data_clean)) {
     } else {
       cat("von_mises_stress could not be computed - too few finite values.\n")
     }
-    
   } else {
     missing_dep <- c(
       if (!exists("outlines_list")) "outlines_list [Msc_outline_loading.R]")
@@ -71,7 +70,7 @@ METRICS <- intersect(c("aspect_ratio", "r2_hat", "von_mises_stress", "wing_curva
  "shape_complexity", "wing_loading_ratio", "pareto_rank_ratio"),colnames(performance_data_clean))
 
 #################################################################################
-# Diet combination, built once for every module
+# Build one combined diet label so every later script uses the same wording
 #################################################################################
 
 if (all(c("Diet.1", "Diet.2") %in% colnames(performance_data_clean))) {
@@ -79,7 +78,7 @@ if (all(c("Diet.1", "Diet.2") %in% colnames(performance_data_clean))) {
   d2 <- trimws(as.character(performance_data_clean$Diet.2))
   performance_data_clean$Diet_combined <- ifelse(
     is.na(d2) | d2 == "" | d2 == d1, d1, paste(d1, d2, sep = " + "))
-  
+
   tb <- table(performance_data_clean$Diet_combined)
   cat(sprintf("\nDiet combinations: %d distinct, %d with n >= %d\n",
               length(tb), sum(tb >= MIN_N), MIN_N))
@@ -110,7 +109,7 @@ if (!"von_mises_stress" %in% METRICS) {
 }
 
 #################################################################################
-# Log-standardised matrix, for the multivariate modules
+# Build the cleaned multivariate matrix used by the later group tests
 #################################################################################
 # Log then standardise, as for the performance PCA: the metrics have
 # heterogeneous units, and a Euclidean distance on raw values would be dominated

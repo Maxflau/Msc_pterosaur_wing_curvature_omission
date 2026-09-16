@@ -1,3 +1,4 @@
+# Test whether groups occupy different parts of the multivariate performance space.
 if (!exists("MV_MATRIX")) stop("Source Msc_stats_00_setup.R first.")
 if (!requireNamespace("vegan", quietly = TRUE)) {
   stop("Package 'vegan' is required: install.packages(\"vegan\")")
@@ -13,42 +14,42 @@ if ("Diet_combined" %in% FACTORS) {
 }
 cat("\n")
 
+# Turn the multivariate table into distances between specimens.
 D_FULL <- vegdist(MV_MATRIX, method = "euclidean")
 
 perm_rows <- list(); disp_rows <- list()
 
 for (f in FACTORS) {
-  
   grp <- as.character(MV_META[[f]])
   ok <- !is.na(grp) & grp != ""
-  # Levels too small to permute are dropped, not silently carried
+  # Drop groups that are too small for a meaningful permutation test.
   keep_lv <- names(which(table(grp[ok]) >= MIN_N))
   ok <- ok & grp %in% keep_lv
-  
+
   if (sum(ok) < 20 || length(unique(grp[ok])) < 2) {
     cat("SKIPPED", f, "- too few usable specimens or levels\n"); next
   }
-  
+
   Ds <- as.dist(as.matrix(D_FULL)[ok, ok])
   g  <- factor(grp[ok])
-  
+
   ad <- adonis2(Ds ~ g, permutations = N_PERM)
   bd <- betadisper(Ds, g)
   bp <- permutest(bd, permutations = N_PERM)
-  
+
   perm_rows[[f]] <- data.frame(
     factor = f, n = sum(ok), levels = nlevels(g), df = ad$Df[1],
     SumOfSqs = round(ad$SumOfSqs[1], 3), R2 = round(ad$R2[1], 4),
     F_value = round(ad$F[1], 3), p_value = ad$`Pr(>F)`[1],
     dispersion_F = round(bp$tab$F[1], 3), dispersion_p = bp$tab$`Pr(>F)`[1],
     stringsAsFactors = FALSE)
-  
+
   disp_rows[[f]] <- data.frame(
     factor = f, group = levels(g), n = as.integer(table(g)),
     mean_distance_to_centroid = round(as.numeric(tapply(bd$distances, g, mean)), 4),
     sd_distance = round(as.numeric(tapply(bd$distances, g, sd)), 4),
     stringsAsFactors = FALSE)
-  
+
   cat(sprintf("%-42s R2=%.3f  p=%.4g  | dispersion p=%.4g\n",
               f, ad$R2[1], ad$`Pr(>F)`[1], bp$tab$`Pr(>F)`[1]))
 }
@@ -58,8 +59,8 @@ if (length(perm_rows) == 0) stop("No factor produced a usable PERMANOVA.")
 perm_tab <- do.call(rbind, perm_rows)
 perm_tab$p_adjusted_BH <- signif(p.adjust(perm_tab$p_value, method = "BH"), 4)
 
-# Stated per row rather than buried in a footnote, because the distinction
-# changes what the result means
+# Add a plain-language verdict to each row so the main result is easy to read.
+# This matters because a spread effect is not the same as a location effect.
 perm_tab$interpretation <- ifelse(
   perm_tab$p_adjusted_BH >= 0.05, "no group effect",
   ifelse(perm_tab$dispersion_p < 0.05,

@@ -1,3 +1,4 @@
+# Classify each taxon by which performance trade-off appears to hold it back.
 OBJECTIVES <- c(aspect_ratio = "max", aspect_ratio = "min",   r2_hat = "min", r2_hat = "max", 
                 von_mises_stress = "min", von_mises_stress = "max", wing_loading_ratio ="max", wing_loading_ratio = "min")
 OBJ_MEANING <- c(
@@ -7,7 +8,7 @@ OBJ_MEANING <- c(
   wing_loading_ratio = "gliding speed")
 
 # --------------------------------------------------------------------------------
-# 0. Objective availability
+# 0. Check which performance objectives can be used for the ranking
 # --------------------------------------------------------------------------------
 missing_obj <- setdiff(names(OBJECTIVES), colnames(performance_data_clean))
 
@@ -17,11 +18,11 @@ if (length(missing_obj) > 0) {
     c("aspect_ratio", "r2_hat", "von_mises_stress",
       "wing_loading_ratio", "wing_curvature", "shape_complexity"),
     colnames(performance_data_clean)), collapse = ", "), "\n")
-  
+
   OBJECTIVES <- OBJECTIVES[!names(OBJECTIVES) %in% missing_obj]
   cat("Dropped:", paste(missing_obj, collapse = ", "),
       "- running with", length(OBJECTIVES), "objectives.\n")
-  
+
   if (length(OBJECTIVES) < 2) {
     stop("Fewer than two objectives available - a Pareto front needs at least ",
          "two. Source the biomechanical functions script (calculate_von_mises_stress) ",
@@ -34,27 +35,26 @@ cat("Objectives in use:", paste(names(OBJECTIVES), OBJECTIVES,
                                 sep = " (", collapse = "), "), ")\n\n")
 
 # --------------------------------------------------------------------------------
-# LEVEL 1 and 2 — theoretical shapes
+# LEVEL 1 and 2 — sort theoretical shapes into broad outcome classes
 # --------------------------------------------------------------------------------
 if (exists("theoretical_data") &&
     all(names(OBJECTIVES) %in% colnames(theoretical_data))) {
-  
   theoretical_data$geometry_class <- ifelse(
     theoretical_data$self_intersecting, "Geometrically impossible", "Possible")
-  
+
   obj_ranges <- lapply(names(OBJECTIVES),
                        function(v) range(performance_data_clean[[v]], na.rm = TRUE))
   names(obj_ranges) <- names(OBJECTIVES)
-  
+
   within_observed <- Reduce(`&`, lapply(names(OBJECTIVES), function(v) {
     x <- theoretical_data[[v]]
     is.finite(x) & x >= obj_ranges[[v]][1] & x <= obj_ranges[[v]][2]
   }))
-  
+
   theoretical_data$realisation_class <- ifelse(
     theoretical_data$self_intersecting, "Geometrically impossible",
     ifelse(within_observed, "Realised region", "Possible but unrealised"))
-  
+
   cat("THEORETICAL SHAPES:\n")
   print(table(theoretical_data$realisation_class))
   cat("\n'Possible but unrealised' is the non-circular result: shapes that could\n")
@@ -65,7 +65,7 @@ if (exists("theoretical_data") &&
 }
 
 # --------------------------------------------------------------------------------
-# LEVEL 3 — mechanical limitation of real taxa
+# LEVEL 3 — classify real taxa by the trade-off that limits them most
 # --------------------------------------------------------------------------------
 obj_matrix <- as.matrix(performance_data_clean[, names(OBJECTIVES), drop = FALSE])
 keep <- complete.cases(obj_matrix) & apply(is.finite(obj_matrix), 1, all)
@@ -79,6 +79,7 @@ M <- obj_matrix[keep, , drop = FALSE]
 
 for (v in names(OBJECTIVES)) if (OBJECTIVES[[v]] == "min") M[, v] <- -M[, v]
 
+# Count how many real specimens can be ranked with the chosen objectives.
 cat(sprintf("Real taxa classified: %d\n\n", nrow(M)))
 
 cls_data$dominance_count <- vapply(seq_len(nrow(M)), function(i) {

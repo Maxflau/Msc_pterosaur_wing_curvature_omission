@@ -1,3 +1,4 @@
+# Prepare shared colours, labels, and folders for later figures.
 cat("\n================================================================================\n")
 cat("Plot preparations\n")
 cat("================================================================================\n\n")
@@ -6,6 +7,7 @@ if (!requireNamespace("ggnewscale", quietly = TRUE)) {
   stop("Package 'ggnewscale' is required: install.packages(\"ggnewscale\")")
 }
 
+# Set one fixed border colour for each clade.
 CLADE_COLS <- c(
   "Anurognathidae"         = "#46852F",
   "Azhdarchoidea"          = "#DB8E00",
@@ -20,7 +22,7 @@ CLADE_COLS <- c(
   "Rhamphorhynchidae"      = "#03240B"
 )
 
-# Used for the "Environment" column
+# Set colours for the broad environment categories.
 ENV_COLS <- c(
   "Archipelago"                   = "#A300E9",
   "Coastal environment"           = "#4F4F4F",
@@ -32,6 +34,7 @@ ENV_COLS <- c(
   "Semi-arid floodplain"          = "#4CAF50"
 )
 
+# Set colours for the primary diet categories.
 DIET_COLS <- c(
   "Carnivore"      = "#E74C3C",
   "Durophageous"   = "#4CAF50",
@@ -53,7 +56,7 @@ DIETCOMBO_COLS <- c(
   "Piscivore+Insectivore"    = "#FFC107", "Piscivore+Piscivore"      = "#FDD835"
 )
 
-# Used for the "Depositional.settings.paleoenvironment" column
+# Set colours for the depositional setting categories.
 DEPOSITIONAL_COLS <- c(
   "Aeolian"                 = "#482072",
   "Alluvial plain"          = "#4CAF50",
@@ -65,9 +68,7 @@ DEPOSITIONAL_COLS <- c(
   "playa"                   = "#6A9DA3"
 )
 
-# Generic case/whitespace-insensitive lookup against any fixed colour set,
-# so labelling differences in the data (capitalisation, extra spaces around
-# separators like " + ") don't silently fall through.
+# Match colour names even if spacing or capital letters vary a little.
 match_fixed_colour <- function(names_in_data, colour_lut) {
   norm <- function(x) gsub("\\s+", "", tolower(trimws(x)))
   lut <- colour_lut
@@ -77,6 +78,7 @@ match_fixed_colour <- function(names_in_data, colour_lut) {
   out
 }
 
+# Make sure the figure folders exist before anything is saved.
 for (d in c("output/plots/biomechanic_plot",
             "output/plots_PDF/biomechanic_plot")) {
   dir.create(d, showWarnings = FALSE, recursive = TRUE)
@@ -89,6 +91,7 @@ pc_lab <- function(k) {
   sprintf("PC%d (%.1f%%)", k, summary(pca_performance)$importance[2, k] * 100)
 }
 
+# Set readable labels for the measurement names used in legends.
 METRIC_LABELS <- c(
   von_mises_stress = "Von Mises stress\n(scale-invariant)",r2_hat = "Second moment\nof area", aspect_ratio = "Aspect ratio", wing_curvature = "Wing curvature",
   shape_complexity = "Shape complexity", pareto_rank_ratio = "Pareto\nrank ratio")

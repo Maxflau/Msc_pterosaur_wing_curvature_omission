@@ -1,3 +1,7 @@
+# Summarise the main biomechanical measurements for each clade.
+# These tables are saved for later reporting.
+
+# --- 1. Mean and spread by clade ----------------------------------------------
 summary_by_clade <- performance_data_clean %>%
   group_by(clade) %>%
   summarise(
@@ -16,11 +20,12 @@ summary_by_clade <- performance_data_clean %>%
     sd_curvature = sd(wing_curvature, na.rm = TRUE),
     mean_complexity = mean(shape_complexity, na.rm = TRUE),
     sd_complexity = sd(shape_complexity, na.rm = TRUE)
-    # Add additional metrics as needed
+    # Add more measurements here only if later scripts also use them.
   )
 write.csv(summary_by_clade,
           "output/results/supplementals/summary_statistics_by_clade.csv", row.names = FALSE)
 cat("✓ Exported: output/results/summary_statistics_by_clade.csv\n\n")
+# --- 2. Mean and spread by order ----------------------------------------------
 summary_by_order <- performance_data_clean %>%
   group_by(Order) %>%
   summarise(

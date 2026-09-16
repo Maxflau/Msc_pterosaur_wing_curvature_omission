@@ -1,9 +1,9 @@
-# --- summary_pterosaur_env_performance_clean.R ---
-
+# Compare environments, depositional settings, and performance metrics.
 
 # ------ 1. Source data: performance_data_clean, patch in deposition/env if missing
 
 # ------ 1. Patch in deposition/env from CSV if missing -----------------------
+# If needed, copy missing environment labels from the master CSV.
 if(!all(c("Environment","Depositional.settings.paleoenvironment") %in% colnames(performance_data_clean))) {
   master_df <- read.csv("data/pteros_main_data.csv", sep=";", stringsAsFactors=FALSE, check.names=FALSE)
   colnames(master_df) <- trimws(colnames(master_df))
@@ -14,7 +14,7 @@ if(!all(c("Environment","Depositional.settings.paleoenvironment") %in% colnames(
 for(c in c("Period.Name","Environment","Depositional.settings.paleoenvironment"))
   performance_data_clean[[c]] <- trimws(as.character(performance_data_clean[[c]]))
 
-# Collapse Early + Middle Jurassic
+# Merge the two Jurassic bins so the time categories stay consistent.
 performance_data_clean$Period_collapsed <- factor(dplyr::recode(performance_data_clean$Period.Name,
                                                                 "Early Jurassic"="Early+Middle Jurassic", "Middle Jurassic"="Early+Middle Jurassic",
                                                                 .default=performance_data_clean$Period.Name),
@@ -28,7 +28,7 @@ tab_by_period <- function(df, col) df %>%
 tab_depo <- tab_by_period(performance_data_clean, "Depositional.settings.paleoenvironment")
 tab_env  <- tab_by_period(performance_data_clean, "Environment")
 
-# ------ 3. Palettes (one colour per category present in the data) ------------
+# ------ 3. Set the colours used in the figures --------------------------------
 depo_colors <- c("Fluviodeltaic"="#117a65",
                  "Alluvial plain"="#f39c12",
                  "Coastal/Shallow marine"="#48c9b0",
@@ -60,7 +60,7 @@ p_env  <- make_bar(tab_env,  env_colors,  "Habitat", "Habitat (macroenvironment)
 ggsave("output/plots/Taphono_plot.png", p_depo + p_env, width=14, height=8, dpi=300)
 ggsave("output/plots_PDF/Taphono_plot.pdf", p_depo + p_env, width=14, height=8)
 
-# ------ 5. Habitat vs depositional setting (are they confounded?) ------------
+# ------ 5. Check whether habitat and depositional setting overlap -------------
 rel <- performance_data_clean %>% filter(!is.na(Environment), Environment!="",
                                          !is.na(Depositional.settings.paleoenvironment), Depositional.settings.paleoenvironment!="")
 ct <- table(rel$Environment, rel$Depositional.settings.paleoenvironment)
@@ -68,16 +68,13 @@ chi <- chisq.test(ct, simulate.p.value=TRUE, B=10000)
 cramers_v <- sqrt(as.numeric(chi$statistic) / (sum(ct) * (min(dim(ct)) - 1)))
 cat(sprintf("\nHabitat x deposition: X2=%.1f, p=%.4g | Cramer's V=%.3f\n", chi$statistic, chi$p.value, cramers_v))
 
-# ------ 6. Biomechanics vs paleoenvironment / deposition / time --------------
-# second_moment -> r2_hat (was never a real column - the DIRECT cause of the
-# "invalid type (NULL) for variable 'dd[[m]]'" crash: dd[["second_moment"]]
-# is NULL, and lm()/model.frame() cannot build a formula from NULL).
-# wing_loading -> wing_loading_ratio (size-corrected, current pipeline
-# convention). mean_optimality replaced by pareto_rank_ratio (the current
-# Goldberg-rank composite score, Msc_pareto_front_1_5.R) - kept as a fallback
-# if the legacy score is what's actually in this session.
-# Filtered with intersect() rather than hard-coded, so a future rename drops
-# the missing metric with a warning instead of crashing model.frame again.
+# ------ 6. Test biomechanics against setting and time -------------------------
+# Use the current column names so missing legacy names do not stop the script.
+# second_moment -> r2_hat (was never a real column, so dd[["second_moment"]]
+# was NULL and lm()/model.frame() could not build the model).
+# wing_loading -> wing_loading_ratio (the current size-corrected convention).
+# mean_optimality is kept only as a fallback if the legacy score is what this
+# session happens to contain instead of pareto_rank_ratio.
 metrics_wanted <- c("aspect_ratio", "wing_loading_ratio", "von_mises_stress",
                     "r2_hat", "pareto_rank_ratio", "mean_optimality")
 metrics <- intersect(metrics_wanted, colnames(performance_data_clean))
@@ -92,7 +89,7 @@ if (length(metrics) == 0) {
 cat("Metrics used:", paste(metrics, collapse = ", "), "\n\n")
 
 dd <- rel
-# (a) group differences (Kruskal-Wallis) + (b) temporal trend (Spearman) + multi-factor lm
+# Test group differences, time trends, and a combined linear model.
 results <- lapply(metrics, function(m) {
   lm_fit <- lm(dd[[m]] ~ dd$Midpoint + factor(dd$Environment) + factor(dd$Depositional.settings.paleoenvironment))
   data.frame(metric=m,
@@ -107,7 +104,7 @@ results <- lapply(metrics, function(m) {
 cat("\n=== Biomechanics vs environment / deposition / time ===\n"); print(results)
 write.csv(results, "output/results/biomech_env_time_tests.csv", row.names=FALSE)
 
-# (c) temporal trends of each metric, coloured by habitat
+# Plot each metric through time, coloured by habitat.
 trend_long <- dd %>% select(Midpoint, Environment, all_of(metrics)) %>%
   pivot_longer(all_of(metrics), names_to="metric", values_to="value")
 p_trend <- ggplot(trend_long, aes(Midpoint, value)) +

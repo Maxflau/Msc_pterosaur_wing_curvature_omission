@@ -2,6 +2,7 @@ cat("\n=========================================================================
 cat("PHYLOGENETIC PREPARATION\n")
 cat("================================================================================\n\n")
 
+# Load the tree packages used in the next steps.
 for (pkg in c("ape", "phytools")) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     stop("Package '", pkg, "' is required.")
@@ -13,7 +14,7 @@ library(phytools)
 TREE_FILE <- "output/phylogenetics/Henry_updated.nex"
 
 ##################################################################################
-# 1. Load the tree
+# 1. Load the tree used for the phylogenetic analyses.
 ##################################################################################
 
 if (!file.exists(TREE_FILE)) {
@@ -39,9 +40,10 @@ if (is.null(ptero_tree$edge.length)) {
 cat(sprintf("Tree: %d tips, %d internal nodes\n\n",Ntip(ptero_tree), Nnode(ptero_tree)))
 
 # ####################################################################################
-# 2. Match specimens to tips
+# 2. Match specimen names to the tree tip names.
 # ####################################################################################
 
+# Clean names in the same way on both sides before matching them.
 normalise_name <- function(x) {
   x <- trimws(as.character(x))
   x <- gsub("[ ]+", "_", x)
@@ -71,7 +73,7 @@ phylo_data <- phylo_data[matched, ]
 phylo_data <- phylo_data[!duplicated(phylo_data$tip_key), ]
 
 # ####################################################################################
-# 3. Prune and align
+# 3. Drop unused tips, then line the data up with the pruned tree.
 # ####################################################################################
 keep_tips <- ptero_tree$tip.label[tip_key %in% phylo_data$tip_key]
 phy_pruned <- drop.tip(ptero_tree, setdiff(ptero_tree$tip.label, keep_tips))
@@ -116,7 +118,7 @@ anc_pc2 <- phytools::fastAnc(phy_pruned, pc2_vals)
 all_pc1 <- c(pc1_vals, anc_pc1)
 all_pc2 <- c(pc2_vals, anc_pc2)
 
-# Vectorised edge construction; the former version grew a data.frame row by row
+# Build the branch table used later for tree overlays.
 n_tips <- Ntip(phy_pruned)
 parent <- phy_pruned$edge[, 1]
 child  <- phy_pruned$edge[, 2]

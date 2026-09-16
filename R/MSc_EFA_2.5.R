@@ -1,3 +1,4 @@
+# Save the remaining group morphospace figures for the last categories.
 save_plot(make_group_morph("Environment",
                            c("Archipelago"="#A300E9","Coastal environment"="#4F4F4F",
                              "Desert"="#B51963","Floodplain"="#FFC107",

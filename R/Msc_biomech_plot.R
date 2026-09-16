@@ -2,6 +2,7 @@ cat("\n=========================================================================
 cat("BIOMECHANICAL MORPHOSPACE PANELS\n")
 cat("================================================================================\n\n")
 # stress_index removed - von_mises_stress is the only stress metric.
+# Set the human-readable labels shown in the plot legends.
 METRIC_LABELS <- c(
   von_mises_stress  = "Von Mises stress\n(scale-invariant)",
   r2_hat            = "Second moment\nof area",
@@ -18,7 +19,7 @@ surf_label <- if (BACKGROUND_VAR %in% names(METRIC_LABELS)) {
 cat("Surface variable:", BACKGROUND_VAR, "| colour bar reads:", gsub("\n", " ", surf_label), "\n")
 
 # --------------------------------------------------------------------------------
-# 2. Convex hulls, rebuilt from the points actually plotted and closed
+# 2. Rebuild the clade outlines from the points shown in the plot
 # --------------------------------------------------------------------------------
 build_hulls <- function(group_col = "clade") {
   if (!group_col %in% colnames(performance_data_clean)) return(NULL)
@@ -52,59 +53,59 @@ print(CLADE_COLS_MATCHED)
 cat("\n")
 
 # --------------------------------------------------------------------------------
-# 3. Panel builder
+# 3. Build one panel at a time
 # --------------------------------------------------------------------------------
 make_biomech_panel <- function(colour_var, panel_title, palette = "plasma",
                                log_colour = FALSE, use_stress_palette = FALSE,
-                               hollow_points = FALSE) 
+                               hollow_points = FALSE)
 {
   if (!colour_var %in% colnames(performance_data_clean)) {
     cat("SKIPPED", panel_title, "- column", colour_var, "does not exist.\n")
     cat("  Present:", paste(intersect(names(METRIC_LABELS), colnames(performance_data_clean)), collapse = ", "), "\n")
     return(NULL)
   }
-  
+
   d <- performance_data_clean
   v <- d[[colour_var]]
-  
+
   d$.clade <- if ("clade" %in% colnames(d)) as.character(d$clade) else NA_character_
-  
+
   if (log_colour && any(v <= 0, na.rm = TRUE)) {
     cat(sprintf("  %s: %d non-positive values - linear scale used.\n",colour_var, sum(v <= 0, na.rm = TRUE)))
     log_colour <- FALSE
   }
   d$.col <- if (log_colour) log(v) else v
   d <- d[is.finite(d$.col), ]
-  
+
   if (nrow(d) < 5) {
     cat("SKIPPED", panel_title, "- only", nrow(d), "finite values.\n"); return(NULL)
   }
-  
+
   pt_label_raw <- if (colour_var %in% names(METRIC_LABELS)) {
     METRIC_LABELS[[colour_var]]
   } else colour_var
   if (log_colour) pt_label_raw <- paste0("log(", gsub("\n", " ", pt_label_raw), ")")
   pt_label <- paste0("Point fill - ", gsub("\n", " ", pt_label_raw))
   bg_label <- paste0("Background - ", gsub("\n", " ", surf_label))
-  
+
   cat(sprintf("  %s: %d specimens | legend: %s | points: %s\n",
               colour_var, nrow(d), gsub("\n", " ", pt_label_raw),
               if (hollow_points) "hollow (clade border only)" else "filled"))
-  
+
   p <- ggplot() +geom_tile(data = stress_grid, aes(x = PC1, y = PC2, fill = stress),alpha = 0.55) +
     scale_fill_stress(name = bg_label, palette = "dark")
-  
+
   if (!is.null(wing_bg)) {
     p <- p + geom_polygon(data = wing_bg, aes(x = PC1, y = PC2, group = grid_id), fill = "#2a2a2a", colour = "#1a1a1a",alpha = 0.18, linewidth = 0.25)
   }
-  
+
   p <- p + ggnewscale::new_scale_colour()
-  
+
   if (has_hulls) {
     p <- p + geom_path(data = hulls_clade, aes(x = PC1, y = PC2, group = grp, colour = grp),
                        linewidth = 1.0, alpha = 0.9, show.legend = FALSE)
   }
-  
+
   if (hollow_points) {
     p <- p +
       geom_point(data = d, aes(x = PC1, y = PC2, colour = .clade),
@@ -113,13 +114,13 @@ make_biomech_panel <- function(colour_var, panel_title, palette = "plasma",
                           name = "Point border - Clade")
   } else {
     p <- p + ggnewscale::new_scale_fill()
-    
+
     fill_scale <- if (use_stress_palette) {
       ggplot2::scale_fill_gradientn(colors = STRESS_PALETTES$dark, name = pt_label, na.value = "white")
     } else {
       scale_fill_viridis_c(option = palette, name = pt_label)
     }
-    
+
     p <- p +
       geom_point(data = d, aes(x = PC1, y = PC2, fill = .col, colour = .clade),
                  shape = 21, size = 3.2, stroke = 0.9, alpha = 0.9) +
@@ -127,7 +128,7 @@ make_biomech_panel <- function(colour_var, panel_title, palette = "plasma",
       scale_colour_manual(values = CLADE_COLS_MATCHED, na.value = "grey50",
                           name = "Point border - Clade")
   }
-  
+
   p +
     labs(title = panel_title,
          subtitle = paste0("Surface: ", gsub("\n", " ", surf_label),
@@ -145,7 +146,7 @@ make_biomech_panel <- function(colour_var, panel_title, palette = "plasma",
 }
 
 # --------------------------------------------------------------------------------
-# 4. The three panels
+# 4. Make the three final panels
 # --------------------------------------------------------------------------------
 # No fallback: von_mises_stress must exist, or this stops with a clear message
 # instead of silently substituting a different metric.

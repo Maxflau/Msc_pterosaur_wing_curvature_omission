@@ -1,7 +1,6 @@
-# --- summary_pterosaur_env_performance_clean.R ---
+# Summarise habitats and depositional settings through time.
 
-# If using after the complete_pterosaur_phylomorpho2.R workflow
-# (Assumes: performance_data_clean exists!)
+# Run this after the main workflow has created performance_data_clean.
 
 library(dplyr)
 library(tidyr)
@@ -17,9 +16,7 @@ library(patchwork)
 
 # ------ 1. Source data: performance_data_clean, patch in deposition/env if missing
 
-# It should contain 'Environment' and 'Depositional.settings.paleoenvironment'
-# If you're running this after the big pipeline script, it's likely these are present.
-# If not, join them in from your CSV:
+# If those two columns are missing, copy them in from the master CSV.
 
 # ------ 1. Patch in deposition/env from CSV if missing -----------------------
 if(!("Environment" %in% colnames(performance_data_clean)) ||
@@ -39,7 +36,7 @@ performance_data_clean$Environment <- trimws(as.character(performance_data_clean
 performance_data_clean$Depositional.settings.paleoenvironment <-
   trimws(as.character(performance_data_clean$Depositional.settings.paleoenvironment))
 
-# Collapse Early + Middle Jurassic
+# Merge the two Jurassic bins so the time plot matches the thesis figures.
 performance_data_clean$Period_collapsed <- dplyr::recode(performance_data_clean$Period.Name,
                                                          "Early Jurassic" = "Early+Middle Jurassic", "Middle Jurassic" = "Early+Middle Jurassic",
                                                          .default = performance_data_clean$Period.Name)
@@ -70,7 +67,7 @@ env_colors <- c(
   "Semi-arid floodplain"="#ac612a", "Fluvial environment"="#e67e22", "Floodplain"="#73c6b6",
   "Archipelago"="#bb8fce", "Marine environment"="#00bcd4", "Desert"="#e1b12c")
 
-# Safety check: warn if any category in the data has no colour (would drop from legend)
+# Warn if a category appears in the data but has no colour assigned.
 check_palette <- function(levels_in_data, palette, label) {
   missing <- setdiff(unique(levels_in_data), names(palette))
   if (length(missing) > 0) warning(label, " - no colour for: ", paste(missing, collapse=" | "))

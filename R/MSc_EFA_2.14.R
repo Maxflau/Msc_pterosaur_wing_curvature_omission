@@ -1,3 +1,4 @@
+# Run extra group tests, then check environment and curvature effects.
 kw_safe <- function(vals, grps) {
   ok <- !is.na(vals) & !is.na(grps) & grps != ""
   vals <- vals[ok]; grps <- droplevels(as.factor(as.character(grps[ok])))
@@ -18,12 +19,12 @@ kw_results <- do.call(rbind, lapply(avail_groups, function(g)
 ))
 save_csv(kw_results, "EFA_kruskal_wallis_shapePC")
 
-
 # =============================================================================
 # SECTION F — ENVIRONMENTAL CONTROL (Msc_code_environment_control_v2)
 # KW for shapePC2 vs preservation quality
 # Chi-square: habitat vs depositional setting
 # =============================================================================
+# Test whether preservation and setting help explain shape differences.
 cat("\n── Section F: Environmental control ──\n")
 
 if ("Depositional" %in% names(sp) && !all(is.na(sp$Depositional))) {
@@ -40,7 +41,7 @@ if ("Depositional" %in% names(sp) && !all(is.na(sp$Depositional))) {
     TRUE ~ NA_character_
   )
   sp$Pres_Quality <- factor(sp$Pres_Quality, levels=c("Low","Medium","Med-High","High"))
-  
+
   sp_env <- sp %>% filter(!is.na(Pres_Quality))
   kw_pq <- kruskal.test(shapePC2 ~ Pres_Quality, data=sp_env)
   pq_summary <- sp_env %>%
@@ -50,7 +51,7 @@ if ("Depositional" %in% names(sp) && !all(is.na(sp$Depositional))) {
   pq_summary$KW_H  <- round(kw_pq$statistic, 3)
   pq_summary$KW_p  <- round(kw_pq$p.value, 5)
   save_csv(pq_summary, "EFA_preservation_quality_shapePC2")
-  
+
   p_pq <- ggplot(sp_env, aes(Pres_Quality, shapePC2, fill=Pres_Quality)) +
     geom_boxplot(alpha=0.55, outlier.shape=NA) +
     geom_jitter(width=0.15, alpha=0.4, size=1.5) +
@@ -79,16 +80,16 @@ if ("Palaeoenvironment" %in% names(sp) && "Depositional" %in% names(sp)) {
               chi$statistic, chi$p.value, cv))
 }
 
-
 # =============================================================================
 # SECTION G — CURVATURE DISTRIBUTION ANALYSIS (Msc_curvature_distri.R)
 # Wing curvature presence vs shapePC1/PC2 positions
 # =============================================================================
+# Compare specimens with and without measured wing curvature.
 cat("\n── Section G: Curvature distribution ──\n")
 
 if ("wing_curvature" %in% names(sp)) {
   sp$has_curvature <- !is.na(sp$wing_curvature) & sp$wing_curvature > 0
-  
+
   curv_summary <- sp %>%
     group_by(has_curvature) %>%
     summarise(n=n(),
@@ -99,7 +100,7 @@ if ("wing_curvature" %in% names(sp)) {
               mean_WAR      = round(mean(aspect_ratio,na.rm=TRUE),3),
               .groups="drop")
   save_csv(curv_summary, "EFA_curvature_presence_summary")
-  
+
   p_c1 <- ggplot(sp, aes(has_curvature, shapePC1, fill=has_curvature)) +
     geom_boxplot(alpha=0.55, outlier.shape=NA) + geom_jitter(width=0.15,alpha=0.4,size=1.5) +
     scale_fill_viridis(discrete=TRUE, guide="none") +

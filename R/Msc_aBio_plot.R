@@ -1,9 +1,10 @@
+# Build morphospace plots for each main ecological grouping.
 cat("\n================================================================================\n")
 cat("MORPHOSPACE OCCUPATION BY GROUP\n")
 cat("================================================================================\n\n")
 
 # --------------------------------------------------------------------------------
-# 1. Diet combination — the category the third figure needs
+# 1. Build the combined diet label used by one of the figures
 # --------------------------------------------------------------------------------
 if (all(c("Diet.1", "Diet.2") %in% colnames(performance_data_clean))) {
   d1 <- trimws(as.character(performance_data_clean$Diet.1))
@@ -14,6 +15,7 @@ if (all(c("Diet.1", "Diet.2") %in% colnames(performance_data_clean))) {
     performance_data_clean$Diet_combined))), "\n\n")
 }
 
+# List the grouping columns, titles, colours, and output file names.
 GROUPINGS <- list(
   list(col = "clade", palette = "Set3", fixed = CLADE_COLS,
        title = "Morphospace occupation by clade",
@@ -33,23 +35,22 @@ GROUPINGS <- list(
 )
 
 # --------------------------------------------------------------------------------
-# 2. One builder for every grouping
+# 2. Use one plotting function for every grouping type
 # --------------------------------------------------------------------------------
 make_group_plot <- function(group_col, palette_name, title_text, fixed_cols = NULL) {
-  
   if (!group_col %in% colnames(performance_data_clean)) {
     cat("SKIPPED", group_col, "- column not found\n"); return(NULL)
   }
-  
+
   d <- performance_data_clean[!is.na(performance_data_clean[[group_col]]) &
                                 is.finite(performance_data_clean$PC1) &
                                 is.finite(performance_data_clean$PC2), ]
   d$.grp <- as.character(d[[group_col]])
   d <- d[d$.grp != "" & !is.na(d$.grp), ]
   if (nrow(d) < 5) { cat("SKIPPED", group_col, "- too few specimens\n"); return(NULL) }
-  
+
   groups <- sort(unique(d$.grp)); n_g <- length(groups)
-  
+
   # Fixed colour codes take priority over the auto-generated Brewer palette,
   # matched case/whitespace-insensitively so labelling differences in the
   # data don't silently fall through to the fallback palette.
@@ -77,7 +78,7 @@ make_group_plot <- function(group_col, palette_name, title_text, fixed_cols = NU
     }
     names(cols) <- groups
   }
-  
+
   # Hulls for n >= 3, segments for n == 2, nothing for n == 1
   hulls <- do.call(rbind, lapply(groups, function(g) {
     dg <- d[d$.grp == g, ]
@@ -85,31 +86,31 @@ make_group_plot <- function(group_col, palette_name, title_text, fixed_cols = NU
     h <- chull(dg$PC1, dg$PC2); h <- c(h, h[1])
     data.frame(PC1 = dg$PC1[h], PC2 = dg$PC2[h], .grp = g)
   }))
-  
+
   pairs2 <- do.call(rbind, lapply(groups, function(g) {
     dg <- d[d$.grp == g, ]
     if (nrow(dg) != 2) return(NULL)
     data.frame(PC1 = dg$PC1, PC2 = dg$PC2, .grp = g)
   }))
-  
+
   n_h <- if (is.null(hulls))  0 else length(unique(hulls$.grp))
   n_p <- if (is.null(pairs2)) 0 else length(unique(pairs2$.grp))
   cat(sprintf("  %s: %d groups | %d hulls | %d segments | %d single points\n",
               group_col, n_g, n_h, n_p, n_g - n_h - n_p))
-  
+
   p <- ggplot() +
     geom_tile(data = stress_grid, aes(x = PC1, y = PC2, fill = stress),
               alpha = 0.5) +
     scale_fill_stress(palette = "dark", name = surf_label)
-  
+
   if (!is.null(wing_bg)) {
     p <- p + geom_polygon(data = wing_bg, aes(x = PC1, y = PC2, group = grid_id),
                           fill = "#2a2a2a", colour = "#1a1a1a",
                           alpha = 0.16, linewidth = 0.25)
   }
-  
+
   p <- p + ggnewscale::new_scale_fill()
-  
+
   if (!is.null(hulls)) {
     p <- p +
       geom_polygon(data = hulls, aes(x = PC1, y = PC2, group = .grp, fill = .grp),
@@ -120,7 +121,7 @@ make_group_plot <- function(group_col, palette_name, title_text, fixed_cols = NU
   if (!is.null(pairs2)) {
     p <- p + geom_line(data = pairs2, aes(x = PC1, y = PC2, group = .grp, colour = .grp), linewidth = 1.0, alpha = 0.8, linetype = "dashed")
   }
-  
+
   p + geom_point(data = d, aes(x = PC1, y = PC2, colour = .grp), size = 2.8, alpha = 0.85) + scale_colour_manual(values = cols, name = NULL) +
     scale_fill_manual(values = cols, guide = "none") +
     labs(title = title_text, subtitle = paste0("Surface: ", gsub("\n", " ", surf_label),". Dashed lines: groups of two specimens."),
@@ -132,7 +133,7 @@ make_group_plot <- function(group_col, palette_name, title_text, fixed_cols = NU
 }
 
 # --------------------------------------------------------------------------------
-# 3. Build and write
+# 3. Build each figure and save it
 # --------------------------------------------------------------------------------
 for (g in GROUPINGS) {
   p <- make_group_plot(g$col, g$palette, g$title, g$fixed)

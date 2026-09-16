@@ -1,3 +1,4 @@
+# Make sure the plot folders exist and the time data are ready.
 for (dd in c("output/plots", "output/plots_PDF")) {
   dir.create(dd, showWarnings = FALSE, recursive = TRUE)
 }
@@ -6,7 +7,7 @@ if (!"Midpoint" %in% names(temporal_data)) {
   stop("Midpoint absent")
 }
 
-# Stacking plot preparations
+# Set the shared layout options for every stacked plot.
 GROUP_VAR    <- "clade"
 PANEL_ASPECT <- 0.45   # plane height / width, in plot units
 SHEAR        <- 0.34   # horizontal shift from front to back edge of a plane
@@ -23,21 +24,21 @@ names(PAL) <- grp_all
 cat(sprintf("Groups: %d\n", length(grp_all)))
 
 # ── BUILDER ───────────────────────────────────────────────────────────────────
+# Draw one stacked morphospace plot, with one plane for each time bin.
 stacked_panels <- function(d, xv, yv, xlab, ylab, main_title) {
-  
   d <- d[is.finite(d[[xv]]) & is.finite(d[[yv]]) & !is.na(d$Time_Bin), ]
-  
-  #Stratigraphic layout
+
+  # Work out the order of the time bins from oldest to youngest.
   bin_age <- tapply(d$Midpoint, d$Time_Bin, mean, na.rm = TRUE)
   bin_age <- bin_age[!is.na(bin_age)]
   bins <- names(sort(bin_age, decreasing = TRUE))
   nb <- length(bins)
   if (nb < 2) { cat("SKIPPED", main_title, "- fewer than two bins\n"); return(invisible(NULL)) }
-  
+
   cat(sprintf("\n  %s\n  Stacking order (bottom to top):\n", main_title))
   for (b in bins) cat(sprintf("    %-24s ~%.0f Ma  (n = %d)\n",
                               b, bin_age[[b]], sum(d$Time_Bin == b)))
-  
+
   # Rescale ONCE on the whole dataset, so every plane shares the same axes
   xr <- range(d[[xv]]); yr <- range(d[[yv]])
   xpad <- diff(xr) * 0.10; ypad <- diff(yr) * 0.10
@@ -48,22 +49,20 @@ stacked_panels <- function(d, xv, yv, xlab, ylab, main_title) {
   plot(NA, xlim = c(-0.16, 1 + SHEAR + 0.24), ylim = c(-0.14, total_h + 0.08),
  axes = FALSE, xlab = "", ylab = "", asp = 1)
  title(main_title, line = 0.4, cex.main = 1.2, adj = 0)
-  
+
   for (k in seq_along(bins)) {
-    
     base <- PLANE_GAP * (k - 1)
-    tx <- function(x, y) x + (y / PANEL_ASPECT) * SHEAR   
+    tx <- function(x, y) x + (y / PANEL_ASPECT) * SHEAR
     ty <- function(y) base + y
-    
+
     polygon(c(tx(0, 0), tx(1, 0), tx(1, PANEL_ASPECT), tx(0, PANEL_ASPECT)),
  c(ty(0), ty(0), ty(PANEL_ASPECT), ty(PANEL_ASPECT)),
 border = "grey25", lwd = 1.1,col = adjustcolor("grey97", alpha.f = 0.85))
-    
+
     sel <- d$Time_Bin == bins[k]
     px <- tx(ux[sel], uy[sel]); py <- ty(uy[sel])
     gv <- as.character(d[[GROUP_VAR]][sel])
-    
-# Hull preparations
+    # Draw a coloured hull around each group when enough points are present.
     for (g in unique(gv)) {
       if (is.na(g) || g == "") next
       i <- which(gv == g)
@@ -73,17 +72,17 @@ border = "grey25", lwd = 1.1,col = adjustcolor("grey97", alpha.f = 0.85))
               col = adjustcolor(PAL[[g]], alpha.f = HULL_ALPHA),
               border = PAL[[g]], lwd = 1.3)
     }
-    
+
     cols <- PAL[gv]; cols[is.na(cols)] <- "grey70"
     points(px, py, pch = 21, bg = cols, col = "grey15", cex = PT_CEX, lwd = 0.45)
-    
+
     text(-0.035, ty(PANEL_ASPECT / 2),
          labels = sprintf("%s (~%.0f Ma)", bins[k], bin_age[[bins[k]]]),
          srt = 90, cex = 0.68, font = 2, xpd = TRUE)
     text(tx(1, PANEL_ASPECT) - 0.04, ty(PANEL_ASPECT) - 0.035,
          labels = sprintf("n=%d", sum(sel)), cex = 0.62, col = "grey40")
   }
-  
+
   # Ticks on the bottom plane only: all planes share the same axes, so five
   # identical sets would only add clutter
   at_x <- pretty(xr, 5); ax <- (at_x - xr[1]) / diff(xr)
@@ -91,24 +90,25 @@ border = "grey25", lwd = 1.1,col = adjustcolor("grey97", alpha.f = 0.85))
   segments(ax[ok], 0, ax[ok], -0.022, xpd = TRUE)
   text(ax[ok], -0.055, labels = at_x[ok], cex = 0.62, xpd = TRUE)
   text(0.5, -0.105, labels = xlab, cex = 0.82, xpd = TRUE)
-  
-#PC2 axis preparation for fitting part 1
+
+  # Prepare the slanted right-hand axis for the y variable.
   tx0 <- function(x, y) x + (y / PANEL_ASPECT) * SHEAR
   ty0 <- function(y) y
-  
+
   at_y <- pretty(yr, 4); ay <- (at_y - yr[1]) / diff(yr) * PANEL_ASPECT
   ok <- ay >= 0 & ay <= PANEL_ASPECT
-  
-#PC2 axis preparation for fitting part 2
+
+  # Add the y-axis tick marks and label on that slanted edge.
   ex <- tx0(1, ay[ok]); ey <- ty0(ay[ok])
   segments(ex, ey, ex + 0.03, ey, xpd = TRUE)
   text(ex + 0.06, ey, labels = at_y[ok], cex = 0.62, xpd = TRUE)
   text(tx0(1, PANEL_ASPECT / 2) + 0.13, PANEL_ASPECT / 2,
        labels = ylab, srt = 90, cex = 0.82, xpd = TRUE)
-  
+
   invisible(TRUE)
 }
 
+# Save the same stacked figure in both PNG and PDF formats.
 save_stack <- function(expr, name, w = 9, h = 11.5) {
   for (fmt in c("png", "pdf")) {
     path <- sprintf("output/plots%s/%s.%s",

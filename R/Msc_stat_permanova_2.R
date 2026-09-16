@@ -1,7 +1,8 @@
+# Run extra summaries and PERMANOVA tests directly on the saved PC scores.
 df <- read.csv("output/results/performance_metrics_complete_CLADE.csv",
                stringsAsFactors = FALSE)
 
-# Rename long column for convenience
+# Give long column names shorter labels for the tables below.
 df <- df %>%
   rename(Depositional     = Depositional.settings.paleoenvironment,
          Palaeoenvironment = Environment,
@@ -15,13 +16,12 @@ if (!"Diet_combined" %in% names(df)) {
   df$Diet_combined <- ifelse(is.na(d2) | d2 == "" | d2 == d1, d1, paste(d1, d2, sep = " + "))
 }
 
-# Quick check
+# Check that the file loaded with the expected size and PC scores.
 cat("Dataset dimensions:", nrow(df), "rows x", ncol(df), "cols\n")
 cat("NAs in PC1:", sum(is.na(df$PC1)),
     "| NAs in PC2:", sum(is.na(df$PC2)), "\n\n")
 
-
-# --- 2. PC SCORE SUMMARY BY GROUP --------------------------------------------
+# --- 2. Summarise PC1 and PC2 within each grouping -------------------------------
 summarise_pcs <- function(data, group_var) {
   data %>%
     group_by(across(all_of(group_var))) %>%
@@ -61,13 +61,11 @@ cat("\n=== PC1 & PC2 SUMMARY BY DIET COMBINATION ===\n")
 sum_dietcombo <- summarise_pcs(df, "Diet_combined")
 print(kable(sum_dietcombo, format = "simple"))
 
-
-# --- 3. BUILD DISTANCE MATRIX FOR PERMANOVA ----------------------------------
+# --- 3. Turn the PC scores into distances between specimens ----------------------
 pca_mat  <- as.matrix(df[, c("PC1", "PC2")])
 pca_dist <- dist(pca_mat, method = "euclidean")
 
-
-# --- 4. PERMANOVA (adonis2) --------------------------------------------------
+# --- 4. Test whether groups sit in different parts of the PC space ---------------
 set.seed(42)
 
 cat("\n\n=== PERMANOVA: PCA SPACE ~ CLADE ===\n")
@@ -120,8 +118,7 @@ perm_full <- adonis2(pca_dist ~ clade + Depositional + Palaeoenvironment + Diet_
                      by           = "margin")
 print(perm_full)
 
-
-# --- 5. HOMOGENEITY OF DISPERSION (betadisper) -------------------------------
+# --- 5. Check whether groups differ mainly in spread rather than position --------
 test_dispersion <- function(dist_mat, groups, label) {
   bd  <- betadisper(dist_mat, groups)
   pv  <- permutest(bd, permutations = 9999)
@@ -137,8 +134,7 @@ test_dispersion(pca_dist, df$Diet_primary,      "Primary diet (Diet.1)")
 test_dispersion(pca_dist, df$Diet_secondary,    "Secondary diet (Diet.2)")
 test_dispersion(pca_dist, df$Diet_combined,     "Diet combination")
 
-
-# --- 6. OPTIONAL: PAIRWISE PERMANOVA FOR CLADES ------------------------------
+# --- 6. Run the optional clade-by-clade follow-up tests --------------------------
 library(pairwiseAdonis)
 cat("\n=== PAIRWISE PERMANOVA: CLADES ===\n")
 pw_clade <- pairwise.adonis2(pca_dist ~ clade,

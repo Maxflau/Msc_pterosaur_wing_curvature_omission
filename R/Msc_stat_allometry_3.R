@@ -1,5 +1,6 @@
 cat("\n--- S14/S15: WING METRICS AGAINST THE SKELETON ---\n\n")
 
+# Test whether the wing measures still change with size or limb proportions.
 if (!exists("POSTCRANIAL")) stop("Source Msc_stats_06a_postcranial.R first.")
 
 MIN_FIT <- 10
@@ -18,20 +19,20 @@ cat("Targets:", paste(TARGETS, collapse = ", "), "\n\n")
 # --------------------------------------------------------------------------------
 # 1. Metric against skeletal size
 # --------------------------------------------------------------------------------
+# Test each wing measure against several body-size proxies.
 fit_metric <- function(target, size_var, d) {
-  
   x <- d[[size_var]]; y <- d[[target]]
   ok <- is.finite(x) & is.finite(y) & x > 0 & y > 0
   if (sum(ok) < MIN_FIT) return(NULL)
-  
+
   m  <- lm(log(y[ok]) ~ log(x[ok]))
   cf <- summary(m)$coefficients
   slope <- cf[2, 1]; se <- cf[2, 2]
   exp_sl <- EXPECTED[[target]]
-  
+
   p_iso <- if (is.na(exp_sl)) NA else
     2 * pt(abs((slope - exp_sl) / se), df = sum(ok) - 2, lower.tail = FALSE)
-  
+
   data.frame(target = target, predictor = size_var, n = sum(ok),
              slope = round(slope, 4), se = round(se, 4),
              r_squared = round(summary(m)$r.squared, 4),
@@ -69,6 +70,7 @@ cat("metric retains a size component and should be reported as such.\n\n")
 # --------------------------------------------------------------------------------
 # 2. Metric against skeletal proportions
 # --------------------------------------------------------------------------------
+# Turn each bone into a size-free proportion, then test those against the metrics.
 # Each element divided by the geometric mean: a size-free shape variable. A
 # relationship here is a proportion effect, independent of how big the animal is.
 PROP_ELEMENTS <- intersect(c("Humerus", "Ulna", "McIV", "WingPh1", "WingPh2",
@@ -98,7 +100,7 @@ if (!is.null(prop_res)) {
   prop_res$p_adjusted_BH <- signif(p.adjust(prop_res$p_value, "BH"), 4)
   prop_res$significant <- prop_res$p_adjusted_BH < 0.05
   prop_res <- prop_res[order(-prop_res$r_squared), ]
-  
+
   cat("Strongest proportion-metric relationships:\n")
   print(head(prop_res[, c("target", "proportion", "n", "slope", "r_squared",
                           "p_adjusted_BH")], 12), row.names = FALSE)

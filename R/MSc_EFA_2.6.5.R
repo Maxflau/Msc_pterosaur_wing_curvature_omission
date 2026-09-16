@@ -1,3 +1,4 @@
+# Compare the two main evolutionary grades and save the final phylogenetic figures.
 if (!exists("phylo_sp") || !exists("make_phylo_v4")) {
   stop("phylo_sp / make_phylo_v4() not found - source Msc_EFA_2_6a.R first.")
 }
@@ -27,6 +28,7 @@ p_violin <- ggplot(violin_df, aes(grade, pareto_rank_ratio, fill=grade)) +
   theme_classic(base_size=12) + theme(plot.title=element_text(face="bold"))
 
 traits_K <- c("aspect_ratio","r2_hat","wing_loading","von_mises_stress","wing_curvature","shape_complexity")
+# Measure phylogenetic signal for the main traits and save the table.
 k_results <- lapply(traits_K, function(tr) {
   vals <- setNames(phylo_sp[[tr]], phylo_sp$tip)
   vals <- vals[!is.na(vals) & names(vals) %in% pruned$tip.label]
@@ -43,6 +45,7 @@ write.csv(k_results, "output/results/phylogenetic_signal_K_v2.csv", row.names=FA
 cat("Blomberg K exported\n"); print(k_results)
 
 p_all   <- make_phylo_v4("all")
+# Build each panel and save the final figure files.
 p_nonp  <- make_phylo_v4("non_pterodact")
 p_pt    <- make_phylo_v4("pterodact")
 p_nonpf <- make_phylo_v4("non_pterodactyliformes")   # NEW — excludes Darwinoptera

@@ -1,4 +1,5 @@
 # ── 9A. DIRECTORIES ───────────────────────────────────────────────────────────
+# Make sure the output folders exist before saving results.
 res_dir  <- "output/results"
 stat_dir <- res_dir                       # save_csv() writes here
 plot_dir <- "output/plots_PDF"
@@ -7,6 +8,7 @@ for (dd in c(res_dir, plot_dir, png_dir)) dir.create(dd, showWarnings=FALSE, rec
 cat("Output directories ready\n")
 
 # ── 9B. DATA PREPARATION ──────────────────────────────────────────────────────
+# Prepare one clean table with the names and groups used later.
 stat_df <- shape_perf
 
 rename_safe <- function(df, old, new) {
@@ -25,14 +27,14 @@ if (!"Diet_combo" %in% names(stat_df) && "Diet_primary" %in% names(stat_df)) {
   d1 <- trimws(as.character(stat_df$Diet_primary))
   d2 <- if ("Diet_secondary" %in% names(stat_df))
     trimws(as.character(stat_df$Diet_secondary)) else rep(NA_character_, length(d1))
-  
+
   # The pair is sorted so "A+B" and "B+A" form one category. The raw columns
   # contain both orderings, which otherwise splits the counts across duplicates.
   stat_df$Diet_combo <- mapply(function(a, b) {
     if (is.na(a) || a == "") return(NA_character_)
     if (is.na(b) || b == "" || b == a) a else paste(sort(c(a, b)), collapse = "+")
   }, d1, d2, USE.NAMES = FALSE)
-  
+
   tb <- table(stat_df$Diet_combo)
   cat(sprintf("Diet_combo: %d levels, %d with n >= 3\n", length(tb), sum(tb >= 3)))
 }
@@ -65,6 +67,7 @@ cat("Metrics:", paste(BIO_VARS, collapse=", "), "\n")
 cat("Factors:", paste(GROUPS, collapse=", "), "\n")
 
 # ── 9C. SUMMARY STATISTICS ────────────────────────────────────────────────────
+# Save simple summaries for the main groups.
 summarise_group <- function(data, grp_col) {
   data %>%
     filter(!is.na(.data[[grp_col]]), .data[[grp_col]] != "") %>%
@@ -90,6 +93,7 @@ for (g in intersect(c("clade","Order","Diet_combo"), names(stat_df))) {
 }
 
 # ── 9D. PERMANOVA ON SHAPE PC SPACE ───────────────────────────────────────────
+# Test whether groups differ in EFA shape space.
 shape_dist <- dist(as.matrix(stat_df[, c("shapePC1","shapePC2")]), method="euclidean")
 set.seed(42)
 

@@ -1,10 +1,13 @@
+# Save the main result tables that later scripts may reuse.
+# Save the full cleaned table in the supplement folder.
 write.csv(performance_data_clean, "output/results/supplementals/performance_metrics_complete_CLADE.csv", row.names = FALSE)
 cat("✓ Exported: output/results/performance_metrics_complete_CLADE.csv\n")
 
+# Save the same full cleaned table in the main results folder.
 write.csv(performance_data_clean, "output/results/performance_metrics_complete_CLADE.csv", row.names = FALSE)
 cat("✓ Exported: output/results/performance_metrics_complete_CLADE.csv\n")
 
-# disparity_by_clade / temporal_by_clade / clade_time_verification do not
+# Save the disparity table when an earlier script has already created it.
 if (exists("disparity_metrics")) {
   write.csv(disparity_metrics, 
             "output/results/supplementals/disparity_metrics.csv", row.names = FALSE)
@@ -13,7 +16,7 @@ if (exists("disparity_metrics")) {
   cat("SKIPPED disparity_metrics - not found (source Msc_temp_3_1.R first).\n")
 }
 
-# temporal_metrics_comprehensive -> temporal_metrics
+# Save the time-bin summary table when it is available.
 if (exists("temporal_metrics")) {
   write.csv(temporal_metrics, 
             "output/results/supplementals/temporal_metrics_CLADE.csv", row.names = FALSE)
@@ -21,7 +24,7 @@ if (exists("temporal_metrics")) {
 } else {
   cat("SKIPPED temporal_metrics - not found (source Msc_temp_3_1.R first).\n")
 }
-# theoretical_shapes -> theoretical_data (built in Msc_theoretical_spaces_v3.R)
+# Save the theoretical shape table when it is available.
 if (exists("theoretical_data")) {
   write.csv(theoretical_data, 
             "output/results/supplementals/theoretical_shape_space.csv", row.names = FALSE)

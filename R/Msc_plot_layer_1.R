@@ -1,5 +1,5 @@
 ##################################################################################
-# 0. Constants, guarded
+# 0. Check that the needed data and helper function are available.
 ##################################################################################
 if (!exists("performance_data_clean")) {
   stop("performance_data_clean not found - source Msc_impossible_region_v3.R first.")
@@ -9,10 +9,10 @@ if (!exists("inside_envelope")) {
 }
 
 # ── 1. ENSURE von_mises_stress EXISTS ─────────────────────────────────────────
+# Rebuild the stress column if it is missing, then stop loudly if it cannot be made.
 if (!"von_mises_stress" %in% colnames(performance_data_clean)) {
-  
   cat("von_mises_stress absent - attempting to build it.\n")
-  
+
   # (a) from the outlines, if the function and the outlines are in memory
   if (exists("calculate_von_mises_stress") && exists("outlines_list")) {
     performance_data_clean$von_mises_stress <- vapply(
@@ -30,7 +30,6 @@ if (!"von_mises_stress" %in% colnames(performance_data_clean)) {
                 sum(is.finite(performance_data_clean$von_mises_stress)),
                 nrow(performance_data_clean)))
   }
-  
   # (b) from a CSV written by an earlier run
   if (!"von_mises_stress" %in% colnames(performance_data_clean) ||
       all(is.na(performance_data_clean$von_mises_stress))) {
@@ -46,7 +45,6 @@ if (!"von_mises_stress" %in% colnames(performance_data_clean)) {
       break
     }
   }
-  
   # (c) give up loudly rather than silently plotting another metric
   if (!"von_mises_stress" %in% colnames(performance_data_clean) ||
       sum(is.finite(performance_data_clean$von_mises_stress)) < 20) {
@@ -59,6 +57,7 @@ if (!"von_mises_stress" %in% colnames(performance_data_clean)) {
 }
 
 # ── 2. BACKGROUND VARIABLE ────────────────────────────────────────────────────
+# Choose which measure will colour the background surface.
 if (!exists("BACKGROUND_VAR")) BACKGROUND_VAR <- "von_mises_stress"
 stopifnot(is.character(BACKGROUND_VAR), length(BACKGROUND_VAR) == 1)
 
@@ -87,7 +86,7 @@ surf_label <- if (BACKGROUND_VAR %in% names(BACKGROUND_LABELS)) {
 cat(sprintf("\nSurface variable: %s | colour bar: %s\n", BACKGROUND_VAR, gsub("\n", " ", surf_label)))
 
 #######################################################################
-#BACKGROUND GRID
+# Build the background grid in PCA space.
 ######################################################################
 
 pc1_rng <- range(performance_data_clean$PC1, na.rm = TRUE)
@@ -96,8 +95,7 @@ pad1 <- diff(pc1_rng) * 0.15; pad2 <- diff(pc2_rng) * 0.15
 
 stress_grid <- expand.grid( PC1 = seq(pc1_rng[1] - pad1, pc1_rng[2] + pad1, length.out = 100), PC2 = seq(pc2_rng[1] - pad2, pc2_rng[2] + pad2, length.out = 100))
 
-# Bandwidth scaled to the morphospace, not a hard-coded 0.5 that changes meaning
-# whenever the PCA changes
+# Set the smoothing width from the size of the morphospace itself.
 bw <- 0.08 * max(diff(pc1_rng), diff(pc2_rng))
 zvals <- performance_data_clean[[BACKGROUND_VAR]]
 
@@ -131,7 +129,7 @@ cat(sprintf("Grid: %d cells | %d inside the envelope\n",
 cat(sprintf("Kernel bandwidth: %.4g | weighted median, nearest-neighbour fallback\n", bw))
 
 ######################################################################
-#COLOUR SCALE 
+# Build the colour scale for the background surface.
 ######################################################################
 
 sv <- stress_grid$stress[is.finite(stress_grid$stress)]

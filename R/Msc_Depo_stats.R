@@ -1,8 +1,8 @@
-
+# --- 1. Load the results table used for the preservation test -----------------
 dat <- read.csv("output/results/performance_metrics_complete_CLADE.csv",
                 stringsAsFactors = FALSE)
 
-# --- 2. Map depositional environment -> preservation quality -----------------
+# --- 2. Turn depositional labels into preservation groups ---------------------
 # Exact, mutually-exclusive matches against the categories present in the data.
 # Order does not matter here because each pattern targets a distinct label,
 # but we keep High -> Low to read top-down.
@@ -27,6 +27,7 @@ if (length(unmatched) > 0) {
           paste(unmatched, collapse = " | "))
 }
 
+# Keep the groups in a fixed order before plotting and testing.
 dat$Pres_Quality <- factor(dat$Pres_Quality,
                            levels = c("Low", "Medium", "Med-High", "High"))
 
@@ -48,7 +49,7 @@ group_means <- dat %>%
 kw <- kruskal.test(PC2 ~ Pres_Quality, data = dat)
 print(kw)
 
-# --- 5. BOXPLOT (PC2 by Pres_Quality) ----------------------------------------
+# --- 5. Plot PC2 for each preservation group ----------------------------------
 y_lab_pos <- max(dat$PC2, na.rm = TRUE) * 1.05
 
 p1 <- ggplot(dat, aes(x = Pres_Quality, y = PC2, fill = Pres_Quality)) +
@@ -66,7 +67,7 @@ p1 <- ggplot(dat, aes(x = Pres_Quality, y = PC2, fill = Pres_Quality)) +
   theme_minimal(base_size = 14) +
   guides(color = "none", fill = "none")
 
-# --- 6. RAW CORRELATION: ordinal coding --------------------------------------
+# --- 6. Test the simple rank relationship -------------------------------------
 # Code Low..High as 1..4 to match the factor level order above.
 dat$Pres_Score <- as.numeric(dat$Pres_Quality)
 

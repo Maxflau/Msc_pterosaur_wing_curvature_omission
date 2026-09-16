@@ -1,5 +1,5 @@
-
 # ── 2. HELPERS ────────────────────────────────────────────────────────────────
+# Create small helper tools for smooth surfaces, hulls, and labels.
 gam_surface <- function(x, y, z, nx = 150, ny = 150) {
   df <- data.frame(x = as.numeric(x), y = as.numeric(y), z = as.numeric(z))
   df <- df[complete.cases(df) & is.finite(df$z), ]
@@ -37,6 +37,7 @@ perm_text <- function(pv) {
 }
 
 # ── 3. SHARED SURFACES ────────────────────────────────────────────────────────
+# Build background layers that later plots can reuse.
 # Non-finite values are FILTERED, not replaced by 1e-9: a fabricated near-zero
 # drags the log surface down wherever a specimen is missing.
 ok_stress <- is.finite(shape_perf$von_mises_stress) &

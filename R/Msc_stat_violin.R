@@ -1,3 +1,4 @@
+# Draw violin plots so each group can be compared metric by metric.
 if (!exists("METRICS")) stop("Source Msc_stats_00_setup.R first.")
 
 for (d in c("output/plots", "output/plots_PDF")) {
@@ -21,39 +22,38 @@ cat("Levels:", paste(VIOLIN_LEVELS, collapse = ", "), "\n")
 cat("Metrics:", paste(VIOLIN_METRICS, collapse = ", "), "\n\n")
 
 # --------------------------------------------------------------------------------
-# Builder: one faceted figure per grouping level
+# Build one faceted figure for one kind of grouping.
 # --------------------------------------------------------------------------------
 make_violin <- function(group_col) {
-  
   d <- performance_data_clean[!is.na(performance_data_clean[[group_col]]) &
                                 performance_data_clean[[group_col]] != "", ]
   d$.grp <- as.character(d[[group_col]])
-  
-  # Groups of one or two are kept as points but excluded from the violin layer
+
+  # Very small groups stay as points only, so the violin shape is not misleading.
   n_by <- table(d$.grp)
   big  <- names(n_by)[n_by >= MIN_N]
   if (length(big) < 2) { cat("SKIPPED", group_col, "- too few usable groups\n"); return(NULL) }
-  
+
   long <- do.call(rbind, lapply(VIOLIN_METRICS, function(m) {
     data.frame(grp = d$.grp, metric = METRIC_LABELS[m], value = d[[m]],
                stringsAsFactors = FALSE)
   }))
   long <- long[is.finite(long$value), ]
   long$metric <- factor(long$metric, levels = METRIC_LABELS[VIOLIN_METRICS])
-  
-  # Order groups by median of the first metric, so the panels read consistently
+
+  # Order the groups once so the panels stay in a consistent left-to-right order.
   ref <- long[long$metric == METRIC_LABELS[VIOLIN_METRICS[1]], ]
   ord <- names(sort(tapply(ref$value, ref$grp, median, na.rm = TRUE)))
   long$grp <- factor(long$grp, levels = ord)
-  
+
   n_lab <- data.frame(grp = factor(names(n_by), levels = ord),
                       n = as.integer(n_by),
                       metric = factor(METRIC_LABELS[VIOLIN_METRICS[1]],
                                       levels = levels(long$metric)))
-  
+
   cat(sprintf("  %s: %d groups (%d with n >= %d)\n",
               group_col, length(n_by), length(big), MIN_N))
-  
+
   ggplot(long, aes(x = grp, y = value)) +
     geom_violin(data = long[long$grp %in% big, ],
                 aes(fill = grp), alpha = 0.45, colour = "grey35",
@@ -80,7 +80,7 @@ make_violin <- function(group_col) {
 }
 
 # --------------------------------------------------------------------------------
-# Build and write
+# Draw each figure, then save it to the plot folders.
 # --------------------------------------------------------------------------------
 for (g in VIOLIN_LEVELS) {
   p <- make_violin(g)

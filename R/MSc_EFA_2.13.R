@@ -1,4 +1,5 @@
 # ── C2: PERMANOVA — all groups × all matrices ─────────────────────────────────
+# Run the main group-comparison tests across all distance tables.
 set.seed(42)
 all_perm_rows <- list()
 
@@ -36,6 +37,7 @@ for (dname in names(dist_list)) {
 }
 
 # ── C3: Full marginal model (shape PCs only) ─────────────────────────────────
+# Test several grouping factors together in one model.
 marg_vars <- c("clade","Depositional","Palaeoenvironment","Diet_combo")
 marg_vars <- marg_vars[marg_vars %in% names(sp)]
 if (length(marg_vars) >= 2) {
@@ -48,6 +50,7 @@ if (length(marg_vars) >= 2) {
 }
 
 # ── C4: PAIRWISE PERMANOVA — all requested groups × shape_dist ───────────────
+# Compare pairs of groups one by one when needed.
 # Groups: clade, Diet_primary, Diet_secondary, Palaeoenvironment,
 #         Depositional, Time_Bin, Diet_combo
 pairwise_groups <- c("clade","Diet_primary","Diet_secondary",
@@ -66,7 +69,7 @@ for (g in pairwise_groups) {
   }
   sp_pw <- sp[!is.na(g_vals),]
   d_pw  <- as.dist(as.matrix(shape_dist)[!is.na(g_vals), !is.na(g_vals)])
-  
+
   pw <- tryCatch(
     pairwise.adonis2(as.formula(paste("d_pw ~", g)), data=sp_pw,
                      permutations=9999, p.adjust.m="bonferroni"),
@@ -88,10 +91,10 @@ if (length(all_pw_list) > 0) {
               nrow(all_pw_df), sum(all_pw_df$p_adj<0.05, na.rm=TRUE)))
 }
 
-
 # =============================================================================
 # SECTION D — BETADISPER: HOMOGENEITY OF DISPERSION (Msc_Perma_3)
 # =============================================================================
+# Check whether group spread is even across the tested matrices.
 cat("\n── Section D: Betadisper ──\n")
 
 disp_rows <- list()

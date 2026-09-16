@@ -1,3 +1,4 @@
+# Rebuild theoretical wing outlines across shape space and prepare the morphospace grid.
 cat("\n================================================================================\n")
 cat("PART 5: THEORETICAL MORPHOSPACE FROM EFA COEFFICIENTS\n")
 cat("================================================================================\n\n")
@@ -10,7 +11,6 @@ set.seed(123)
 GRID_N      <- 21     # points per axis
 EXPAND_FRAC <- 0.20   # extend 20% beyond the empirical range, as in Liu et al.
 NB_PTS      <- 100    # points per reconstructed outline
-
 
 if (exists("outlines_list") && length(outlines_list) > 0) {
   real_spans <- vapply(outlines_list, function(o) {
@@ -28,9 +28,8 @@ if (exists("outlines_list") && length(outlines_list) > 0) {
 }
 cat("\n")
 
-
 ####################################################################################
-# 0. Pre-flight diagnostics
+# 0. Check the PCA inputs before building any theoretical shape
 ####################################################################################
 rot <- pca_shape$rotation
 ctr <- pca_shape$center
@@ -58,7 +57,7 @@ nb_h <- nb_h_eff
 cat(sprintf("Reconstructing with %d harmonics, %d points per outline\n\n", nb_h, NB_PTS))
 
 ####################################################################################
-# 1. Grid over the empirical shape-PCA plane
+# 1. Lay down a grid across the observed shape PCA space
 ####################################################################################
 pc1_rng <- range(pca_shape$x[, 1]); pc2_rng <- range(pca_shape$x[, 2])
 pc1_pad <- diff(pc1_rng) * EXPAND_FRAC
@@ -71,7 +70,7 @@ grid <- expand.grid(
 cat(sprintf("Grid: %d x %d = %d theoretical shapes\n", GRID_N, GRID_N, nrow(grid)))
 
 ####################################################################################
-# 2. Inline orientation — no external dependency
+# 2. Turn each rebuilt outline into the same left-right orientation
 ####################################################################################
 # Centre, rotate onto the principal axis, then put the TIP at max(x) so the base
 # sits at min(x), matching the convention the metric functions expect.
@@ -80,7 +79,7 @@ orient_inline <- function(o) {
   pc <- prcomp(cbind(o$x, o$y))
   r  <- as.matrix(cbind(o$x, o$y)) %*% pc$rotation
   o  <- data.frame(x = r[, 1], y = r[, 2])
-  
+
   lo <- min(o$x); hi <- max(o$x); R <- hi - lo
   chord_lo <- diff(range(o$y[o$x < lo + 0.1 * R]))
   chord_hi <- diff(range(o$y[o$x > hi - 0.1 * R]))
@@ -89,7 +88,7 @@ orient_inline <- function(o) {
 }
 
 # --------------------------------------------------------------------------------
-# 3. Reconstruct an outline from a position in shape-PCA space
+# 3. Rebuild one outline from one position in the shape PCA space
 # --------------------------------------------------------------------------------
 split_coefs <- function(coe) {
   if (exists("coeff_split", where = asNamespace("Momocs"), inherits = FALSE)) {
@@ -104,7 +103,7 @@ reconstruct_outline <- function(pc1, pc2) {
   scores <- rep(0, ncol(rot)); scores[1] <- pc1; scores[2] <- pc2
   coe <- as.numeric(scores %*% t(rot)) + ctr
   if (anyNA(coe)) stop("NA in reconstructed coefficients")
-  
+
   cf <- split_coefs(coe)
   shp <- Momocs::efourier_i(list(an = cf$an, bn = cf$bn, cn = cf$cn, dn = cf$dn),
                             nb.h = nb_h, nb.pts = NB_PTS)
@@ -113,7 +112,7 @@ reconstruct_outline <- function(pc1, pc2) {
   orient_inline(o)
 }
 
-# Fail loudly ONCE, before the loop
+# Test one rebuilt outline first so a bad setup fails early.
 test_shape <- tryCatch(reconstruct_outline(grid$shapePC1[1], grid$shapePC2[1]), error = function(e)
  stop("Test reconstruction failed: ", e$message, "\nReport this message with the diagnostics above."))
 cat(sprintf("Test reconstruction OK: %d points, area = %.4g, span = %.4g\n\n", nrow(test_shape), abs(pracma::polyarea(test_shape$x, test_shape$y)),

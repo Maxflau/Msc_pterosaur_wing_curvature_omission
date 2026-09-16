@@ -1,5 +1,6 @@
+# Measure each rebuilt theoretical wing shape and map it onto the Pareto landscape.
 # --------------------------------------------------------------------------------
-# 4. Self-intersection test
+# 4. Flag rebuilt outlines that cross over themselves
 # --------------------------------------------------------------------------------
 # Liu et al. exclude self-intersecting theoretical outlines as impossible
 # designs. This is the only legitimate use of the word "impossible" here.
@@ -21,7 +22,7 @@ is_self_intersecting <- function(o) {
 }
 
 ###################################################################################
-# 5. Build and measure
+# 5. Rebuild every theoretical outline and measure its traits
 ###################################################################################
 cat("Reconstructing outlines and computing functional metrics...\n")
 
@@ -42,7 +43,7 @@ for (k in seq_len(nrow(grid))) {
     von_mises_stress = if (impossible) NA_real_ else calculate_von_mises_stress(o, NA_real_, NA_real_),
     wing_curvature   = if (impossible) NA_real_ else calculate_wing_curvature(o),
     shape_complexity = if (impossible) NA_real_ else calculate_shape_complexity(o))
-  
+
   if (k %% 50 == 0) cat(paste("  ", k, "/", nrow(grid), "\n"))
 }
 
@@ -63,7 +64,7 @@ print(summary(theoretical_data[, c("aspect_ratio", "r2_hat", "von_mises_stress",
 cat("\n")
 
 ###################################################################################
-# 6. Pareto Rank Ratio on the theoretical shapes
+# 6. Rank the usable theoretical shapes by Pareto performance
 ###################################################################################
 THEO_OBJECTIVES <- c(aspect_ratio = "max", aspect_ratio = "min",r2_hat = "max", r2_hat = "min",von_mises_stress = "min", von_mises_stress = "max")
 
@@ -95,7 +96,7 @@ print(summary(theoretical_data$pareto_rank_ratio))
 cat(sprintf("Shapes on the front: %d / %d\n\n", sum(RO == 0), length(RO)))
 
 ####################################################################################
-# 7. Project the real taxa onto the theoretical landscape
+# 7. Match each real taxon to the nearest point on the theoretical landscape
 ####################################################################################
 if (exists("shape_scores") &&
     all(c("shapePC1", "shapePC2") %in% colnames(shape_scores))) {
@@ -104,7 +105,7 @@ if (exists("shape_scores") &&
     which.min((gd$shapePC1 - shape_scores$shapePC1[i])^2 +
                 (gd$shapePC2 - shape_scores$shapePC2[i])^2), integer(1))
   shape_scores$pareto_rank_ratio <- gd$pareto_rank_ratio[nn]
-  
+
   cat("Pareto Rank Ratio of the real taxa, read off the theoretical landscape:\n")
   print(summary(shape_scores$pareto_rank_ratio))
   cat("\n")

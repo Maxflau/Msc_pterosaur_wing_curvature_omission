@@ -1,5 +1,6 @@
 cat("\n--- POSTCRANIAL DATA PREPARATION ---\n\n")
 
+# Read the limb measurements and turn them into a cleaned size table.
 if (!exists("write_supp")) stop("Source Msc_stats_00_setup.R first.")
 
 MAIN_CSV <- "data/pteros_main_data.csv"
@@ -84,6 +85,7 @@ if (!is.null(flag)) {
 # --------------------------------------------------------------------------------
 # 3. Geometric-mean size proxy
 # --------------------------------------------------------------------------------
+# Use the measured bones to build one overall body-size proxy per specimen.
 # Computed on the elements only, excluding the two summary lengths, which are
 # sums of the others and would be counted twice.
 GM_ELEMENTS <- setdiff(EL_NAMES, c("WingLength", "HindLimb"))

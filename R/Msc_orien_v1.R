@@ -4,7 +4,7 @@
 
 cat("Normalising outline orientation...\n")
 
-# --- 1. Rotate a contour so its principal (longest) axis is horizontal --------
+# --- 1. Rotate each outline so its longest axis lies flat ----------------------
 
 orient_principal_axis <- function(coords) {
   cx <- mean(coords[,1]); cy <- mean(coords[,2])
@@ -15,7 +15,7 @@ orient_principal_axis <- function(coords) {
   rotated
 }
 
-# --- 2. Enforce a consistent direction: tip (narrow end) pointing RIGHT --------
+# --- 2. Make every wing point the same way ------------------------------------
 orient_tip_right <- function(coords) {
   x <- coords[,1]
   xr <- diff(range(x))
@@ -28,7 +28,7 @@ orient_tip_right <- function(coords) {
   coords
 }
 
-# --- 3. Enforce dorsal side up: put the larger-area lobe on top (+y) -----------
+# --- 3. Flip outlines so the same side always faces up -------------------------
 # Convention check so wings don't appear upside-down relative to each other.
 orient_dorsal_up <- function(coords) {
   # signed area; if negative (clockwise), the y-convention is flipped -> mirror y
@@ -38,7 +38,7 @@ orient_dorsal_up <- function(coords) {
   coords
 }
 
-# --- 4. Light smoothing (very mild) to reduce chull angularity -----------------
+# --- 4. Smooth the outline very gently -----------------------------------------
 # Moving average over the closed contour, small window so shape is preserved.
 smooth_contour <- function(coords, window = 3) {
   n <- nrow(coords)
@@ -52,7 +52,7 @@ smooth_contour <- function(coords, window = 3) {
   sm
 }
 
-# --- 5. Full orientation pipeline per specimen ---------------------------------
+# --- 5. Run the full orientation steps for one outline -------------------------
 orient_outline <- function(coords) {
   coords <- orient_principal_axis(coords)
   coords <- orient_tip_right(coords)
@@ -61,7 +61,7 @@ orient_outline <- function(coords) {
   coords
 }
 
-# --- 6. Apply to every specimen, overwrite outlines_list in place --------------
+# --- 6. Apply the orientation steps to every saved outline ---------------------
 n_done <- 0
 for (nm in names(outlines_list)) {
   cm <- as.matrix(outlines_list[[nm]][, c("x","y")])
@@ -72,7 +72,7 @@ for (nm in names(outlines_list)) {
 
 cat(paste("✓ Oriented + lightly smoothed", n_done, "outlines (tip right, dorsal up)\n\n"))
 
-# --- 7. Optional quick visual check against Albadraco --------------------------
+# --- 7. Optional quick visual check --------------------------------------------
 # Uncomment to eyeball a few oriented wings vs the Albadraco reference.
  check <- c("Albadraco tharmisensis", names(outlines_list)[c(1, 50, 100, 150)])
  op <- par(mfrow = c(1, length(check)), mar = c(1,1,2,1))

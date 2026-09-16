@@ -1,3 +1,4 @@
+# Summarise how the optimality score changes through time.
 cat("\n--- S25/S26: OPTIMALITY THROUGH TIME ---\n\n")
 
 if (!exists("write_supp")) stop("Source Msc_stats_00_setup.R first.")
@@ -7,7 +8,7 @@ if (!"pareto_rank_ratio" %in% colnames(performance_data_clean)) {
 
 d <- performance_data_clean[is.finite(performance_data_clean$pareto_rank_ratio), ]
 
-# Time bins, rebuilt here so the script runs without Msc_temp_metrics_v3.R
+# Rebuild the time bins here so this script can run on its own.
 if (!"Time_Bin" %in% colnames(d) && "Period.Name" %in% colnames(d)) {
   pc <- trimws(as.character(d$Period.Name))
   pc[pc %in% c("Early Jurassic", "Middle Jurassic")] <- "Early+Middle Jurassic"
@@ -19,7 +20,7 @@ d <- d[!is.na(d$Time_Bin), ]
 cat(sprintf("Specimens with an optimality score and a time bin: %d\n", nrow(d)))
 
 # --------------------------------------------------------------------------------
-# 1. Optimality per bin, bootstrap intervals
+# 1. Estimate the average score in each time bin
 # --------------------------------------------------------------------------------
 boot_ci <- function(x, n_boot = 2000) {
   x <- x[is.finite(x)]
@@ -43,7 +44,7 @@ cat("\nOptimality by time bin:\n"); print(time_tab, row.names = FALSE)
 write_supp(time_tab, "S25_optimality_through_time")
 
 # --------------------------------------------------------------------------------
-# 2. Optimality by clade within each bin
+# 2. Break each time bin down by clade
 # --------------------------------------------------------------------------------
 # A bin-level mean can rise simply because a high-scoring clade radiates. This
 # table shows whether the rise happens WITHIN clades or only between them.
@@ -62,30 +63,28 @@ if ("clade" %in% colnames(d)) {
 }
 
 # --------------------------------------------------------------------------------
-# 3. The trend, OLS and PGLS side by side
+# 3. Compare the plain trend and the phylogenetic trend
 # --------------------------------------------------------------------------------
 # Reported as a pair so the write-up cannot quote one without the other.
 if ("Midpoint" %in% colnames(d)) {
-  
   ols <- lm(pareto_rank_ratio ~ Midpoint, data = d)
   o <- summary(ols)$coefficients
   cat(sprintf("\nOLS   : slope = %+.5f, p = %.4g, R2 = %.3f\n",
               o[2, 1], o[2, 4], summary(ols)$r.squared))
-  
+
   rows <- data.frame(model = "OLS", n = nrow(d), slope = round(o[2, 1], 5),
                      se = round(o[2, 2], 5), p_value = signif(o[2, 4], 4),
                      lambda = NA, stringsAsFactors = FALSE)
-  
+
   if (exists("phy_pruned") && requireNamespace("nlme", quietly = TRUE) &&
       exists("normalise_name")) {
-    
     dd <- d[normalise_name(d$species) %in% normalise_name(phy_pruned$tip.label), ]
     tr <- ape::drop.tip(phy_pruned,
                         phy_pruned$tip.label[!normalise_name(phy_pruned$tip.label)
                                              %in% normalise_name(dd$species)])
     dd <- dd[match(normalise_name(tr$tip.label), normalise_name(dd$species)), ]
     dd <- dd[complete.cases(dd[, c("pareto_rank_ratio", "Midpoint")]), ]
-    
+
     m <- tryCatch(nlme::gls(pareto_rank_ratio ~ Midpoint, data = dd,
                             correlation = ape::corPagel(1, phy = tr, form = ~1),
                             method = "ML"),
@@ -105,9 +104,9 @@ if ("Midpoint" %in% colnames(d)) {
   } else {
     cat("PGLS skipped - phy_pruned or nlme unavailable.\n")
   }
-  
+
   write_supp(rows, "S26_optimality_pgls")
-  
+
   if (nrow(rows) == 2 && rows$p_value[1] < 0.05 && rows$p_value[2] >= 0.05) {
     cat("\nThe trend does NOT survive phylogenetic correction. It reflects the\n")
     cat("pterodactyloid radiation, not evolution in performance, and must not be\n")

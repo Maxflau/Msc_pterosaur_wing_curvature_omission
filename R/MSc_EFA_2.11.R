@@ -1,4 +1,5 @@
 # ── HELPERS ───────────────────────────────────────────────────────────────────
+# Save files and set shared names used in the next tables.
 save_csv  <- function(df, name) {
   path <- file.path(stat_dir, paste0(name, ".csv"))
   write.csv(df, path, row.names=FALSE)
@@ -47,10 +48,10 @@ shape_perf <- shape_perf %>%
 sp   <- shape_perf
 cat(sprintf("Dataset: %d specimens | %d columns\n", nrow(sp), ncol(sp)))
 
-
 # =============================================================================
 # SECTION A — SUMMARY STATISTICS BY CLADE AND ORDER (Msc_Clade_sum.R)
 # =============================================================================
+# Make summary tables for clades, orders, and other key groups.
 cat("\n── Section A: Summary statistics ──\n")
 
 summarise_group <- function(data, grp_col) {

@@ -1,4 +1,5 @@
-#Colour Biomechanic plot(border) ─────────────────────────────────────────────────
+# Set clade colours and build a smooth background stress surface.
+# Use one fixed border colour for each clade.
 CLADE_COLS <- c(
   "Anurognathidae"         = "#46852F",
   "Azhdarchoidea"          = "#DB8E00",
@@ -22,6 +23,7 @@ match_clade_colour <- function(clade_names) {
   out
 }
 
+# Make sure the figure folders exist before saving plots.
 for (d in c("output/plots/biomechanic_plot",
             "output/plots_PDF/biomechanic_plot")) {
   dir.create(d, showWarnings = FALSE, recursive = TRUE)
@@ -30,6 +32,7 @@ for (d in c("output/plots/biomechanic_plot",
 if (!exists("stress_grid")) stop("stress_grid not found - source Msc_plot_layer_v3.R first.")
 if (!exists("wing_bg"))     stop("wing_bg not found - source Msc_wing_overlay_v1.R first.")
 
+# Build the axis label text from the current PCA output.
 pc_lab <- function(k) {
   sprintf("PC%d (%.1f%%)", k, summary(pca_performance)$importance[2, k] * 100)
 }
@@ -37,6 +40,7 @@ if (!requireNamespace("mgcv", quietly = TRUE)) {
   stop("Package 'mgcv' is required for the smoothed stress surface: install.packages(\"mgcv\")")
 }
 
+# Smooth the stress values across the morphospace grid for the background layer.
 build_smooth_stress_grid <- function(value_col = "von_mises_stress") {
   df <- data.frame(x = performance_data_clean$PC1, y = performance_data_clean$PC2,
                    z = performance_data_clean[[value_col]])

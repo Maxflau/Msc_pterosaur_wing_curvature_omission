@@ -1,7 +1,7 @@
+# Make sure the plot folders and input table are ready.
 for (dd in c("output/plots", "output/plots_PDF")) {
   dir.create(dd, showWarnings = FALSE, recursive = TRUE)
 }
-
 if (!exists("performance_data_clean")) stop("performance_data_clean not found.")
 if (!exists("PTERODACT")) {
   PTERODACT <- c("Azhdarchoidea", "Ctenochasmatoidea", "Dsungaripteroidea",
@@ -54,12 +54,12 @@ pareto_front_2d <- function(x, y, x_max = TRUE, y_max = TRUE) {
   keep <- rep(FALSE, n)
   ok <- is.finite(x) & is.finite(y)
   if (sum(ok) < 2) return(keep)
-  
+
   idx <- which(ok)
   xo <- x[idx]; yo <- y[idx]
   ord <- order(xo, decreasing = x_max)
   xo <- xo[ord]; yo <- yo[ord]; idx <- idx[ord]
-  
+
   best <- if (y_max) -Inf else Inf
   for (i in seq_along(xo)) {
     better <- if (y_max) yo[i] > best else yo[i] < best
@@ -69,45 +69,44 @@ pareto_front_2d <- function(x, y, x_max = TRUE, y_max = TRUE) {
 }
 
 ##################################################################################
-#Creation of the enveloppe of theoretical aerodynamic solution
+# Build the outline of the possible solution space.
 ##################################################################################
 build_theoretical_envelope <- function(xcol, ycol) {
   pts <- data.frame(x = numeric(0), y = numeric(0))
-  
+
   if (has_theoretical && all(c(xcol, ycol) %in% names(theoretical_data))) {
     td <- theoretical_data[!theoretical_data$self_intersecting &
                              is.finite(theoretical_data[[xcol]]) & theoretical_data[[xcol]] > 0 &
                              is.finite(theoretical_data[[ycol]]) & theoretical_data[[ycol]] > 0, ]
     if (nrow(td) > 0) pts <- rbind(pts, data.frame(x = td[[xcol]], y = td[[ycol]]))
   }
-  
+
   real_ok <- is.finite(d[[xcol]]) & d[[xcol]] > 0 & is.finite(d[[ycol]]) & d[[ycol]] > 0
   pts <- rbind(pts, data.frame(x = d[[xcol]][real_ok], y = d[[ycol]][real_ok]))
-  
+
   if (nrow(pts) < 3) return(NULL)
   h <- chull(pts$x, pts$y); h <- c(h, h[1])
   data.frame(x = pts$x[h], y = pts$y[h])
 }
 
 ################################################################################
-#Preparation of the pareto front panel
+# Build one Pareto panel for a chosen pair of measures.
 ################################################################################
 make_perf_panel <- function(xcol, ycol, xlab, ylab, x_max, y_max, letter,
                             log_x = FALSE, log_y = FALSE) {
-  
   on_front <- pareto_front_2d(d[[xcol]], d[[ycol]], x_max, y_max)
   front_pts <- d[on_front, c(xcol, ycol)]
   front_pts <- front_pts[order(front_pts[[xcol]]), ]
-  
+
   front_tab <- table(d$panel_group[on_front])
   cat(sprintf("  %s vs %s: %d specimens on the common front (%s)\n",
               xcol, ycol, nrow(front_pts),
               paste(sprintf("%s: %d", names(front_tab), front_tab), collapse = ", ")))
-  
+
   envelope <- build_theoretical_envelope(xcol, ycol)
-  
+
   p <- ggplot()
-  
+
   if (!is.null(envelope)) {
     p <- p +
       geom_polygon(data = envelope, aes(x = x, y = y, fill = "Theoretical aerodynamic solutions"),
@@ -115,7 +114,7 @@ make_perf_panel <- function(xcol, ycol, xlab, ylab, x_max, y_max, letter,
       scale_fill_manual(name = NULL, values = c("Theoretical aerodynamic solutions" = "grey55")) +
       ggnewscale::new_scale_fill()
   }
-  
+
   p <- p +
     geom_point(data = d, aes(x = .data[[xcol]], y = .data[[ycol]], fill = panel_group),
                shape = 21, colour = "black", stroke = 0.3, size = 2.3, alpha = 0.9) +
@@ -127,7 +126,7 @@ make_perf_panel <- function(xcol, ycol, xlab, ylab, x_max, y_max, letter,
                        linewidth = 0.9, inherit.aes = FALSE) +
       scale_colour_manual(name = NULL, values = c("Pareto front" = "black"))
   }
-  
+
   p +
     labs(subtitle = sprintf("(%s)", letter), x = xlab, y = ylab) +
     theme_bw(base_size = 11) +
@@ -153,8 +152,7 @@ p3 <- make_perf_panel("von_mises_stress", "r2_hat",
                       log_x = TRUE, log_y = FALSE)
 cat("\n")
 
-# Legend built from p2, likely to carry all three guides (group fill,
-# front-line colour, and the envelope fill).
+# Build one shared legend from panel b so all guides stay together.
 legend_src <- p2 + theme(legend.position = "bottom", legend.box = "horizontal")
 shared_legend <- cowplot::get_legend(legend_src)
 

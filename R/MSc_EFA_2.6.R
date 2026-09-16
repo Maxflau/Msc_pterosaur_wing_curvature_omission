@@ -1,4 +1,6 @@
+# Load the tree, match the species, and build phylogenetic morphospace plots.
 PTERODACT <- c("Azhdarchoidea","Ctenochasmatoidea","Dsungaripteroidea",
+# Name the clades used as the derived pterodactyloid group.
                "Ornithocheiromorpha","Pteranodontia","basal pterodactyloidea")
 
 if (!file.exists("output/phylogenetics/Henry_updated.nex")) {
@@ -65,26 +67,27 @@ k_annot <- sprintf(
 )
 
 make_phylo_v4 <- function(subset=c("all","non_pterodact","pterodact",
+# Build one phylogenetic morphospace view for the chosen subset.
                                    "non_pterodactyliformes")) {
   subset <- match.arg(subset)
-  
+
   # Pterodactyliformes = Darwinoptera + Pterodactyloidea (sensu Unwin 2003)
   PTERODACTYLIFORMES <- c(PTERODACT, "Darwinoptera")
-  
+
   all_pts <- phylo_sp %>%
     mutate(grade = case_when(
       clade %in% PTERODACT        ~ "Pterodactyloidea",
       clade == "Darwinoptera"     ~ "Darwinoptera (Pterodactyliform)",
       TRUE                        ~ "Non-Pterodactyliformes"
     ))
-  
+
   fg <- switch(subset,
                all                    = all_pts,
                non_pterodact          = filter(all_pts, !clade %in% PTERODACT),
                pterodact              = filter(all_pts,  clade %in% PTERODACT),
                non_pterodactyliformes = filter(all_pts, !clade %in% PTERODACTYLIFORMES)
   )
-  
+
   ttl <- switch(subset,
                 all                    = "Pterosauria Phylomorphospace",
                 non_pterodact          = "(a) Non-Pterodactyloidea Phylomorphospace",
@@ -97,10 +100,10 @@ make_phylo_v4 <- function(subset=c("all","non_pterodact","pterodact",
                 pterodact              = "Derived pterosaurs projected onto optimality landscape",
                 non_pterodactyliformes = "Anurognathidae, Rhamphorhynchidae, Non-breviquartossan,\nBasal pterosaur — Pareto optimality landscape"
   )
-  
+
   xrng <- range(all_pts$shapePC1, na.rm=TRUE)
   yrng <- range(all_pts$shapePC2, na.rm=TRUE)
-  
+
   p <- ggplot()
   if (!is.null(pareto_bg))
     p <- p +
@@ -121,7 +124,7 @@ make_phylo_v4 <- function(subset=c("all","non_pterodact","pterodact",
     p <- p + geom_point(data=all_pts, aes(shapePC1,shapePC2),
                         shape=21, fill="grey75", colour="grey50",
                         size=1.5, stroke=0.25, alpha=0.30)
-  
+
   p <- p +
     new_scale_fill() +
     geom_point(data=fg, aes(shapePC1, shapePC2),

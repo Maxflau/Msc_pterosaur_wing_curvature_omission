@@ -1,9 +1,10 @@
+# Measure phylogenetic signal, then save violin plots for group comparisons.
 if (exists("pruned_tree")) {
   sp$species_clean <- gsub(" ","_",trimws(sp$species))
-  
+
   traits_phylo <- c("shapePC1","shapePC2",
                     BIO_VARS[BIO_VARS %in% names(sp)])
-  
+
   k_results <- do.call(rbind, lapply(traits_phylo, function(tr) {
     trait_df <- sp %>% select(species_clean, value=all_of(tr)) %>% filter(!is.na(value))
     common   <- intersect(trait_df$species_clean, pruned_tree$tip.label)
@@ -26,10 +27,10 @@ if (exists("pruned_tree")) {
   cat("  Run the phylo section of Msc_perf_surfaces_v4.R first.\n")
 }
 
-
 # =============================================================================
 # SECTION J — VIOLIN PLOTS: SHAPE PC BY CLADE AND SUBGROUP
 # =============================================================================
+# Draw one distribution plot for each shape axis and grouping.
 cat("\n── Section J: Violin plots by clade and subgroup ──\n")
 
 # Violin colour palette reused from CLADE_COLS if available
@@ -61,12 +62,12 @@ for (resp in c("shapePC1","shapePC2")) {
     d_v <- sp %>% filter(!is.na(.data[[grp]]), .data[[grp]]!="",
                          !is.na(.data[[resp]]))
     if (nrow(d_v) < 5 || length(unique(d_v[[grp]])) < 2) next
-    
+
     ylab <- if (resp=="shapePC1") efa_lab1 else efa_lab2
-    
+
     # KW annotation
     kw_v  <- kw_safe(d_v[[resp]], d_v[[grp]])
-    
+
     p_vio <- ggplot(d_v, aes(fct_infreq(as.factor(.data[[grp]])),
                              .data[[resp]])) +
       # 1. Violin body
@@ -107,7 +108,7 @@ for (resp in c("shapePC1","shapePC2")) {
       theme(axis.text.x = element_text(angle=45, hjust=1, size=8),
             plot.title  = element_text(face="bold"),
             panel.grid.major.x = element_blank())
-    
+
     w <- if (length(unique(d_v[[grp]])) > 10) 15 else 11
     save_plot(p_vio, paste0("EFA_violin_",resp,"_by_",grp), w=w, h=6)
   }

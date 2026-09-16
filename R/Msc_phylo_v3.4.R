@@ -4,12 +4,12 @@ cat("===========================================================================
 
 FIG_W <- 9; FIG_H <- 9
 # ── 4. PANEL BUILDER ──────────────────────────────────────────────────────────
+# Rebuild the subgroup labels and draw one phylomorphospace panel at a time.
 ax1 <- sprintf("PC1 (%.1f%%)", summary(pca_performance)$importance[2, 1] * 100)
 ax2 <- sprintf("PC2 (%.1f%%)", summary(pca_performance)$importance[2, 2] * 100)
 
-# panel_group is rebuilt from the clade column rather than trusted from
-# Msc_phylo_prep_v3.R: if its labels differ by so much as a space, the subgroup
-# filter returns zero rows and the panel is drawn with branches but no tips.
+# Rebuild the panel groups from the clade names each time.
+# That avoids empty panels if saved labels differ by even a small spelling change.
 if (!"clade" %in% names(pd)) stop("pd has no clade column.")
 pd <- as.data.frame(pd)   # a tbl_df with list columns breaks geom_point
 pd$panel_group <- ifelse(pd$clade %in% PTERODACT,
@@ -26,26 +26,25 @@ if (length(unknown) > 0) {
 }
 
 make_panel <- function(group_name, letter, subtitle) {
-  
   grp <- pd[pd$panel_group == group_name, ]
   cat(sprintf("\n  %s: %d tips\n", group_name, nrow(grp)))
   if (nrow(grp) == 0) {
     cat("  WARNING: no tips in this group - landscape and grey tips only.\n")
   }
-  
+
   p <- ggplot() +
     geom_raster(data = grid[!is.na(grid$opt), ],
                 aes(x = PC1, y = PC2, fill = opt), interpolate = TRUE) +
     scale_fill_gradientn(
       colours = c("#ffffff","#e8f4ea","#bfe0c6","#8fc79c","#54a468","#1b7837"),
       name = "Pareto\noptimality", limits = c(0, 1), na.value = "white")
-  
+
   if (!is.null(wing_perf)) {
     p <- p + geom_polygon(data = wing_perf, aes(x = PC1, y = PC2, group = grid_id),
                           fill = "grey55", colour = "grey45",
                           alpha = 0.15, linewidth = 0.18)
   }
-  
+
   p <- p +
     geom_segment(data = edges, aes(x = x, y = y, xend = xend, yend = yend),
                  colour = "grey35", alpha = 0.45, linewidth = 0.28) +
@@ -54,13 +53,13 @@ make_panel <- function(group_name, letter, subtitle) {
     geom_point(data = pd, aes(x = PC1, y = PC2),
                shape = 21, fill = "grey82", colour = "grey50",
                size = 1.6, stroke = 0.3)
-  
+
   if (nrow(grp) > 0) {
     p <- p + geom_point(data = grp, aes(x = PC1, y = PC2),
                         shape = 21, fill = "black", colour = "black",
                         size = 1.7 , stroke = 0.4)
   }
-  
+
   # geom_raster sets the panel limits from the grid alone; tips falling outside
   # it would be clipped and vanish without warning
   p +
@@ -79,8 +78,8 @@ labs(title = sprintf("(%s) %s Phylomorphospace", letter, group_name),
 }
 
 # ── 4b. BUILD AND WRITE THE PANELS ────────────────────────────────────────────
-# OUTSIDE make_panel(). Placing this loop inside the function body made it call
-# itself: infinite recursion, and no figure ever written.
+# Write the two tree panels after the function is defined.
+# Keeping this loop outside the function prevents it from calling itself forever.
 for (pn in list(
   list(g = "Non-pterodactyliform", l = "a",
        s = "Basal pterosaurs on the performance optimality landscape",
@@ -88,7 +87,6 @@ for (pn in list(
   list(g = "Pterodactyliform", l = "b",
        s = "Derived pterosaurs on the performance optimality landscape",
        f = "PERF_15B_phylo_pterodact"))) {
-  
   p <- make_panel(pn$g, pn$l, pn$s)
   ggsave(sprintf("output/plots/%s.png", pn$f), p,
          width = FIG_W, height = FIG_H, dpi = FIG_DPI)
@@ -98,6 +96,7 @@ for (pn in list(
 }
 
 # ── 5. OPTIMALITY BY GRADE - VIOLIN ───────────────────────────────────────────
+# Compare the Pareto scores of the two broad grades in one summary plot.
 vdf <- as.data.frame(pd)
 vdf$grade <- ifelse(vdf$clade %in% c(PTERODACT, "Darwinoptera"),
                     "Pterodactyliformes", "Non-Pterodactyliformes")
@@ -114,15 +113,14 @@ vdf$grade <- factor(vdf$grade,
 cat("\nGrade levels:\n"); print(table(vdf$grade, useNA = "always"))
 
 if (nlevels(droplevels(vdf$grade)) == 2) {
-  
   GRADE_COLS <- c("Non-Pterodactyliformes" = "#4292c6",
                   "Pterodactyliformes"     = "#ef6548")
-  
+
   wx <- wilcox.test(opt ~ grade, data = vdf)
   cat(sprintf("Wilcoxon: W = %.0f, p = %.3e\n", wx$statistic, wx$p.value))
-  
+
   yr_v <- range(vdf$opt, na.rm = TRUE)
-  
+
   p_violin <- ggplot(vdf, aes(x = grade, y = opt)) +
     # fill inside the geom's own aes(), not inherited from ggplot(): an
     # inherited fill is overridden by the boxplot layer, which sets fill="white"
@@ -144,13 +142,12 @@ if (nlevels(droplevels(vdf$grade)) == 2) {
     theme_classic(base_size = 12) +
     theme(plot.title = element_text(face = "bold"),
           plot.subtitle = element_text(size = 9, colour = "grey35"))
-  
+
   ggsave("output/plots/PERF_15C_optimality_violin.png",
          p_violin, width = 7, height = 8, dpi = FIG_DPI)
   ggsave("output/plots_PDF/PERF_15C_optimality_violin.pdf",
          p_violin, width = 7, height = 8)
   cat("Written: PERF_15C_optimality_violin\n")
-  
 } else {
   cat("Only", nlevels(droplevels(vdf$grade)), "grade(s) - violin skipped.\n")
   print(unique(vdf$clade))
