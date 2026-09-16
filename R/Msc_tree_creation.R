@@ -1,16 +1,15 @@
 # ============================================================
-# Creation of a large phylogenetic tree considering
-#    (A) ORTHOGRAPHY      -> rename existing tip
-#    (B) CONGENERIC       -> sister to a same-genus tip in Henry
-#    (C) REFERENCE-INFORMED -> sister / small-clade MRCA taken from
-#                             the Pegas or Andres topology (precise)
-#    (D) CLADE-MRCA       -> fallback for taxa absent from all refs
-#  Cases C use the nearest Henry-present neighbour recovered from
-#  the reference trees, so they are far better placed than a bare
-#  clade graft.
+# Construit un arbre phylogénétique complet à partir de l'arbre
+# de référence "Henry", en y ajoutant les espèces manquantes.
+# Chaque espèce manquante est ajoutée selon 1 de ces 4 méthodes :
+#    (A) ORTHOGRAPHIE      -> renomme une pointe déjà existante
+#    (B) MÊME GENRE        -> placée à côté d'une espèce du même genre
+#    (C) ARBRES DE RÉFÉRENCE -> placée d'après Pegas ou Andres (précis)
+#    (D) CLADE DE SECOURS  -> utilisé si l'espèce est absente de tout
+#  Ne pas modifier les noms d'espèces ci-dessous : ce sont des
+#  correspondances taxonomiques précises établies manuellement.
 # ============================================================
 library(phytools)
-
 tr <- read.nexus("data/phylogenetics/Henry")
 if (inherits(tr, "multiPhylo")) {
   tr <- tr[[1]]                       # several MPTs in file -> take the first
