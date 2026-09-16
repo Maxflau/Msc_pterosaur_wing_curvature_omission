@@ -4,7 +4,7 @@ cat("===========================================================================
 
 library(ggplot2)
 
-for (dd in c("clade_analyses_v4/plots", "clade_analyses_v4/plots_PDF")) {
+for (dd in c("output/plots", "output/plots_PDF")) {
   dir.create(dd, showWarnings = FALSE, recursive = TRUE)
 }
 if (!exists("phy_pruned") || !exists("phylo_data")) {

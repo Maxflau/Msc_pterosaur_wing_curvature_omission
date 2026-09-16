@@ -1,4 +1,4 @@
-for (dd in c("clade_analyses_v4/plots", "clade_analyses_v4/plots_PDF")) {
+for (dd in c("output/plots", "output/plots_PDF")) {
   dir.create(dd, showWarnings = FALSE, recursive = TRUE)
 }
 if (!exists("temporal_data")) stop("temporal_data not found - source Msc_temp_3_1.R.")
@@ -111,7 +111,7 @@ border = "grey25", lwd = 1.1,col = adjustcolor("grey97", alpha.f = 0.85))
 
 save_stack <- function(expr, name, w = 9, h = 11.5) {
   for (fmt in c("png", "pdf")) {
-    path <- sprintf("clade_analyses_v4/plots%s/%s.%s",
+    path <- sprintf("output/plots%s/%s.%s",
    if (fmt == "pdf") "_PDF" else "", name, fmt)
     if (fmt == "png") png(path, width = w, height = h, units = "in", res = 300)
     else pdf(path, width = w, height = h)

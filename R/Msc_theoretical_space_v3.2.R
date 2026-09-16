@@ -110,10 +110,10 @@ if (exists("shape_scores") &&
   cat("\n")
 }
 
-dir.create("clade_analyses_v4/results", showWarnings = FALSE, recursive = TRUE)
-dir.create("clade_analyses_v4/plots", showWarnings = FALSE, recursive = TRUE)
-dir.create("clade_analyses_v4/results/supplementals", showWarnings = FALSE, recursive = TRUE)
-write.csv(theoretical_data, "clade_analyses_v4/results/theoretical_shapes.csv",
+dir.create("output/results", showWarnings = FALSE, recursive = TRUE)
+dir.create("output/plots", showWarnings = FALSE, recursive = TRUE)
+dir.create("output/results/supplementals", showWarnings = FALSE, recursive = TRUE)
+write.csv(theoretical_data, "output/results/theoretical_shapes.csv",
           row.names = FALSE)
 
 cat("Theoretical morphospace complete.\n\n")

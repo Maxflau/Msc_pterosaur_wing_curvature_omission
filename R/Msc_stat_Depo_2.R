@@ -24,9 +24,9 @@ if (exists("POSTCRANIAL") && "n_elements" %in% colnames(POSTCRANIAL)) {
     theme(plot.subtitle = element_text(size = 8, colour = "grey35"),
           panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 0.5))
   
-  ggsave("clade_analyses_v4/plots/TAPH_01_completeness.png", p_t1,
+  ggsave("output/plots/TAPH_01_completeness.png", p_t1,
          width = 10, height = 6, dpi = 300)
-  ggsave("clade_analyses_v4/plots_PDF/TAPH_01_completeness.pdf", p_t1,
+  ggsave("output/plots_PDF/TAPH_01_completeness.pdf", p_t1,
          width = 10, height = 6)
   cat("Written: TAPH_01_completeness\n")
   
@@ -53,9 +53,9 @@ if (exists("POSTCRANIAL") && "n_elements" %in% colnames(POSTCRANIAL)) {
           panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 0.5),
           plot.subtitle = element_text(size = 8, colour = "grey35"))
   
-  ggsave("clade_analyses_v4/plots/TAPH_02_completeness_vs_metrics.png", p_t2,
+  ggsave("output/plots/TAPH_02_completeness_vs_metrics.png", p_t2,
          width = 12, height = 7, dpi = 300)
-  ggsave("clade_analyses_v4/plots_PDF/TAPH_02_completeness_vs_metrics.pdf", p_t2,
+  ggsave("output/plots_PDF/TAPH_02_completeness_vs_metrics.pdf", p_t2,
          width = 12, height = 7)
   cat("Written: TAPH_02_completeness_vs_metrics\n")
   

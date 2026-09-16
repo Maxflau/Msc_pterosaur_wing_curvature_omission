@@ -1,5 +1,5 @@
 
-dat <- read.csv("clade_analyses_v4/results/performance_metrics_complete_CLADE.csv",
+dat <- read.csv("output/results/performance_metrics_complete_CLADE.csv",
                 stringsAsFactors = FALSE)
 
 # --- 2. Map depositional environment -> preservation quality -----------------
@@ -137,10 +137,10 @@ p4 <- ggplot(hm, aes(x = Pres_Quality, y = clade, fill = mean_PC2)) +
 
 # --- 9. Output ---------------------------------------------------------------
 fig_box <- ggarrange(p1, p2, p3, ncol = 3, labels = c("A", "B", "C"))
-ggsave("clade_analyses_v4/plots_PDF/taphonomic_sensitivity_pc2_box_corrs.pdf", fig_box,
+ggsave("output/plots_PDF/taphonomic_sensitivity_pc2_box_corrs.pdf", fig_box,
        width = 14, height = 5, dpi = 300)
 
-ggsave("clade_analyses_v4/plots_PDF/taphonomic_sensitivity_heatmap.pdf", p4, width = 8, height = 5, dpi = 300)
+ggsave("output/plots_PDF/taphonomic_sensitivity_heatmap.pdf", p4, width = 8, height = 5, dpi = 300)
 
 # --- Optional: summaries for report ------------------------------------------
-write.csv(hm, "clade_analyses_v4/results/supplementals/taphonomic_PC2_by_clade_prescat.csv", row.names = FALSE)
+write.csv(hm, "output/results/supplementals/taphonomic_PC2_by_clade_prescat.csv", row.names = FALSE)

@@ -13,7 +13,7 @@ CLADE_COLS <- c(
   "Rhamphorhynchidae"      = "#03240B")
 
 # ── 1. LOAD DATA ──────────────────────────────────────────────────────────────
-PERF_CSV <- "clade_analyses_v4/results/performance_metrics_complete_CLADE.csv"
+PERF_CSV <- "output/results/performance_metrics_complete_CLADE.csv"
 
 if (exists("performance_data_clean")) {
   perf <- performance_data_clean
@@ -54,7 +54,7 @@ for (v in c("r2_hat", "pareto_rank_ratio")) {
   }
 }
 
-perm_csv <- read.csv("clade_analyses_v4/results/04_permanova_pc1pc2.csv",
+perm_csv <- read.csv("output/results/04_permanova_pc1pc2.csv",
                      stringsAsFactors = FALSE)
 
 get_perm <- function(factor_name) {

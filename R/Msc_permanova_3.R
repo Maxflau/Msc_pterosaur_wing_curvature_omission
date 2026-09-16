@@ -24,7 +24,7 @@ tidy_betadisper <- function(dist_mat, groups, factor_label) {
   tbl
 }
 
-OUT <- "clade_analyses_v4/results/"
+OUT <- "output/results/"
 
 cat("\n\n=== EXPORTING CSV FILES ===\n")
 

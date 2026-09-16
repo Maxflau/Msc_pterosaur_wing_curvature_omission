@@ -110,6 +110,6 @@ fail <- added[!(added %in% tr$tip.label)]
 if (length(fail)) cat("FAILED:\n", paste(" -", fail, collapse="\n"), "\n")
 class(tr) <- "phylo"                  # ensure single-tree class before writing
 attr(tr, "TipLabel") <- NULL
-write.tree(tr, file="data/phylogenetics/Henry_updated.tre") 
-write.nexus(tr, file="data/phylogenetics/Henry_updated.nex")
+write.tree(tr, file="output/phylogenetics/Henry_updated.tre") 
+write.nexus(tr, file="output/phylogenetics/Henry_updated.nex")
 cat("Saved -> Henry_updated.nex (and .tre)\n")

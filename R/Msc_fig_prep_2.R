@@ -22,8 +22,8 @@ match_clade_colour <- function(clade_names) {
   out
 }
 
-for (d in c("clade_analyses_v4/plots/biomechanic_plot",
-            "clade_analyses_v4/plots_PDF/biomechanic_plot")) {
+for (d in c("output/plots/biomechanic_plot",
+            "output/plots_PDF/biomechanic_plot")) {
   dir.create(d, showWarnings = FALSE, recursive = TRUE)
 }
 

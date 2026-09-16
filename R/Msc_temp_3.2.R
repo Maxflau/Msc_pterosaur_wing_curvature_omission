@@ -52,7 +52,7 @@ p_shape <- make_time_panel(
         "not its raw value.", CAPTION_CI))
 
 if (!is.null(p_shape)) {
-  ggsave("clade_analyses_v4/plots_PDF/TEMPORAL_01_shape_traits.pdf", p_shape, width = 11, height = 4)
+  ggsave("output/plots_PDF/TEMPORAL_01_shape_traits.pdf", p_shape, width = 11, height = 4)
   cat("Written: TEMPORAL_01_shape_traits\n")
 }
 
@@ -68,7 +68,7 @@ p_size <- make_time_panel(
   paste("Log\u2081\u2080 scale.", CAPTION_CI))
 
 if (!is.null(p_size)) {
-  ggsave("clade_analyses_v4/plots_PDF/TEMPORAL_02_body_size.pdf", p_size, width = 11, height = 4)
+  ggsave("output/plots_PDF/TEMPORAL_02_body_size.pdf", p_size, width = 11, height = 4)
   cat("Written: TEMPORAL_02_body_size\n")
 }
 
@@ -109,8 +109,8 @@ p_disp <- ggplot(disp_long, aes(x = Time_Bin, y = mean, group = 1)) +
         strip.text = element_text(face = "bold", size = 9),
         panel.grid.minor = element_blank())
 
-ggsave("clade_analyses_v4/plots/TEMPORAL_03_disparity_optimality.png",
+ggsave("output/plots/TEMPORAL_03_disparity_optimality.png",
        p_disp, width = 11, height = 4, dpi = 300)
-ggsave("clade_analyses_v4/plots_PDF/TEMPORAL_03_disparity_optimality.pdf",
+ggsave("output/plots_PDF/TEMPORAL_03_disparity_optimality.pdf",
        p_disp, width = 11, height = 4)
 cat("Written: TEMPORAL_03_disparity_optimality\n\n")

@@ -10,7 +10,7 @@ for (pkg in c("ape", "phytools")) {
 library(ape)
 library(phytools)
 
-TREE_FILE <- "data/phylogenetics/Henry_updated.nex"
+TREE_FILE <- "output/phylogenetics/Henry_updated.nex"
 
 ##################################################################################
 # 1. Load the tree

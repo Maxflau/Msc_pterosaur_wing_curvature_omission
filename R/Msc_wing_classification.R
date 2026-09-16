@@ -145,10 +145,10 @@ for (nm in new_cols) {
   performance_data_clean[[nm]][keep] <- cls_data[[nm]]
 }
 
-dir.create("clade_analyses_v4/results", showWarnings = FALSE, recursive = TRUE)
+dir.create("output/results", showWarnings = FALSE, recursive = TRUE)
 write.csv(cls_data[, intersect(c("species", "clade", "Diet.1", "Diet.2", "DIETCOMBO_COLS", "Wingspan_cm",
                                  names(OBJECTIVES), new_cols), colnames(cls_data))],
-          "clade_analyses_v4/results/wing_classification.csv", row.names = FALSE)
+          "output/results/wing_classification.csv", row.names = FALSE)
 
 cat("Added to performance_data_clean:", paste(new_cols, collapse = ", "), "\n")
-cat("Written: clade_analyses_v4/results/wing_classification.csv\n\n")
+cat("Written: output/results/wing_classification.csv\n\n")

@@ -137,8 +137,8 @@ make_group_plot <- function(group_col, palette_name, title_text, fixed_cols = NU
 for (g in GROUPINGS) {
   p <- make_group_plot(g$col, g$palette, g$title, g$fixed)
   if (is.null(p)) next
-  ggsave(sprintf("clade_analyses_v4/plots/biomechanic_plot/%s.png", g$file),p, width = 16, height = 11, dpi = 300)
-  ggsave(sprintf("clade_analyses_v4/plots_PDF/biomechanic_plot/%s.pdf", g$file), p, width = 16, height = 11)
+  ggsave(sprintf("output/plots/biomechanic_plot/%s.png", g$file),p, width = 16, height = 11, dpi = 300)
+  ggsave(sprintf("output/plots_PDF/biomechanic_plot/%s.pdf", g$file), p, width = 16, height = 11)
   cat("Written:", g$file, "\n")
 }
 cat("\nGroup morphospace figures complete.\n\n")

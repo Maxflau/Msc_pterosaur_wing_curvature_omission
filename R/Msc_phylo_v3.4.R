@@ -90,9 +90,9 @@ for (pn in list(
        f = "PERF_15B_phylo_pterodact"))) {
   
   p <- make_panel(pn$g, pn$l, pn$s)
-  ggsave(sprintf("clade_analyses_v4/plots/%s.png", pn$f), p,
+  ggsave(sprintf("output/plots/%s.png", pn$f), p,
          width = FIG_W, height = FIG_H, dpi = FIG_DPI)
-  ggsave(sprintf("clade_analyses_v4/plots_PDF/%s.pdf", pn$f), p,
+  ggsave(sprintf("output/plots_PDF/%s.pdf", pn$f), p,
          width = FIG_W, height = FIG_H)
   cat("Written:", pn$f, "\n")
 }
@@ -145,9 +145,9 @@ if (nlevels(droplevels(vdf$grade)) == 2) {
     theme(plot.title = element_text(face = "bold"),
           plot.subtitle = element_text(size = 9, colour = "grey35"))
   
-  ggsave("clade_analyses_v4/plots/PERF_15C_optimality_violin.png",
+  ggsave("output/plots/PERF_15C_optimality_violin.png",
          p_violin, width = 7, height = 8, dpi = FIG_DPI)
-  ggsave("clade_analyses_v4/plots_PDF/PERF_15C_optimality_violin.pdf",
+  ggsave("output/plots_PDF/PERF_15C_optimality_violin.pdf",
          p_violin, width = 7, height = 8)
   cat("Written: PERF_15C_optimality_violin\n")
   

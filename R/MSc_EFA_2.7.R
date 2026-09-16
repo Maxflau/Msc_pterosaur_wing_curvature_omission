@@ -1,8 +1,8 @@
 # ── 9A. DIRECTORIES ───────────────────────────────────────────────────────────
-res_dir  <- "clade_analyses_v4/results"
+res_dir  <- "output/results"
 stat_dir <- res_dir                       # save_csv() writes here
-plot_dir <- "clade_analyses_v4/plots_PDF"
-png_dir  <- "clade_analyses_v4/plots"
+plot_dir <- "output/plots_PDF"
+png_dir  <- "output/plots"
 for (dd in c(res_dir, plot_dir, png_dir)) dir.create(dd, showWarnings=FALSE, recursive=TRUE)
 cat("Output directories ready\n")
 

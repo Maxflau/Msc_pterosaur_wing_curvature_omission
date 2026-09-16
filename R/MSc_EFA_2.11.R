@@ -25,7 +25,7 @@ GROUPS   <- c("clade","Depositional","Palaeoenvironment",
 if (!exists("shape_perf")) {
   cat("shape_perf not found — attempting to load from CSV\n")
   sp_path <- file.path("EFA_stat-results",
-                       "../clade_analyses_v4/results/specimen_biomechanical_pca_table.csv")
+                       "../output/results/specimen_biomechanical_pca_table.csv")
   if (file.exists(sp_path)) {
     shape_perf <- read.csv(sp_path, stringsAsFactors=FALSE)
   } else {

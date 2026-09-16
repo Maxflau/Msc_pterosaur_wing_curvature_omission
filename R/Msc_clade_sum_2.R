@@ -19,8 +19,8 @@ summary_by_clade <- performance_data_clean %>%
     # Add additional metrics as needed
   )
 write.csv(summary_by_clade,
-          "clade_analyses_v4/results/supplementals/summary_statistics_by_clade.csv", row.names = FALSE)
-cat("✓ Exported: clade_analyses_v4/results/summary_statistics_by_clade.csv\n\n")
+          "output/results/supplementals/summary_statistics_by_clade.csv", row.names = FALSE)
+cat("✓ Exported: output/results/summary_statistics_by_clade.csv\n\n")
 summary_by_order <- performance_data_clean %>%
   group_by(Order) %>%
   summarise(
@@ -40,5 +40,5 @@ summary_by_order <- performance_data_clean %>%
     mean_complexity = mean(shape_complexity, na.rm = TRUE),
     sd_complexity = sd(shape_complexity, na.rm = TRUE)
   )
-write.csv(summary_by_order, "clade_analyses_v4/results/supplementals/summary_statistics_by_order.csv", row.names = FALSE)
-cat("✓ Exported: clade_analyses_v4/results/summary_statistics_by_order.csv\n\n")
+write.csv(summary_by_order, "output/results/supplementals/summary_statistics_by_order.csv", row.names = FALSE)
+cat("✓ Exported: output/results/summary_statistics_by_order.csv\n\n")

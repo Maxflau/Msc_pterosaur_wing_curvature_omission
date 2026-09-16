@@ -57,8 +57,8 @@ make_bar <- function(tab, palette, fill_name, title, thr) ggplot(tab, aes(Period
 p_depo <- make_bar(tab_depo, depo_colors, "Depositional setting", "Depositional setting by period", 0.06)
 p_env  <- make_bar(tab_env,  env_colors,  "Habitat", "Habitat (macroenvironment) by period", 0.07)
 (p_depo | p_env) + plot_annotation(title="Summary of pterosaur environments through time")
-ggsave("clade_analyses_v4/plots/Taphono_plot.png", p_depo + p_env, width=14, height=8, dpi=300)
-ggsave("clade_analyses_v4/plots_PDF/Taphono_plot.pdf", p_depo + p_env, width=14, height=8)
+ggsave("output/plots/Taphono_plot.png", p_depo + p_env, width=14, height=8, dpi=300)
+ggsave("output/plots_PDF/Taphono_plot.pdf", p_depo + p_env, width=14, height=8)
 
 # ------ 5. Habitat vs depositional setting (are they confounded?) ------------
 rel <- performance_data_clean %>% filter(!is.na(Environment), Environment!="",
@@ -105,7 +105,7 @@ results <- lapply(metrics, function(m) {
              lm_time_p=summary(lm_fit)$coefficients["dd$Midpoint","Pr(>|t|)"])
 }) %>% bind_rows() %>% mutate(across(where(is.numeric), ~round(.x, 4)))
 cat("\n=== Biomechanics vs environment / deposition / time ===\n"); print(results)
-write.csv(results, "clade_analyses_v4/results/biomech_env_time_tests.csv", row.names=FALSE)
+write.csv(results, "output/results/biomech_env_time_tests.csv", row.names=FALSE)
 
 # (c) temporal trends of each metric, coloured by habitat
 trend_long <- dd %>% select(Midpoint, Environment, all_of(metrics)) %>%
@@ -117,5 +117,5 @@ p_trend <- ggplot(trend_long, aes(Midpoint, value)) +
   scale_x_reverse() + facet_wrap(~metric, scales="free_y") +
   labs(x="Age (Ma)", y="Metric value", title="Biomechanical performance through time by habitat") +
   theme_minimal(base_size=12)
-ggsave("clade_analyses_v4/plots/Biomech_env_time.png", p_trend, width=12, height=8, dpi=300)
-ggsave("clade_analyses_v4/plots_PDF/Biomech_env_time.pdf", p_trend, width=12, height=8)
+ggsave("output/plots/Biomech_env_time.png", p_trend, width=12, height=8, dpi=300)
+ggsave("output/plots_PDF/Biomech_env_time.pdf", p_trend, width=12, height=8)

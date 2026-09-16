@@ -16,14 +16,14 @@ metrics <- list(
        clade_col=FALSE, transp=FALSE, dark_bg=FALSE))
 
 # ── 7. PRODUCE FIGURES — one plot per data type, pipeline naming ──────────────
-dir.create("clade_analyses_v4/plots_PDF", showWarnings=FALSE, recursive=TRUE)
-dir.create("clade_analyses_v4/plots",     showWarnings=FALSE, recursive=TRUE)
+dir.create("output/plots_PDF", showWarnings=FALSE, recursive=TRUE)
+dir.create("output/plots",     showWarnings=FALSE, recursive=TRUE)
 
 # Helper: save both PDF and PNG
 save_plot <- function(p, name, w=11, h=8.5) {
-  base <- file.path("clade_analyses_v4/plots_PDF", name)
+  base <- file.path("output/plots_PDF", name)
   ggsave(paste0(base,".pdf"), p, width=w, height=h, dpi=300)
-  ggsave(file.path("clade_analyses_v4/plots", paste0(name,".png")),
+  ggsave(file.path("output/plots", paste0(name,".png")),
          p, width=w, height=h, dpi=150)
   cat(sprintf("✓ Plot saved: %s (PNG + PDF)\n", name))
 }

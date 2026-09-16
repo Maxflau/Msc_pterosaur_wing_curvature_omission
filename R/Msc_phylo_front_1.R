@@ -1,4 +1,4 @@
-for (dd in c("clade_analyses_v4/plots", "clade_analyses_v4/plots_PDF")) {
+for (dd in c("output/plots", "output/plots_PDF")) {
   dir.create(dd, showWarnings = FALSE, recursive = TRUE)
 }
 
@@ -164,5 +164,5 @@ combined_d <- cowplot::plot_grid(combined_d, shared_legend, ncol = 1, rel_height
 title_d <- cowplot::ggdraw() +cowplot::draw_label( "Pairwise optimality comparison", fontface = "bold", size = 15, x = 0, hjust = 0)
 
 final_d <- cowplot::plot_grid(title_d, combined_d, ncol = 1, rel_heights = c(0.1, 1))
-ggsave("clade_analyses_v4/plots_PDF/CLADE_15D_pairwise_performance_pareto.pdf",final_d, width = 15, height = 6.5)
+ggsave("output/plots_PDF/CLADE_15D_pairwise_performance_pareto.pdf",final_d, width = 15, height = 6.5)
 cat("Written: CLADE_15D_pairwise_performance_pareto\n\n")

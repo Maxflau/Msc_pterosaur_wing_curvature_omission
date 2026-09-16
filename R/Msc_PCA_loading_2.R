@@ -5,7 +5,7 @@ filter <- dplyr::filter
 arrange <- dplyr::arrange
 
 # --- 1. LOAD & PREPARE -------------------------------------------------------
-df <- read.csv("clade_analyses_v4/results/supplementals/performance_metrics_complete_CLADE.csv", stringsAsFactors = FALSE) %>%
+df <- read.csv("output/results/supplementals/performance_metrics_complete_CLADE.csv", stringsAsFactors = FALSE) %>%
   rename(Depositional = Depositional.settings.paleoenvironment,
          Palaeoenvironment = Environment, Diet_primary = Diet.1, Diet_secondary = Diet.2)
 
@@ -43,7 +43,7 @@ if (exists("pca_performance")) {
 }
 var_tbl <- data.frame(PC = names(var_exp), Var_pct = var_exp, Cumul_pct = cum_var)
 cat("=== VARIANCE EXPLAINED (PC1 + PC2) ===\n"); print(var_tbl)
-write.csv(var_tbl, "clade_analyses_v4/results/supplementals/01_pca_variance_explained.csv", row.names = FALSE)
+write.csv(var_tbl, "output/results/supplementals/01_pca_variance_explained.csv", row.names = FALSE)
 
 # --- 2B. RECALCULATE LOADINGS FROM EXISTING PC SCORES -----------------------
 bio_scaled_mat <- scale(df[, BIO_VARS])
@@ -56,7 +56,7 @@ loadings_computed <- data.frame(
 
 cat("\n=== RECALCULATED LOADINGS (correlation with PC scores) ===\n")
 print(loadings_computed)
-write.csv(loadings_computed, "clade_analyses_v4/results/supplementals/00_pca_loadings_recalculated.csv", row.names = FALSE)
+write.csv(loadings_computed, "output/results/supplementals/00_pca_loadings_recalculated.csv", row.names = FALSE)
 
 load_df <- loadings_computed
 
@@ -74,7 +74,7 @@ p_biplot <- ggplot() +
   labs(title  = "Biomechanical morphospace — PC1 vs PC2",
        x = paste0("PC1 (",var_exp[["PC1"]],"%)"), y = paste0("PC2 (",var_exp[["PC2"]],"%)"),
        colour = "Clade") + theme_bw()
-ggsave("clade_analyses_v4/plots_PDF/supplementals/02_biplot_PC1_PC2.pdf", p_biplot, width=12, height=8)
+ggsave("output/plots_PDF/supplementals/02_biplot_PC1_PC2.pdf", p_biplot, width=12, height=8)
 
 # --- 4. PC SCORE SUMMARY BY GROUP --------------------------------------------
 summarise_pcs <- function(data, g) {
@@ -85,7 +85,7 @@ summarise_pcs <- function(data, g) {
 for (g in GROUPS) {
   tbl <- summarise_pcs(df, g)
   cat("\n--- PC summary:", g, "---\n"); print(tbl)
-  write.csv(tbl, paste0("clade_analyses_v4/results/supplementals/03_summary_pcs_", g, ".csv"), row.names = FALSE)
+  write.csv(tbl, paste0("output/results/supplementals/03_summary_pcs_", g, ".csv"), row.names = FALSE)
 }
 
 # --- 5. PERMANOVA ON PC1 + PC2 -----------------------------------------------
@@ -104,7 +104,7 @@ perm_df <- do.call(rbind, perm_rows) %>%
   mutate(sig = case_when(p_value<0.001~"***", p_value<0.01~"**",
                          p_value<0.05~"*",   p_value<0.1~".", TRUE~""))
 cat("\n=== PERMANOVA (PC1+PC2) ===\n"); print(perm_df)
-write.csv(perm_df, "clade_analyses_v4/results/supplementals/04_permanova_pc1pc2.csv", row.names = FALSE)
+write.csv(perm_df, "output/results/supplementals/04_permanova_pc1pc2.csv", row.names = FALSE)
 
 # --- 6. PAIRWISE PERMANOVA — BONFERRONI (clades & diet combo) ----------------
 set.seed(42)
@@ -122,7 +122,7 @@ for (g in c("clade","Diet_combined")) {
                            p_adj<0.05~"*",   p_adj<0.1~".", TRUE~""))
   cat("\n--- Pairwise PERMANOVA:", g, "---\n")
   print(as.data.frame(pw_df))
-  write.csv(as.data.frame(pw_df), paste0("clade_analyses_v4/results/supplementals/05_pairwise_permanova_", g, ".csv"), row.names=FALSE)
+  write.csv(as.data.frame(pw_df), paste0("output/results/supplementals/05_pairwise_permanova_", g, ".csv"), row.names=FALSE)
 }
 
 # --- 7. HOMOGENEITY OF DISPERSION --------------------------------------------
@@ -135,6 +135,6 @@ disp_rows <- lapply(GROUPS, function(g) {
 disp_df <- do.call(rbind, disp_rows) %>%
   rename(p_value=`Pr(>F)`) %>%
   select(Factor, Term, Df, `Sum Sq`, `Mean Sq`, F, p_value)
-write.csv(disp_df, "clade_analyses_v4/results/supplementals/06_betadisper_pc1pc2.csv", row.names=FALSE)
+write.csv(disp_df, "output/results/supplementals/06_betadisper_pc1pc2.csv", row.names=FALSE)
 
 cat("\n=== All CSV files saved. Analysis complete. ===\n")

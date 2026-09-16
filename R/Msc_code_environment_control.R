@@ -110,5 +110,5 @@ cat(sprintf("\nChi-square (MC): X2=%.1f, p=%.4g | Cramer's V=%.3f\n",
 
 # ------ 6. Combined plot + save ----------------------------------------------
 (p_depo | p_env) + plot_annotation(title = "Summary of pterosaur environments through time")
-ggsave("clade_analyses_v4/plots/Taphono_plot.png", p_depo + p_env, width=14, height=8, dpi=300)
-ggsave("clade_analyses_v4/plots_PDF/Taphono_plot.pdf", p_depo + p_env, width=14, height=8)
+ggsave("output/plots/Taphono_plot.png", p_depo + p_env, width=14, height=8, dpi=300)
+ggsave("output/plots_PDF/Taphono_plot.pdf", p_depo + p_env, width=14, height=8)

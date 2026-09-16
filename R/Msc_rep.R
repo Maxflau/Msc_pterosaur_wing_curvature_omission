@@ -65,7 +65,7 @@ p1 <- ggplot() +
   geom_polygon(data=sil, aes(x,y,group=species,fill=clade), colour="grey30", linewidth=0.15, alpha=0.7) +
   labs(title="Shape morphospace — real silhouettes", x=lab1, y=lab2, fill="Clade") +
   theme_minimal(base_size=11) + theme(panel.grid.minor=element_blank())
-ggsave("clade_analyses_v4/plots_PDF/Morphospace_silhouettes.pdf", p1, width=9, height=8, dpi=300)
+ggsave("output/plots_PDF/Morphospace_silhouettes.pdf", p1, width=9, height=8, dpi=300)
 
 # --- FIGURE 2: theoretical EFA grid + specimen points -------------------------
 grid_w <- build_grid_wings(8,7,0.2)
@@ -75,7 +75,7 @@ p2 <- ggplot() +
   geom_point(data=shape_scores, aes(shapePC1,shapePC2,colour=clade), size=2) +
   labs(title="Theoretical shape morphospace (EFA)", x=lab1, y=lab2, colour="Clade") +
   theme_minimal(base_size=11) + theme(panel.grid.minor=element_blank())
-ggsave("clade_analyses_v4/plots_PDF/Morphospace_theoretical_grid.pdf", p2, width=10, height=8, dpi=300)
+ggsave("output/plots_PDF/Morphospace_theoretical_grid.pdf", p2, width=10, height=8, dpi=300)
 
 # --- FIGURE 3: dense Foth-style grid + open black points ----------------------
 grid_dense <- build_grid_wings(18,14,0.35)
@@ -85,5 +85,5 @@ p3 <- ggplot() +
   labs(title="Empirical Shape Distribution", x=lab1, y=lab2) +
   coord_equal(expand=FALSE) + theme_classic(base_size=12) +
   theme(plot.title=element_text(hjust=0.5,size=16))
-ggsave("clade_analyses_v4/plots_PDF/Morphospace_Fothstyle.pdf", p3, width=9, height=8, dpi=300)
+ggsave("output/plots_PDF/Morphospace_Fothstyle.pdf", p3, width=9, height=8, dpi=300)
 

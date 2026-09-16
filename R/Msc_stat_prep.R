@@ -4,7 +4,7 @@ cat("===========================================================================
 
 library(dplyr)
 
-OUT_DIR <- "clade_analyses_v4/results/supplementals"
+OUT_DIR <- "output/results/supplementals"
 dir.create(OUT_DIR, showWarnings = FALSE, recursive = TRUE)
 
 # Groups below this size are excluded: an SD or a variance on two points is

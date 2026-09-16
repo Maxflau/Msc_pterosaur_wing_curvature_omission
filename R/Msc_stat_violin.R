@@ -1,6 +1,6 @@
 if (!exists("METRICS")) stop("Source Msc_stats_00_setup.R first.")
 
-for (d in c("clade_analyses_v4/plots", "clade_analyses_v4/plots_PDF")) {
+for (d in c("output/plots", "output/plots_PDF")) {
   dir.create(d, showWarnings = FALSE, recursive = TRUE)
 }
 
@@ -89,9 +89,9 @@ for (g in VIOLIN_LEVELS) {
   w <- max(10, min(20, 5 + n_g * 0.45))
   h <- 3.4 * ceiling(length(VIOLIN_METRICS) / 2)
   nm <- paste0("VIOLIN_", tolower(gsub("\\.", "_", g)))
-  ggsave(sprintf("clade_analyses_v4/plots/%s.png", nm), p,
+  ggsave(sprintf("output/plots/%s.png", nm), p,
          width = w, height = h, dpi = 300, limitsize = FALSE)
-  ggsave(sprintf("clade_analyses_v4/plots_PDF/%s.pdf", nm), p,
+  ggsave(sprintf("output/plots_PDF/%s.pdf", nm), p,
          width = w, height = h, limitsize = FALSE)
   cat(sprintf("Written: %s (%.1f x %.1f in)\n", nm, w, h))
 }

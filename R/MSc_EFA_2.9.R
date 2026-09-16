@@ -1,6 +1,6 @@
 # Ensure res_dir exists (may not if Section 9 was skipped)
 if (!exists("res_dir")) {
-  res_dir <- "clade_analyses_v4/results"
+  res_dir <- "output/results"
   dir.create(res_dir, showWarnings=FALSE, recursive=TRUE)
 }
 
@@ -131,13 +131,13 @@ if (length(missing_time) > 0) {
   n_rows_efa <- ceiling(n_bins_efa / 3)
   fig_h_efa  <- max(8, n_rows_efa * 5.2)
   
-  dir.create("clade_analyses_v4/plots",     showWarnings=FALSE, recursive=TRUE)
-  dir.create("clade_analyses_v4/plots_PDF", showWarnings=FALSE, recursive=TRUE)
+  dir.create("output/plots",     showWarnings=FALSE, recursive=TRUE)
+  dir.create("output/plots_PDF", showWarnings=FALSE, recursive=TRUE)
   
-  ggsave("clade_analyses_v4/plots_PDF/CLADE_EFA_morphospace_time.pdf",
+  ggsave("output/plots_PDF/CLADE_EFA_morphospace_time.pdf",
          efa_time_plot, width=18, height=fig_h_efa, dpi=300)
 
-  ggsave("clade_analyses_v4/plots_PDF/CLADE_EFA_disparity_time.pdf",
+  ggsave("output/plots_PDF/CLADE_EFA_disparity_time.pdf",
          disp_time_plot, width=10, height=6, dpi=300)
   
   write.csv(efa_disparity,file.path(res_dir, "efa_disparity_through_time.csv"), row.names=FALSE)

@@ -166,7 +166,7 @@ for (pn in PANELS) {
   p <- make_biomech_panel(pn$var, pn$title, pn$pal, pn$log, pn$stress, pn$hollow)
   if (is.null(p)) next
   plots[[pn$file]] <- p
-  ggsave(sprintf("clade_analyses_v4/plots_PDF/biomechanic_plot/%s.pdf", pn$file),
+  ggsave(sprintf("output/plots_PDF/biomechanic_plot/%s.pdf", pn$file),
          p, width = 18, height = 11)
   cat("Written:", pn$file, "\n")
 }

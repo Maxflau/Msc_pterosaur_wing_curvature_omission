@@ -1,7 +1,7 @@
 cat("\n--- ENVIRONMENT AND TAPHONOMY FIGURES ---\n\n")
 
 library(ggplot2)
-for (dd in c("clade_analyses_v4/plots", "clade_analyses_v4/plots_PDF")) {
+for (dd in c("output/plots", "output/plots_PDF")) {
   dir.create(dd, showWarnings = FALSE, recursive = TRUE)
 }
 if (!exists("METRICS")) stop("Source Msc_stats_00_setup.R first.")
@@ -61,9 +61,9 @@ p_env <- ggplot(long, aes(x = setting, y = value, fill = setting)) +
         plot.title = element_text(face = "bold", size = 13))
 
 h <- 3.3 * ceiling(length(PLOT_METRICS) / 2)
-ggsave("clade_analyses_v4/plots/ENV_01_metrics_by_setting.png", p_env,
+ggsave("output/plots/ENV_01_metrics_by_setting.png", p_env,
        width = 11, height = h, dpi = 300, limitsize = FALSE)
-ggsave("clade_analyses_v4/plots_PDF/ENV_01_metrics_by_setting.pdf", p_env,
+ggsave("output/plots_PDF/ENV_01_metrics_by_setting.pdf", p_env,
        width = 11, height = h, limitsize = FALSE)
 cat("Written: ENV_01_metrics_by_setting\n")
 
@@ -97,9 +97,9 @@ if (all(c("PC1", "PC2") %in% colnames(d))) {
     theme(panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 0.5),
           plot.title = element_text(face = "bold", size = 13))
   
-  ggsave("clade_analyses_v4/plots/ENV_02_morphospace_by_setting.png", p_ms,
+  ggsave("output/plots/ENV_02_morphospace_by_setting.png", p_ms,
          width = 10, height = 7, dpi = 300)
-  ggsave("clade_analyses_v4/plots_PDF/ENV_02_morphospace_by_setting.pdf", p_ms,
+  ggsave("output/plots_PDF/ENV_02_morphospace_by_setting.pdf", p_ms,
          width = 10, height = 7)
   cat("Written: ENV_02_morphospace_by_setting\n")
 }

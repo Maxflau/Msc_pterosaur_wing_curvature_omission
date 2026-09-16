@@ -39,7 +39,7 @@ k_results <- bind_rows(k_results,
                        data.frame(trait="shapePC1", n=length(spc1), K=round(K1$K,6), p_value=round(K1$P,6)),
                        data.frame(trait="shapePC2", n=length(spc2), K=round(K2$K,6), p_value=round(K2$P,6))
 )
-write.csv(k_results, "clade_analyses_v4/results/phylogenetic_signal_K_v2.csv", row.names=FALSE)
+write.csv(k_results, "output/results/phylogenetic_signal_K_v2.csv", row.names=FALSE)
 cat("Blomberg K exported\n"); print(k_results)
 
 p_all   <- make_phylo_v4("all")
@@ -47,24 +47,24 @@ p_nonp  <- make_phylo_v4("non_pterodact")
 p_pt    <- make_phylo_v4("pterodact")
 p_nonpf <- make_phylo_v4("non_pterodactyliformes")   # NEW — excludes Darwinoptera
 
-ggsave("clade_analyses_v4/plots_PDF/CLADE_15A_phylo_non_pterodactyliformes.pdf",
+ggsave("output/plots_PDF/CLADE_15A_phylo_non_pterodactyliformes.pdf",
        p_nonpf, width=11, height=8.5, dpi=300)
-ggsave("clade_analyses_v4/plots_PDF/CLADE_15A_phylo_nonpterodact.pdf",
+ggsave("output/plots_PDF/CLADE_15A_phylo_nonpterodact.pdf",
        p_nonp,  width=11, height=8.5, dpi=300)
-ggsave("clade_analyses_v4/plots_PDF/CLADE_15B_phylo_pterodact.pdf",
+ggsave("output/plots_PDF/CLADE_15B_phylo_pterodact.pdf",
        p_pt,    width=11, height=8.5, dpi=300)
-ggsave("clade_analyses_v4/plots_PDF/CLADE_15_phylo_all.pdf",
+ggsave("output/plots_PDF/CLADE_15_phylo_all.pdf",
        p_all,   width=11, height=8.5, dpi=300)
-ggsave("clade_analyses_v4/plots_PDF/CLADE_15C_pareto_violin.pdf",
+ggsave("output/plots_PDF/CLADE_15C_pareto_violin.pdf",
        p_violin, width=7, height=8, dpi=300)
 
 # Combined: Non-Pterodactyliformes (a) + Pterodactyloidea (b) + violin (c)
 combined_ab <- plot_grid(p_nonpf, p_pt, ncol=2,
                          labels=c("a","b"), label_size=11, label_fontface="bold")
-ggsave("clade_analyses_v4/plots_PDF/CLADE_15_phylo_combined.pdf",
+ggsave("output/plots_PDF/CLADE_15_phylo_combined.pdf",
        combined_ab, width=22, height=9, dpi=300)
 combined_abc <- plot_grid(combined_ab, p_violin, ncol=1, rel_heights=c(2.2,1),
                           labels=c("","c"), label_size=11, label_fontface="bold")
-ggsave("clade_analyses_v4/plots_PDF/CLADE_15_phylo_abc.pdf",
+ggsave("output/plots_PDF/CLADE_15_phylo_abc.pdf",
        combined_abc, width=22, height=20, dpi=300)
 cat("All phylomorphospace figures saved.\n")

@@ -2,7 +2,7 @@
 # Msc_PGLS.R   —   PHYLOGENETIC TESTS
 # ==============================================================================
 
-dir.create("clade_analyses_v4/results", showWarnings = FALSE, recursive = TRUE)
+dir.create("output/results", showWarnings = FALSE, recursive = TRUE)
 
 normalise_name <- function(x) {
   tolower(gsub("[^A-Za-z0-9_]", "", gsub("[ ]+", "_", trimws(as.character(x)))))
@@ -15,8 +15,8 @@ if (!exists("phy_pruned")) {
     inherits(get(x, envir = .GlobalEnv), "phylo"), logical(1))]
   if (length(cand) > 0) {
     phy_pruned <- get(cand[1]); cat("Using phylo object:", cand[1], "\n")
-  } else if (file.exists("data/phylogenetics/Henry_updated.nex")) {
-    tr0 <- read.nexus("data/phylogenetics/Henry_updated.nex")
+  } else if (file.exists("output/phylogenetics/Henry_updated.nex")) {
+    tr0 <- read.nexus("output/phylogenetics/Henry_updated.nex")
     phy_pruned <- if (inherits(tr0, "multiPhylo")) tr0[[1]] else tr0
     cat(sprintf("Tree read: %d tips\n", Ntip(phy_pruned)))
   } else stop("No tree available in ", getwd())
@@ -135,6 +135,6 @@ print(res[, c("variable","n","transform","signal_lambda","ols_p","pgls_p",
               "pgls_lambda","slope_ratio","verdict")], row.names = FALSE)
 
 res$metric_set <- SET_NAME
-write.csv(res, sprintf("clade_analyses_v4/results/pgls_%s_metrics.csv", SET_NAME),row.names = FALSE)
+write.csv(res, sprintf("output/results/pgls_%s_metrics.csv", SET_NAME),row.names = FALSE)
 cat(sprintf("\nWritten: pgls_%s_metrics.csv\n", SET_NAME))
 cat("Report OLS and PGLS together: the gap between them is the result.\n\n")

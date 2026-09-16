@@ -2,12 +2,12 @@
 n_rows_efa <- ceiling(n_bins_efa / 3)
 fig_h_efa  <- max(8, n_rows_efa * 5.2)
 
-dir.create("clade_analyses_v4/plots",     showWarnings=FALSE, recursive=TRUE)
-dir.create("clade_analyses_v4/plots_PDF", showWarnings=FALSE, recursive=TRUE)
+dir.create("output/plots",     showWarnings=FALSE, recursive=TRUE)
+dir.create("output/plots_PDF", showWarnings=FALSE, recursive=TRUE)
 
-ggsave("clade_analyses_v4/plots_PDF/CLADE_EFA_morphospace_time.pdf",
+ggsave("output/plots_PDF/CLADE_EFA_morphospace_time.pdf",
        efa_time_plot, width=18, height=fig_h_efa, dpi=300)
-ggsave("clade_analyses_v4/plots/CLADE_EFA_morphospace_time.png",
+ggsave("output/plots/CLADE_EFA_morphospace_time.png",
        efa_time_plot, width=18, height=fig_h_efa, dpi=150)
 cat("  ✓ EFA morphospace through time (PNG + PDF)\n")
 
@@ -17,7 +17,7 @@ if (!exists("shape_perf")) {
   cat("  shape_perf not found - skipping.\n")
 } else {
   
-  if (!exists("res_dir")) res_dir <- "clade_analyses_v4/results"
+  if (!exists("res_dir")) res_dir <- "output/results"
   dir.create(res_dir, showWarnings = FALSE, recursive = TRUE)
   cat(sprintf("  Specimens: %d\n", nrow(shape_perf)))
   
@@ -35,8 +35,8 @@ if (!exists("shape_perf")) {
   # written by the old pipeline lists second_moment and stress_root, so
   # projecting the new metrics through it would silently produce wrong scores.
   use_loadings <- FALSE
-  if (file.exists("data/pca_loadings.csv")) {
-    loadings_df <- read.csv("data/pca_loadings.csv", stringsAsFactors = FALSE)
+  if (file.exists("output/pca_loadings.csv")) {
+    loadings_df <- read.csv("output/pca_loadings.csv", stringsAsFactors = FALSE)
     rownames(loadings_df) <- loadings_df$variable
     if (all(PCA_VARS %in% rownames(loadings_df))) {
       use_loadings <- TRUE
@@ -101,10 +101,10 @@ if (!exists("shape_perf")) {
   # 2. Pareto and classification columns, from whichever CSV holds them
   PARETO_COLS <- c("goldberg_rank","strategy","limiting_objective",
                    "distance_to_front","on_front","pareto_rank_ratio")
-  for (p in c("clade_analyses_v4/results/pareto_all_specimens.csv",
-              "clade_analyses_v4/results/wing_classification.csv",
-              "supplementals/wing_classification.csv",
-              "clade_analyses_v4/results/reference_specimens_for_curvature.csv")) {
+  for (p in c("output/results/pareto_all_specimens.csv",
+              "output/results/wing_classification.csv",
+              "output/results/supplementals/wing_classification.csv",
+              "output/results/reference_specimens_for_curvature.csv")) {
     shape_perf <- join_missing(shape_perf, p, PARETO_COLS)
   }
   
@@ -177,7 +177,7 @@ if (!exists("shape_perf")) {
   if (exists("pca_performance")) {
     write.csv(data.frame(variable = rownames(pca_performance$rotation),
                          pca_performance$rotation[, 1:2]),
-              "data/pca_loadings.csv", row.names = FALSE)
+              "output/pca_loadings.csv", row.names = FALSE)
     cat("  pca_loadings.csv refreshed from the current PCA.\n")
   }
 }
