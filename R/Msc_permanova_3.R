@@ -1,4 +1,30 @@
-# Turn the PERMANOVA output into a simple table that can be saved.
+# --------------------------------------------------------------------------------
+# Check that all the objects this script needs already exist before continuing.
+# --------------------------------------------------------------------------------
+required_objects <- c("df", "pca_dist", "summarise_pcs", "test_dispersion",
+                      "perm_clade", "perm_dep", "perm_env",
+                      "perm_diet1", "perm_diet2", "perm_dietcombo", "perm_full",
+                      "D_FULL", "MV_META")
+missing_objects <- required_objects[!vapply(required_objects, exists, logical(1))]
+if (length(missing_objects) > 0) {
+  stop("Missing: ", paste(missing_objects, collapse = ", "),
+       "\n  Source Msc_stat_permanova_2.R AND Msc_stat_permanova.R",
+       "\n  (via Msc_stats_00_setup.R) before this script.")
+}
+
+# The groups compared in every test below.
+GROUPS <- c("clade", "Depositional", "Palaeoenvironment",
+            "Diet_primary", "Diet_secondary", "Diet_combined")
+
+perm_results_pca <- list(
+  clade              = perm_clade,
+  Depositional       = perm_dep,
+  Palaeoenvironment  = perm_env,
+  Diet_primary       = perm_diet1,
+  Diet_secondary     = perm_diet2,
+  Diet_combined      = perm_dietcombo)
+
+# Turn one PERMANOVA (adonis2) result into a tidy, labelled table row set.
 tidy_adonis2 <- function(res, factor_label) {
   tbl           <- as.data.frame(res)
   tbl$Term      <- rownames(tbl)
@@ -9,7 +35,7 @@ tidy_adonis2 <- function(res, factor_label) {
   tbl
 }
 
-# Turn the dispersion test output into a simple table that can be saved.
+# Turn one betadisper (variance homogeneity) test into a tidy, labelled table row set.
 tidy_betadisper <- function(dist_mat, groups, factor_label) {
   bd            <- betadisper(dist_mat, groups)
   pv            <- permutest(bd, permutations = 9999)
@@ -25,116 +51,108 @@ tidy_betadisper <- function(dist_mat, groups, factor_label) {
 }
 
 OUT <- "output/results/"
+dir.create(OUT, showWarnings = FALSE, recursive = TRUE)
 
 cat("\n\n=== EXPORTING CSV FILES ===\n")
 
-# --- 01 & 02  PC and biomechanical summaries ---------------------------------
-# Save the basic summary tables for each grouping variable.
+# --- 01  PC summaries by group ------------------------------------------------
 
 for (g in GROUPS) {
   pc_tbl <- summarise_pcs(df, g)
   write.csv(pc_tbl,
             file      = paste0(OUT, "01_summary_pcs_", g, ".csv"),
             row.names = FALSE)
-
-  bio_tbl <- bio_summary(df, g)
-  write.csv(bio_tbl,
-            file      = paste0(OUT, "02_summary_biomech_", g, ".csv"),
-            row.names = FALSE)
 }
-cat("01 & 02 — Summary CSVs written.\n")
+cat("01 — PC summary CSVs written.\n")
+
 
 # --- 03  Individual PERMANOVA results — PCA space ----------------------------
-# Test each grouping variable one at a time in PCA space.
 
-set.seed(42)
-
-pca_perm_list <- list()
-for (g in GROUPS) {
-  res <- adonis2(as.formula(paste("pca_dist ~", g)),
-                 data         = df,
-                 permutations = 9999,
-                 method       = "euclidean")
-  pca_perm_list[[g]] <- tidy_adonis2(res, g)
-}
-
+pca_perm_list <- lapply(names(perm_results_pca), function(g) {
+  tidy_adonis2(perm_results_pca[[g]], g)
+})
 pca_perm_df <- do.call(rbind, pca_perm_list)
 write.csv(pca_perm_df,
           file      = paste0(OUT, "03_permanova_pca.csv"),
           row.names = FALSE)
 cat("03 — PCA PERMANOVA CSV written.\n")
 
-# --- 04  Full marginal model — PCA space -------------------------------------
-# Test all main grouping variables together in PCA space.
 
-perm_pca_full_export <- adonis2(
-  pca_dist ~ clade + Depositional + Palaeoenvironment + Diet_combined,
-  data         = df,
-  permutations = 9999,
-  method       = "euclidean",
-  by           = "margin"
-)
-write.csv(tidy_adonis2(perm_pca_full_export, "Full model (PCA)"),
+# --- 04  Full marginal model — PCA space -------------------------------------
+
+write.csv(tidy_adonis2(perm_full, "Full model (PCA)"),
           file      = paste0(OUT, "04_permanova_pca_full_model.csv"),
           row.names = FALSE)
 cat("04 — PCA full model CSV written.\n")
 
-# --- 05  Individual PERMANOVA results — biomechanical space ------------------
-# Repeat the one-factor tests in biomechanical space.
-
-bio_perm_list <- list()
-for (g in GROUPS) {
-  res <- adonis2(as.formula(paste("bio_dist ~", g)),
-                 data         = df,
-                 permutations = 9999,
-                 method       = "euclidean")
-  bio_perm_list[[g]] <- tidy_adonis2(res, g)
-}
-
-bio_perm_df <- do.call(rbind, bio_perm_list)
-write.csv(bio_perm_df,
-          file      = paste0(OUT, "05_permanova_biomech.csv"),
-          row.names = FALSE)
-cat("05 — Biomechanical PERMANOVA CSV written.\n")
-
-# --- 06  Full marginal model — biomechanical space ---------------------------
-# Test all main grouping variables together in biomechanical space.
-
-perm_bio_full_export <- adonis2(
-  bio_dist ~ clade + Depositional + Palaeoenvironment + Diet_combined,
-  data         = df,
-  permutations = 9999,
-  method       = "euclidean",
-  by           = "margin"
-)
-write.csv(tidy_adonis2(perm_bio_full_export, "Full model (Biomech)"), file  = paste0(OUT, "06_permanova_biomech_full_model.csv"),row.names = FALSE)
-cat("06 — Biomechanical full model CSV written.\n")
 
 # --- 07  Betadisper — PCA space ----------------------------------------------
-# Check whether group spread differs in PCA space.
 
 set.seed(42)
-pca_disp_list <- list()
-for (g in GROUPS) {
-  pca_disp_list[[g]] <- tidy_betadisper(pca_dist, df[[g]], g)
-}
+
+pca_disp_list <- lapply(GROUPS, function(g) tidy_betadisper(pca_dist, df[[g]], g))
 pca_disp_df <- do.call(rbind, pca_disp_list)
-write.csv(pca_disp_df, file= paste0(OUT, "07_betadisper_pca.csv"),row.names = FALSE)
+write.csv(pca_disp_df,
+          file      = paste0(OUT, "07_betadisper_pca.csv"),
+          row.names = FALSE)
 cat("07 — PCA betadisper CSV written.\n")
 
-# --- 08  Betadisper — biomechanical space ------------------------------------
-# Check whether group spread differs in biomechanical space.
-bio_disp_list <- list()
-for (g in GROUPS) {
-  bio_disp_list[[g]] <- tidy_betadisper(bio_dist, df[[g]], g)
+
+# --------------------------------------------------------------------------------
+# 08. Betadisper - biomechanical (multivariate) space.
+# --------------------------------------------------------------------------------
+bio_dist <- D_FULL
+
+bio_groups <- intersect(GROUPS, colnames(MV_META))
+skipped_groups <- setdiff(GROUPS, bio_groups)
+if (length(skipped_groups) > 0) {
+  cat("NOTE: skipping betadisper (biomech) for groups not in MV_META:",
+      paste(skipped_groups, collapse = ", "), "\n")
 }
 
+bio_disp_list <- lapply(bio_groups, function(g) {
+  grp <- as.character(MV_META[[g]])
+  ok <- !is.na(grp) & grp != ""
+  if (sum(ok) < 10 || length(unique(grp[ok])) < 2) {
+    cat("SKIPPED betadisper (biomech) for", g, "- too few usable specimens or levels\n")
+    return(NULL)
+  }
+  Ds <- as.dist(as.matrix(bio_dist)[ok, ok])
+  tidy_betadisper(Ds, factor(grp[ok]), g)
+})
 bio_disp_df <- do.call(rbind, bio_disp_list)
-write.csv(bio_disp_df, file= paste0(OUT, "08_betadisper_biomech.csv"),row.names = FALSE)
+
+write.csv(bio_disp_df, file      = paste0(OUT, "08_betadisper_biomech.csv"), row.names = FALSE)
 cat("08 — Biomechanical betadisper CSV written.\n")
 
-# --- 09  Kruskal-Wallis results (already computed in section 10) -------------
-# Save the non-parametric test results that were already created earlier.
 
-write.csv(kw_results, file = paste0(OUT, "09_kruskal_wallis.csv"),row.names = FALSE)
-cat("09 — Kruskal-Wallis CSV written.\n")
+# --------------------------------------------------------------------------------
+# 09. Kruskal-Wallis tests, univariate, per metric x group.
+# --------------------------------------------------------------------------------
+KW_METRICS <- intersect(c("aspect_ratio", "r2_hat", "von_mises_stress",
+                          "wing_loading_ratio", "wing_curvature", "shape_complexity",
+                          "reynolds", "PC1", "PC2"), colnames(df))
+cat("\nKruskal-Wallis metrics:", paste(KW_METRICS, collapse = ", "), "\n\n")
+
+kw_results <- data.frame()
+for (g in GROUPS) {
+  for (v in KW_METRICS) {
+    ok <- !is.na(df[[v]]) & !is.na(df[[g]]) & df[[g]] != ""
+    if (sum(ok) < 10 || length(unique(df[[g]][ok])) < 2) next
+    kw <- kruskal.test(df[[v]][ok], as.factor(df[[g]][ok]))
+    kw_results <- rbind(kw_results, data.frame(
+      Group = g, Variable = v,
+      H = round(kw$statistic, 3), df_kw = kw$parameter,
+      p_value = round(kw$p.value, 4),
+      sig = ifelse(kw$p.value < 0.001, "***",
+                   ifelse(kw$p.value < 0.01,  "**",
+                          ifelse(kw$p.value < 0.05,  "*",
+                                 ifelse(kw$p.value < 0.1,   ".", ""))))))
+  }
+}
+
+cat("\nKruskal-Wallis omnibus results:\n")
+print(kw_results, row.names = FALSE)
+
+write.csv(kw_results, file      = paste0(OUT, "09_kruskal_wallis.csv"), row.names = FALSE)
+cat("09 — Kruskal-Wallis CSV written.\n\n")
