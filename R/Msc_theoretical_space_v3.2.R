@@ -113,7 +113,7 @@ if (exists("shape_scores") &&
 
 dir.create("output/results", showWarnings = FALSE, recursive = TRUE)
 dir.create("output/plots", showWarnings = FALSE, recursive = TRUE)
-dir.create("output/results/supplementals", showWarnings = FALSE, recursive = TRUE)
+dir.create("output/results/Supplemental_performance", showWarnings = FALSE, recursive = TRUE)
 write.csv(theoretical_data, "output/results/theoretical_shapes.csv",
           row.names = FALSE)
 

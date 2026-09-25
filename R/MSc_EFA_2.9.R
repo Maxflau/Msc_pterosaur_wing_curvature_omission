@@ -1,6 +1,6 @@
 # Ensure res_dir exists (may not if Section 9 was skipped)
 if (!exists("res_dir")) {
-  res_dir <- "output/results"
+  res_dir <- "output/results/Supplemental_EFA"
   dir.create(res_dir, showWarnings=FALSE, recursive=TRUE)
 }
 

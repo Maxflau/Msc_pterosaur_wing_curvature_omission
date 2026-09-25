@@ -147,4 +147,4 @@ ggsave("output/plots_PDF/taphonomic_sensitivity_heatmap.pdf", p4, width = 8, hei
 # Show a fixed number of decimals so every row lines up.
 hm_display <- hm
 hm_display$mean_PC2 <- format_fixed(hm$mean_PC2, 3)
-write.csv(hm_display, "output/results/supplementals/taphonomic_PC2_by_clade_prescat.csv", row.names = FALSE)
+write.csv(hm_display, "output/results/Supplemental_performance/taphonomic_PC2_by_clade_prescat.csv", row.names = FALSE)

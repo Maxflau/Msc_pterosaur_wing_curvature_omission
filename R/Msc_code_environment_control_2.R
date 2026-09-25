@@ -104,7 +104,7 @@ results <- lapply(metrics, function(m) {
 # Show a fixed number of decimals so every row lines up.
 results_display <- results %>% mutate(across(where(is.numeric), ~format_fixed(.x, 4)))
 cat("\n=== Biomechanics vs environment / deposition / time ===\n"); print(results_display)
-write.csv(results_display, "output/results/biomech_env_time_tests.csv", row.names=FALSE)
+write.csv(results_display, "output/results/Supplemental_performance/biomech_env_time_tests.csv", row.names=FALSE)
 
 # Plot each metric through time, coloured by habitat.
 trend_long <- dd %>% select(Midpoint, Environment, all_of(metrics)) %>%

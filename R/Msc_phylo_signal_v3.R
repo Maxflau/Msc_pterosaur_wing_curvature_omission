@@ -133,8 +133,8 @@ if (any(phylo_signal_results$disagreement, na.rm = TRUE)) {
                              c("variable", "lambda", "lambda_p", "K", "K_p")])
 }
 
-dir.create("output/results/supplementals", showWarnings = FALSE, recursive = TRUE)
-write.csv(phylo_signal_results, "output/results/supplementals/phylogenetic_signal_lambda_K.csv",
+dir.create("output/results/Supplemental_performance", showWarnings = FALSE, recursive = TRUE)
+write.csv(phylo_signal_results, "output/results/Supplemental_performance/phylogenetic_signal_lambda_K.csv",
           row.names = FALSE)
 
 cat("\nAvailable: phylo_signal_results, tree, species_to_tip\n\n")

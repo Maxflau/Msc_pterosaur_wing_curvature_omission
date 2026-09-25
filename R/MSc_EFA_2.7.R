@@ -1,6 +1,6 @@
 # ── 9A. DIRECTORIES ───────────────────────────────────────────────────────────
 # Make sure the output folders exist before saving results.
-res_dir  <- "output/results"
+res_dir  <- "output/results/Supplemental_EFA"
 stat_dir <- res_dir                       # save_csv() writes here
 plot_dir <- "output/plots_PDF"
 png_dir  <- "output/plots"

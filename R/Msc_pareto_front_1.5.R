@@ -125,7 +125,7 @@ out_cols <- intersect(c("species","clade","Order","Diet.1","Diet.2","Midpoint",
                         paste0("pareto_score_", names(OBJECTIVES)),
                         paste0("pareto_tradeoff_", TRADEOFF_CORE)), colnames(dd))
 
-out_file <- "output/results/supplementals/wing_classification_von_mises_stress.csv"
+out_file <- "output/results/Supplemental_performance/wing_classification_von_mises_stress.csv"
 write.csv(dd[order(-dd$pareto_rank_ratio), out_cols], out_file, row.names = FALSE)
 cat(sprintf("\nWritten: %s\n", out_file))
 

@@ -4,7 +4,7 @@ filter <- dplyr::filter
 arrange <- dplyr::arrange
 
 # --- 1. Load the PCA table and tidy the group names ---------------------------
-df <- read.csv("output/results/supplementals/performance_metrics_complete_CLADE.csv", stringsAsFactors = FALSE) %>%
+df <- read.csv("output/results/Supplemental_performance/performance_metrics_complete_CLADE.csv", stringsAsFactors = FALSE) %>%
   rename(Depositional = Depositional.settings.paleoenvironment,
          Palaeoenvironment = Environment, Diet_primary = Diet.1, Diet_secondary = Diet.2)
 
@@ -39,7 +39,7 @@ if (exists("pca_performance")) {
 }
 var_tbl <- data.frame(PC = names(var_exp), Var_pct = var_exp, Cumul_pct = cum_var)
 cat("=== VARIANCE EXPLAINED (PC1 + PC2) ===\n"); print(var_tbl)
-write.csv(var_tbl, "output/results/supplementals/01_pca_variance_explained.csv", row.names = FALSE)
+write.csv(var_tbl, "output/results/Supplemental_performance/01_pca_variance_explained.csv", row.names = FALSE)
 
 # --- 2B. Recalculate how strongly each variable lines up with the PCs ---------
 # Scale the selected measurements so they are on a comparable scale.
@@ -53,7 +53,7 @@ loadings_computed <- data.frame(
 
 cat("\n=== RECALCULATED LOADINGS (correlation with PC scores) ===\n")
 print(loadings_computed)
-write.csv(loadings_computed, "output/results/supplementals/00_pca_loadings_recalculated.csv", row.names = FALSE)
+write.csv(loadings_computed, "output/results/Supplemental_performance/00_pca_loadings_recalculated.csv", row.names = FALSE)
 
 load_df <- loadings_computed
 
@@ -89,7 +89,7 @@ for (g in GROUPS) {
   tbl_display$PC2_mean <- format_fixed(tbl$PC2_mean, 3)
   tbl_display$PC2_sd   <- format_fixed(tbl$PC2_sd, 3)
   print(tbl_display)
-  write.csv(tbl_display, paste0("output/results/supplementals/03_summary_pcs_", g, ".csv"), row.names = FALSE)
+  write.csv(tbl_display, paste0("output/results/Supplemental_performance/03_summary_pcs_", g, ".csv"), row.names = FALSE)
 }
 
 # --- 5. PERMANOVA ON PC1 + PC2 -----------------------------------------------
@@ -115,7 +115,7 @@ perm_df_display$R2       <- format_fixed(perm_df$R2, 4)
 perm_df_display$F        <- format_fixed(perm_df$F, 3)
 perm_df_display$p_value  <- format_fixed(perm_df$p_value, 4)
 print(perm_df_display)
-write.csv(perm_df_display, "output/results/supplementals/04_permanova_pc1pc2.csv", row.names = FALSE)
+write.csv(perm_df_display, "output/results/Supplemental_performance/04_permanova_pc1pc2.csv", row.names = FALSE)
 
 # --- 6. PAIRWISE PERMANOVA — BONFERRONI (clades & diet combo) ----------------
 set.seed(42)
@@ -139,7 +139,7 @@ for (g in c("clade","Diet_combined")) {
   pw_df_display$F        <- format_fixed(pw_df$F, 3)
   pw_df_display$p_adj    <- format_fixed(pw_df$p_adj, 4)
   print(pw_df_display)
-  write.csv(pw_df_display, paste0("output/results/supplementals/05_pairwise_permanova_", g, ".csv"), row.names=FALSE)
+  write.csv(pw_df_display, paste0("output/results/Supplemental_performance/05_pairwise_permanova_", g, ".csv"), row.names=FALSE)
 }
 
 # --- 7. HOMOGENEITY OF DISPERSION --------------------------------------------
@@ -158,6 +158,6 @@ disp_df_display$`Sum Sq`  <- format_fixed(disp_df$`Sum Sq`, 4)
 disp_df_display$`Mean Sq` <- format_fixed(disp_df$`Mean Sq`, 4)
 disp_df_display$F         <- format_fixed(disp_df$F, 3)
 disp_df_display$p_value   <- format_fixed(disp_df$p_value, 4)
-write.csv(disp_df_display, "output/results/supplementals/06_betadisper_pc1pc2.csv", row.names=FALSE)
+write.csv(disp_df_display, "output/results/Supplemental_performance/06_betadisper_pc1pc2.csv", row.names=FALSE)
 
 cat("\n=== All CSV files saved. Analysis complete. ===\n")

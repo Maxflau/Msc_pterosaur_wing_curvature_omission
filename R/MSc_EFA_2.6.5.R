@@ -41,7 +41,7 @@ k_results <- bind_rows(k_results,
                        data.frame(trait="shapePC1", n=length(spc1), K=round(K1$K,6), p_value=round(K1$P,6)),
                        data.frame(trait="shapePC2", n=length(spc2), K=round(K2$K,6), p_value=round(K2$P,6))
 )
-write.csv(k_results, "output/results/phylogenetic_signal_K_v2.csv", row.names=FALSE)
+write.csv(k_results, "output/results/Supplemental_EFA/phylogenetic_signal_K_v2.csv", row.names=FALSE)
 cat("Blomberg K exported\n"); print(k_results)
 
 p_all   <- make_phylo_v4("all")

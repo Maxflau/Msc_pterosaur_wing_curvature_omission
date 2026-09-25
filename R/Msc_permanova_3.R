@@ -50,7 +50,7 @@ tidy_betadisper <- function(dist_mat, groups, factor_label) {
   tbl
 }
 
-OUT <- "output/results/"
+OUT <- "output/results/Supplemental_performance/"
 dir.create(OUT, showWarnings = FALSE, recursive = TRUE)
 
 cat("\n\n=== EXPORTING CSV FILES ===\n")

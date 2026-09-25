@@ -2,7 +2,7 @@
 # Msc_PGLS.R   —   PHYLOGENETIC TESTS
 # ==============================================================================
 
-dir.create("output/results", showWarnings = FALSE, recursive = TRUE)
+dir.create("output/results/Supplemental_performance", showWarnings = FALSE, recursive = TRUE)
 
 # Make species names easier to match between the table and the tree.
 normalise_name <- function(x) {
@@ -144,6 +144,6 @@ print(res_display[, c("variable","n","transform","signal_lambda","ols_p","pgls_p
               "pgls_lambda","slope_ratio","verdict")], row.names = FALSE)
 
 res$metric_set <- SET_NAME
-write.csv(res, sprintf("output/results/pgls_%s_metrics.csv", SET_NAME),row.names = FALSE)
+write.csv(res, sprintf("output/results/Supplemental_performance/pgls_%s_metrics.csv", SET_NAME),row.names = FALSE)
 cat(sprintf("\nWritten: pgls_%s_metrics.csv\n", SET_NAME))
 cat("Report OLS and PGLS together: the gap between them is the result.\n\n")

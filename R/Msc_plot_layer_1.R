@@ -35,7 +35,7 @@ if (!"von_mises_stress" %in% colnames(performance_data_clean)) {
       all(is.na(performance_data_clean$von_mises_stress))) {
     for (p in c("output/results/pareto_all_specimens.csv",
                 "output/results/performance_metrics_complete_CLADE.csv",
-                "output/results/supplementals/wing_classification.csv")) {
+                "output/results/Supplemental_performance/wing_classification.csv")) {
       if (!file.exists(p)) next
       src <- read.csv(p, stringsAsFactors = FALSE)
       if (!all(c("species", "von_mises_stress") %in% names(src))) next

@@ -17,7 +17,7 @@ cat("\n=== Section 11: EFA grid biomechanical table ===\n")
 if (!exists("shape_perf")) {
   cat("  shape_perf not found - skipping.\n")
 } else {
-  if (!exists("res_dir")) res_dir <- "output/results"
+  if (!exists("res_dir")) res_dir <- "output/results/Supplemental_EFA"
   dir.create(res_dir, showWarnings = FALSE, recursive = TRUE)
   cat(sprintf("  Specimens: %d\n", nrow(shape_perf)))
 
@@ -103,7 +103,7 @@ if (!exists("shape_perf")) {
                    "distance_to_front","on_front","pareto_rank_ratio")
   for (p in c("output/results/pareto_all_specimens.csv",
               "output/results/wing_classification.csv",
-              "output/results/supplementals/wing_classification.csv",
+              "output/results/Supplemental_performance/wing_classification.csv",
               "output/results/reference_specimens_for_curvature.csv")) {
     shape_perf <- join_missing(shape_perf, p, PARETO_COLS)
   }

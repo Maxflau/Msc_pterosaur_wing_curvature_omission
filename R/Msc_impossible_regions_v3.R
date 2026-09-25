@@ -81,8 +81,8 @@ print(variance_table_display, row.names = FALSE)
 cat(sprintf("\nFirst three axes collectively account for %s%% of total variance.\n",
             format_fixed(variance_table$Cumulative_pct[min(3, nrow(variance_table))], 1)))
 
-dir.create("output/results/supplementals", showWarnings = FALSE, recursive = TRUE)
-write.csv(variance_table, "output/results/supplementals/performance_pca_variance_table.csv",
+dir.create("output/results/Supplemental_performance", showWarnings = FALSE, recursive = TRUE)
+write.csv(variance_table, "output/results/Supplemental_performance/performance_pca_variance_table.csv",
           row.names = FALSE)
 
 # --------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ cat("\nLoadings and structure correlations (r, r^2) per PC:\n")
 print(loadings_table, row.names = FALSE)
 cat("\n")
 
-write.csv(loadings_table, "output/results/supplementals/performance_pca_loadings_table.csv",
+write.csv(loadings_table, "output/results/Supplemental_performance/performance_pca_loadings_table.csv",
           row.names = FALSE)
 
 cat("Correlation among log-transformed performance variables:\n")

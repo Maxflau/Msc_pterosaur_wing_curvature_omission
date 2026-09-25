@@ -88,7 +88,7 @@ for (resp in c("shapePC1","shapePC2")) {
       geom_abline(slope=1, intercept=0, linetype="dashed", colour="grey40") +
       geom_smooth(method="lm", se=FALSE, colour="black", linetype="dotted") +
       labs(title=paste("RF predicted vs actual:", resp),
-           subtitle=paste0("R² = ", r2),
+           subtitle=paste0("R2 = ", r2),
            x=paste("Actual", resp), y=paste("Predicted", resp)) +
       theme_bw(base_size=12)
     save_plot(p_pva, paste0("EFA_rf_predicted_vs_actual_", resp), w=8, h=7)

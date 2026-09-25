@@ -23,7 +23,7 @@ summary_by_clade <- performance_data_clean %>%
     # Add more measurements here only if later scripts also use them.
   )
 write.csv(summary_by_clade,
-          "output/results/supplementals/summary_statistics_by_clade.csv", row.names = FALSE)
+          "output/results/Supplemental_performance/summary_statistics_by_clade.csv", row.names = FALSE)
 cat("✓ Exported: output/results/summary_statistics_by_clade.csv\n\n")
 # --- 2. Mean and spread by order ----------------------------------------------
 summary_by_order <- performance_data_clean %>%
@@ -45,5 +45,5 @@ summary_by_order <- performance_data_clean %>%
     mean_complexity = mean(shape_complexity, na.rm = TRUE),
     sd_complexity = sd(shape_complexity, na.rm = TRUE)
   )
-write.csv(summary_by_order, "output/results/supplementals/summary_statistics_by_order.csv", row.names = FALSE)
+write.csv(summary_by_order, "output/results/Supplemental_performance/summary_statistics_by_order.csv", row.names = FALSE)
 cat("✓ Exported: output/results/summary_statistics_by_order.csv\n\n")
