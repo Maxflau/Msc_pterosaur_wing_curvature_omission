@@ -59,7 +59,10 @@ if ("clade" %in% colnames(d)) {
     }))
   }))
   cat(sprintf("\nClade-by-bin cells with n >= %d: %d\n", MIN_N, nrow(by_cb)))
-  write_supp(by_cb, "S25b_optimality_by_clade_and_bin")
+  # Show a fixed number of decimals so every row lines up.
+  by_cb_display <- by_cb
+  by_cb_display$mean_PRR <- format_fixed(by_cb$mean_PRR, 4)
+  write_supp(by_cb_display, "S25b_optimality_by_clade_and_bin")
 }
 
 # --------------------------------------------------------------------------------
@@ -105,12 +108,19 @@ if ("Midpoint" %in% colnames(d)) {
     cat("PGLS skipped - phy_pruned or nlme unavailable.\n")
   }
 
-  write_supp(rows, "S26_optimality_pgls")
-
   if (nrow(rows) == 2 && rows$p_value[1] < 0.05 && rows$p_value[2] >= 0.05) {
     cat("\nThe trend does NOT survive phylogenetic correction. It reflects the\n")
     cat("pterodactyloid radiation, not evolution in performance, and must not be\n")
     cat("reported as a temporal trend.\n")
   }
+
+  # Show a fixed number of decimals so every row lines up (done AFTER the
+  # significance check above, which needs the real numeric p-values).
+  rows_display <- rows
+  rows_display$slope   <- format_fixed(rows$slope, 5)
+  rows_display$se      <- format_fixed(rows$se, 5)
+  rows_display$p_value <- format_fixed(rows$p_value, 4)
+  rows_display$lambda  <- format_fixed(rows$lambda, 3)
+  write_supp(rows_display, "S26_optimality_pgls")
 }
 cat("\n")

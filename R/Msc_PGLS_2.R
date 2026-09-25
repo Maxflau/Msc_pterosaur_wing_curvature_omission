@@ -133,7 +133,14 @@ res$verdict <- ifelse(is.na(res$pgls_p), "PGLS failed",
                              ifelse(res$ols_p < 0.05, "LOST after correction", "no trend either way")))
 
 cat("\n")
-print(res[, c("variable","n","transform","signal_lambda","ols_p","pgls_p",
+# Show a fixed number of decimals so every row lines up.
+res_display <- res
+res_display$signal_lambda <- format_fixed(res$signal_lambda, 3)
+res_display$ols_p         <- format_fixed(res$ols_p, 4)
+res_display$pgls_p        <- format_fixed(res$pgls_p, 4)
+res_display$pgls_lambda   <- format_fixed(res$pgls_lambda, 3)
+res_display$slope_ratio   <- format_fixed(res$slope_ratio, 2)
+print(res_display[, c("variable","n","transform","signal_lambda","ols_p","pgls_p",
               "pgls_lambda","slope_ratio","verdict")], row.names = FALSE)
 
 res$metric_set <- SET_NAME

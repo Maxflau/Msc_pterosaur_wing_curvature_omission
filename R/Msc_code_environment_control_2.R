@@ -101,8 +101,10 @@ results <- lapply(metrics, function(m) {
              lm_adjR2=summary(lm_fit)$adj.r.squared,
              lm_time_p=summary(lm_fit)$coefficients["dd$Midpoint","Pr(>|t|)"])
 }) %>% bind_rows() %>% mutate(across(where(is.numeric), ~round(.x, 4)))
-cat("\n=== Biomechanics vs environment / deposition / time ===\n"); print(results)
-write.csv(results, "output/results/biomech_env_time_tests.csv", row.names=FALSE)
+# Show a fixed number of decimals so every row lines up.
+results_display <- results %>% mutate(across(where(is.numeric), ~format_fixed(.x, 4)))
+cat("\n=== Biomechanics vs environment / deposition / time ===\n"); print(results_display)
+write.csv(results_display, "output/results/biomech_env_time_tests.csv", row.names=FALSE)
 
 # Plot each metric through time, coloured by habitat.
 trend_long <- dd %>% select(Midpoint, Environment, all_of(metrics)) %>%

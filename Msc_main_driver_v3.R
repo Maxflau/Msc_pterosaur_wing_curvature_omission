@@ -32,7 +32,7 @@ source("R/Msc_fig_prep_1.R");source("R/Msc_fig_prep_2.R")
 source("R/Msc_biomech_plot.R"); source("R/Msc_aBio_plot.R")
 # --- 6. Phylogenetic analyses ---
 source("R/Msc_phylo_v3.1.R"); source("R/Msc_phylo_v3.2.R"); source("R/Msc_phylo_v3.3.R");
-source("R/Msc_phylo_v3.4.R"); source("R/Msc_phylo_front_1.R")
+source("R/Msc_phylo_v3.4.R"); source("R/Msc_phylo_front_1.R"); source("R/Msc_phylo_signal_v3.R")
 # --- 7. Temporal (through-time) analyses ---
 source("R/Msc_temp_3.1.R"); source("R/Msc_temp_3.1.5.R"); source("R/Msc_temp_3.2.R");source("R/Msc_temp_3.3.R"); source("R/Msc_temp_3.4.R"); source("R/Msc_temp_3.4_5.R")
 # --- 8. Clade-level statistics and PCA ---

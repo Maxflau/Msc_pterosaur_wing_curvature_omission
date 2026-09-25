@@ -144,4 +144,7 @@ ggsave("output/plots_PDF/taphonomic_sensitivity_pc2_box_corrs.pdf", fig_box,
 ggsave("output/plots_PDF/taphonomic_sensitivity_heatmap.pdf", p4, width = 8, height = 5, dpi = 300)
 
 # --- Optional: summaries for report ------------------------------------------
-write.csv(hm, "output/results/supplementals/taphonomic_PC2_by_clade_prescat.csv", row.names = FALSE)
+# Show a fixed number of decimals so every row lines up.
+hm_display <- hm
+hm_display$mean_PC2 <- format_fixed(hm$mean_PC2, 3)
+write.csv(hm_display, "output/results/supplementals/taphonomic_PC2_by_clade_prescat.csv", row.names = FALSE)

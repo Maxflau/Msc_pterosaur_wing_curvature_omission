@@ -56,16 +56,65 @@ if (nrow(high) > 0) {
 # ── 4. Run the PCA and store the first two axes ───────────────────────────────
 pca_performance <- prcomp(performance_matrix_log, scale. = TRUE, center = TRUE)
 
-cat("Performance morphospace PCA:\n")
-print(summary(pca_performance)$importance[, 1:min(4, ncol(pca_performance$x))])
-cat("\n")
-
 performance_data_clean$PC1 <- pca_performance$x[, 1]
 performance_data_clean$PC2 <- pca_performance$x[, 2]
 
-cat("PC1 / PC2 loadings - report these so the axes are interpretable:\n")
-print(round(pca_performance$rotation[, 1:2], 3))
+# --------------------------------------------------------------------------------
+# TABLE 1: How much variance each PC axis explains, plus a running total.
+# --------------------------------------------------------------------------------
+pca_summary <- summary(pca_performance)
+
+variance_table <- data.frame(
+  Axis           = paste0("PC", seq_len(ncol(pca_performance$x))),
+  Eigenvalue     = pca_performance$sdev^2,
+  Variance_pct   = pca_summary$importance["Proportion of Variance", ] * 100,
+  Cumulative_pct = pca_summary$importance["Cumulative Proportion", ] * 100
+)
+
+cat("Variance explained by each PC axis:\n")
+variance_table_display <- variance_table
+variance_table_display$Eigenvalue     <- format_fixed(variance_table$Eigenvalue, 4)
+variance_table_display$Variance_pct   <- format_fixed(variance_table$Variance_pct, 2)
+variance_table_display$Cumulative_pct <- format_fixed(variance_table$Cumulative_pct, 2)
+print(variance_table_display, row.names = FALSE)
+
+cat(sprintf("\nFirst three axes collectively account for %s%% of total variance.\n",
+            format_fixed(variance_table$Cumulative_pct[min(3, nrow(variance_table))], 1)))
+
+dir.create("output/results/supplementals", showWarnings = FALSE, recursive = TRUE)
+write.csv(variance_table, "output/results/supplementals/performance_pca_variance_table.csv",
+          row.names = FALSE)
+
+# --------------------------------------------------------------------------------
+# TABLE 2: Loadings + structure correlations (r and r^2) with each PC.
+#
+# pca_performance$rotation gives the raw eigenvector loadings. Because the PCA
+# was run on SCALED (unit-variance) variables, the correlation of a variable
+# with a PC score is loading * sqrt(eigenvalue) - this is the "structure
+# coefficient" reported in most morphometrics papers, and its square (r^2) is
+# the proportion of that variable's variance captured by the axis.
+# --------------------------------------------------------------------------------
+n_axes_report <- 3   # how many PCs to tabulate; change as needed
+
+loadings_raw <- pca_performance$rotation[, seq_len(n_axes_report), drop = FALSE]
+eigenvalues  <- pca_performance$sdev[seq_len(n_axes_report)]^2
+
+structure_r  <- sweep(loadings_raw, 2, sqrt(eigenvalues), `*`)   # correlation (r)
+structure_r2 <- structure_r^2                                    # r^2
+
+loadings_table <- data.frame(Variable = rownames(loadings_raw))
+for (i in seq_len(n_axes_report)) {
+  loadings_table[[paste0("Loading_PC", i)]] <- format_fixed(loadings_raw[, i], 3)
+  loadings_table[[paste0("r_PC", i)]]        <- format_fixed(structure_r[, i], 3)
+  loadings_table[[paste0("r2_PC", i)]]       <- format_fixed(structure_r2[, i], 3)
+}
+
+cat("\nLoadings and structure correlations (r, r^2) per PC:\n")
+print(loadings_table, row.names = FALSE)
 cat("\n")
+
+write.csv(loadings_table, "output/results/supplementals/performance_pca_loadings_table.csv",
+          row.names = FALSE)
 
 cat("Correlation among log-transformed performance variables:\n")
 print(round(cor(performance_matrix_log), 2))

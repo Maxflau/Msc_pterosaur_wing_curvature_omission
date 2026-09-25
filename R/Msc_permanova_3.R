@@ -72,7 +72,13 @@ pca_perm_list <- lapply(names(perm_results_pca), function(g) {
   tidy_adonis2(perm_results_pca[[g]], g)
 })
 pca_perm_df <- do.call(rbind, pca_perm_list)
-write.csv(pca_perm_df,
+# Show a fixed number of decimals so every row lines up.
+pca_perm_display <- pca_perm_df
+pca_perm_display$SumOfSqs <- format_fixed(pca_perm_df$SumOfSqs, 4)
+pca_perm_display$R2       <- format_fixed(pca_perm_df$R2, 4)
+pca_perm_display$F        <- format_fixed(pca_perm_df$F, 3)
+pca_perm_display$p_value  <- format_fixed(pca_perm_df$p_value, 4)
+write.csv(pca_perm_display,
           file      = paste0(OUT, "03_permanova_pca.csv"),
           row.names = FALSE)
 cat("03 — PCA PERMANOVA CSV written.\n")
@@ -80,7 +86,12 @@ cat("03 — PCA PERMANOVA CSV written.\n")
 
 # --- 04  Full marginal model — PCA space -------------------------------------
 
-write.csv(tidy_adonis2(perm_full, "Full model (PCA)"),
+full_model_tbl <- tidy_adonis2(perm_full, "Full model (PCA)")
+full_model_tbl$SumOfSqs <- format_fixed(full_model_tbl$SumOfSqs, 4)
+full_model_tbl$R2       <- format_fixed(full_model_tbl$R2, 4)
+full_model_tbl$F        <- format_fixed(full_model_tbl$F, 3)
+full_model_tbl$p_value  <- format_fixed(full_model_tbl$p_value, 4)
+write.csv(full_model_tbl,
           file      = paste0(OUT, "04_permanova_pca_full_model.csv"),
           row.names = FALSE)
 cat("04 — PCA full model CSV written.\n")
@@ -92,7 +103,13 @@ set.seed(42)
 
 pca_disp_list <- lapply(GROUPS, function(g) tidy_betadisper(pca_dist, df[[g]], g))
 pca_disp_df <- do.call(rbind, pca_disp_list)
-write.csv(pca_disp_df,
+# Show a fixed number of decimals so every row lines up.
+pca_disp_display <- pca_disp_df
+pca_disp_display$SumSq   <- format_fixed(pca_disp_df$SumSq, 4)
+pca_disp_display$MeanSq  <- format_fixed(pca_disp_df$MeanSq, 4)
+pca_disp_display$F       <- format_fixed(pca_disp_df$F, 3)
+pca_disp_display$p_value <- format_fixed(pca_disp_df$p_value, 4)
+write.csv(pca_disp_display,
           file      = paste0(OUT, "07_betadisper_pca.csv"),
           row.names = FALSE)
 cat("07 — PCA betadisper CSV written.\n")
@@ -122,7 +139,13 @@ bio_disp_list <- lapply(bio_groups, function(g) {
 })
 bio_disp_df <- do.call(rbind, bio_disp_list)
 
-write.csv(bio_disp_df, file      = paste0(OUT, "08_betadisper_biomech.csv"), row.names = FALSE)
+# Show a fixed number of decimals so every row lines up.
+bio_disp_display <- bio_disp_df
+bio_disp_display$SumSq   <- format_fixed(bio_disp_df$SumSq, 4)
+bio_disp_display$MeanSq  <- format_fixed(bio_disp_df$MeanSq, 4)
+bio_disp_display$F       <- format_fixed(bio_disp_df$F, 3)
+bio_disp_display$p_value <- format_fixed(bio_disp_df$p_value, 4)
+write.csv(bio_disp_display, file = paste0(OUT, "08_betadisper_biomech.csv"), row.names = FALSE)
 cat("08 — Biomechanical betadisper CSV written.\n")
 
 
@@ -152,7 +175,13 @@ for (g in GROUPS) {
 }
 
 cat("\nKruskal-Wallis omnibus results:\n")
-print(kw_results, row.names = FALSE)
+# Show a fixed number of decimals so every row lines up.
+kw_results_display <- kw_results
+if (nrow(kw_results_display) > 0) {
+  kw_results_display$H       <- format_fixed(kw_results$H, 3)
+  kw_results_display$p_value <- format_fixed(kw_results$p_value, 4)
+}
+print(kw_results_display, row.names = FALSE)
 
-write.csv(kw_results, file      = paste0(OUT, "09_kruskal_wallis.csv"), row.names = FALSE)
+write.csv(kw_results_display, file = paste0(OUT, "09_kruskal_wallis.csv"), row.names = FALSE)
 cat("09 — Kruskal-Wallis CSV written.\n\n")

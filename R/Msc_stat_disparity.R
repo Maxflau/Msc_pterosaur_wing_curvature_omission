@@ -40,6 +40,13 @@ for (g in DISP_GROUPS) {
   disp <- disparity_by(performance_data_clean, g)
   cat(sprintf("Disparity by %s: %d groups with n >= %d\n",
               g, if (is.null(disp)) 0 else nrow(disp), MIN_N))
+  # Show a fixed number of decimals so every row lines up.
+  if (!is.null(disp)) {
+    for (col in c("mean_PC1", "mean_PC2", "var_PC1", "var_PC2",
+                  "sum_of_variance", "mean_pairwise_distance")) {
+      disp[[col]] <- format_fixed(disp[[col]], 4)
+    }
+  }
   write_supp(disp, paste0("S4_disparity_by_",
                           tolower(gsub("\\.", "_", g))))
 }

@@ -44,7 +44,15 @@ for (v in SIGNAL_VARS) {
 }
 
 cat("PHYLOGENETIC SIGNAL:\n")
-print(signal_results, row.names = FALSE)
+# Show a fixed number of decimals so every row lines up.
+signal_results_display <- signal_results
+if (nrow(signal_results_display) > 0) {
+  signal_results_display$lambda   <- format_fixed(signal_results$lambda, 3)
+  signal_results_display$lambda_p <- format_fixed(signal_results$lambda_p, 4)
+  signal_results_display$K        <- format_fixed(signal_results$K, 3)
+  signal_results_display$K_p      <- format_fixed(signal_results$K_p, 4)
+}
+print(signal_results_display, row.names = FALSE)
 cat("\nlambda near 1 with a significant p means related taxa resemble each other.\n")
 cat("K below 1 means evolution is more labile than Brownian motion, which is\n")
 cat("compatible with ecological convergence on a phylogenetically structured\n")

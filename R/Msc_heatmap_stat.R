@@ -73,7 +73,10 @@ for (pr in PAIRS) {
   long$std_residual <- round(as.vector(res), 3)
   long$over_represented <- long$std_residual > 2   # |z| > 2 is the usual flag
 
-  write_supp(long, paste0("S37_cooccurrence_", pair_name))
+  # Show a fixed number of decimals so every row lines up.
+  long_display <- long
+  long_display$std_residual <- format_fixed(long$std_residual, 3)
+  write_supp(long_display, paste0("S37_cooccurrence_", pair_name))
 
   # --- Figure ----------------------------------------------------------------
   p <- ggplot(long, aes(x = level_1, y = level_2, fill = std_residual)) +
@@ -109,9 +112,14 @@ if (length(test_rows) > 0) {
   tests <- tests[order(-tests$cramers_V), ]
 
   cat("\nASSOCIATION STRENGTH BETWEEN FACTORS:\n")
-  print(tests[, c("factor_1", "factor_2", "n", "cramers_V", "p_adjusted_BH",
+  # Show a fixed number of decimals so every row lines up.
+  tests_display <- tests
+  tests_display$cramers_V     <- format_fixed(tests$cramers_V, 4)
+  tests_display$fisher_p      <- format_fixed(tests$fisher_p, 4)
+  tests_display$p_adjusted_BH <- format_fixed(tests$p_adjusted_BH, 4)
+  print(tests_display[, c("factor_1", "factor_2", "n", "cramers_V", "p_adjusted_BH",
                   "strength")], row.names = FALSE)
-  write_supp(tests, "S38_cooccurrence_tests")
+  write_supp(tests_display, "S38_cooccurrence_tests")
 
   cat("\nStrong associations mean the two factors are confounded: any effect\n")
   cat("attributed to one may belong to the other. Watch in particular for\n")

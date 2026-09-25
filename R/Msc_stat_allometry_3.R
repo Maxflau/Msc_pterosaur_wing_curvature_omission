@@ -57,10 +57,15 @@ metric_allo$size_dependent <- !is.na(metric_allo$p_adjusted_BH) &
   metric_allo$p_adjusted_BH < 0.05
 
 cat("\nWing metrics against size:\n")
-print(metric_allo[, c("target", "predictor", "n", "slope", "r_squared",
+# Show a fixed number of decimals so every row lines up.
+metric_allo_display <- metric_allo
+metric_allo_display$slope         <- format_fixed(metric_allo$slope, 4)
+metric_allo_display$r_squared     <- format_fixed(metric_allo$r_squared, 4)
+metric_allo_display$p_adjusted_BH <- format_fixed(metric_allo$p_adjusted_BH, 4)
+print(metric_allo_display[, c("target", "predictor", "n", "slope", "r_squared",
                       "expected_slope", "p_adjusted_BH", "size_dependent")],
       row.names = FALSE)
-write_supp(metric_allo, "S14_metric_allometry")
+write_supp(metric_allo_display, "S14_metric_allometry")
 
 n_dep <- sum(metric_allo$size_dependent[metric_allo$expected_slope == 0], na.rm = TRUE)
 cat(sprintf("\n%d of the dimensionless metrics still scale with size.\n", n_dep))
@@ -102,9 +107,14 @@ if (!is.null(prop_res)) {
   prop_res <- prop_res[order(-prop_res$r_squared), ]
 
   cat("Strongest proportion-metric relationships:\n")
-  print(head(prop_res[, c("target", "proportion", "n", "slope", "r_squared",
+  # Show a fixed number of decimals so every row lines up.
+  prop_res_display <- prop_res
+  prop_res_display$slope         <- format_fixed(prop_res$slope, 4)
+  prop_res_display$r_squared     <- format_fixed(prop_res$r_squared, 4)
+  prop_res_display$p_adjusted_BH <- format_fixed(prop_res$p_adjusted_BH, 4)
+  print(head(prop_res_display[, c("target", "proportion", "n", "slope", "r_squared",
                           "p_adjusted_BH")], 12), row.names = FALSE)
-  write_supp(prop_res, "S15_metric_vs_proportions")
+  write_supp(prop_res_display, "S15_metric_vs_proportions")
 }
 
 cat("\nNOTE: independence is assumed throughout. With Pagel's lambda near 0.7,\n")

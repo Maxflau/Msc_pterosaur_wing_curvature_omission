@@ -48,6 +48,22 @@ library(patchwork)
 library(viridisLite)
 
 cat("✓ All libraries loaded\n\n")
+
 # Load the custom functions used to extract wing outlines
 source("R/MorphometricExtraction_Functions.r")
 source("R/MorphoFiles_Function.r")
+
+# --------------------------------------------------------------------------------
+# Shared helper: fixed-decimal number formatting for statistical tables.
+#
+# Plain round() drops trailing zeros (e.g. round(0.10, 3) prints as "0.1"),
+# so rows in the same table can show different numbers of decimals and are
+# harder to scan. format_fixed() always writes the requested number of
+# decimal places, and always keeps the leading zero for values below 1
+# (e.g. "0.100" instead of ".1"). Use it on the FINAL result table, right
+# before print() or write.csv() - never on numbers still used in further
+# calculations.
+# --------------------------------------------------------------------------------
+format_fixed <- function(x, digits = 3) {
+  ifelse(is.na(x), NA, formatC(as.numeric(x), format = "f", digits = digits, flag = "0"))
+}

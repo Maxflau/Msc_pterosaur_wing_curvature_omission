@@ -23,7 +23,7 @@ cat("NAs in PC1:", sum(is.na(df$PC1)),
 
 # --- 2. Summarise PC1 and PC2 within each grouping -------------------------------
 summarise_pcs <- function(data, group_var) {
-  data %>%
+  tbl <- data %>%
     group_by(across(all_of(group_var))) %>%
     summarise(
       N       = n(),
@@ -35,6 +35,10 @@ summarise_pcs <- function(data, group_var) {
       PC2_median = round(median(PC2),3),
       .groups = "drop"
     )
+  # Show a fixed number of decimals so every row lines up.
+  num_cols <- c("PC1_mean", "PC1_sd", "PC1_median", "PC2_mean", "PC2_sd", "PC2_median")
+  tbl[num_cols] <- lapply(tbl[num_cols], format_fixed, digits = 3)
+  tbl
 }
 
 cat("=== PC1 & PC2 SUMMARY BY CLADE ===\n")

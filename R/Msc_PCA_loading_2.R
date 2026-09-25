@@ -81,8 +81,15 @@ summarise_pcs <- function(data, g) {
 }
 for (g in GROUPS) {
   tbl <- summarise_pcs(df, g)
-  cat("\n--- PC summary:", g, "---\n"); print(tbl)
-  write.csv(tbl, paste0("output/results/supplementals/03_summary_pcs_", g, ".csv"), row.names = FALSE)
+  cat("\n--- PC summary:", g, "---\n")
+  # Show a fixed number of decimals so every row lines up.
+  tbl_display <- tbl
+  tbl_display$PC1_mean <- format_fixed(tbl$PC1_mean, 3)
+  tbl_display$PC1_sd   <- format_fixed(tbl$PC1_sd, 3)
+  tbl_display$PC2_mean <- format_fixed(tbl$PC2_mean, 3)
+  tbl_display$PC2_sd   <- format_fixed(tbl$PC2_sd, 3)
+  print(tbl_display)
+  write.csv(tbl_display, paste0("output/results/supplementals/03_summary_pcs_", g, ".csv"), row.names = FALSE)
 }
 
 # --- 5. PERMANOVA ON PC1 + PC2 -----------------------------------------------
@@ -100,8 +107,15 @@ perm_df <- do.call(rbind, perm_rows) %>%
   rename(p_value=`Pr(>F)`) %>%
   mutate(sig = case_when(p_value<0.001~"***", p_value<0.01~"**",
                          p_value<0.05~"*",   p_value<0.1~".", TRUE~""))
-cat("\n=== PERMANOVA (PC1+PC2) ===\n"); print(perm_df)
-write.csv(perm_df, "output/results/supplementals/04_permanova_pc1pc2.csv", row.names = FALSE)
+cat("\n=== PERMANOVA (PC1+PC2) ===\n")
+# Show a fixed number of decimals so every row lines up.
+perm_df_display <- perm_df
+perm_df_display$SumOfSqs <- format_fixed(perm_df$SumOfSqs, 4)
+perm_df_display$R2       <- format_fixed(perm_df$R2, 4)
+perm_df_display$F        <- format_fixed(perm_df$F, 3)
+perm_df_display$p_value  <- format_fixed(perm_df$p_value, 4)
+print(perm_df_display)
+write.csv(perm_df_display, "output/results/supplementals/04_permanova_pc1pc2.csv", row.names = FALSE)
 
 # --- 6. PAIRWISE PERMANOVA — BONFERRONI (clades & diet combo) ----------------
 set.seed(42)
@@ -118,8 +132,14 @@ for (g in c("clade","Diet_combined")) {
     mutate(sig = case_when(p_adj<0.001~"***", p_adj<0.01~"**",
                            p_adj<0.05~"*",   p_adj<0.1~".", TRUE~""))
   cat("\n--- Pairwise PERMANOVA:", g, "---\n")
-  print(as.data.frame(pw_df))
-  write.csv(as.data.frame(pw_df), paste0("output/results/supplementals/05_pairwise_permanova_", g, ".csv"), row.names=FALSE)
+  # Show a fixed number of decimals so every row lines up.
+  pw_df_display <- as.data.frame(pw_df)
+  pw_df_display$SumOfSqs <- format_fixed(pw_df$SumOfSqs, 4)
+  pw_df_display$R2       <- format_fixed(pw_df$R2, 4)
+  pw_df_display$F        <- format_fixed(pw_df$F, 3)
+  pw_df_display$p_adj    <- format_fixed(pw_df$p_adj, 4)
+  print(pw_df_display)
+  write.csv(pw_df_display, paste0("output/results/supplementals/05_pairwise_permanova_", g, ".csv"), row.names=FALSE)
 }
 
 # --- 7. HOMOGENEITY OF DISPERSION --------------------------------------------
@@ -132,6 +152,12 @@ disp_rows <- lapply(GROUPS, function(g) {
 disp_df <- do.call(rbind, disp_rows) %>%
   rename(p_value=`Pr(>F)`) %>%
   select(Factor, Term, Df, `Sum Sq`, `Mean Sq`, F, p_value)
-write.csv(disp_df, "output/results/supplementals/06_betadisper_pc1pc2.csv", row.names=FALSE)
+# Show a fixed number of decimals so every row lines up.
+disp_df_display <- disp_df
+disp_df_display$`Sum Sq`  <- format_fixed(disp_df$`Sum Sq`, 4)
+disp_df_display$`Mean Sq` <- format_fixed(disp_df$`Mean Sq`, 4)
+disp_df_display$F         <- format_fixed(disp_df$F, 3)
+disp_df_display$p_value   <- format_fixed(disp_df$p_value, 4)
+write.csv(disp_df_display, "output/results/supplementals/06_betadisper_pc1pc2.csv", row.names=FALSE)
 
 cat("\n=== All CSV files saved. Analysis complete. ===\n")

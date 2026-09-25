@@ -29,8 +29,13 @@ for (g in TEST_LEVELS) {
 
   cat(sprintf("Kruskal-Wallis by %s (%d metrics, %d significant after BH):\n",
               g, nrow(kw), sum(kw$significant, na.rm = TRUE)))
-  print(kw, row.names = FALSE)
-  write_supp(kw, paste0("S2_kruskal_wallis_by_", tolower(g)))
+  # Show a fixed number of decimals so every row lines up (e.g. "0.0500", not ".05").
+  kw_display <- kw
+  kw_display$chi_squared   <- format_fixed(kw$chi_squared, 4)
+  kw_display$p_value       <- format_fixed(kw$p_value, 4)
+  kw_display$p_adjusted_BH <- format_fixed(kw$p_adjusted_BH, 4)
+  print(kw_display, row.names = FALSE)
+  write_supp(kw_display, paste0("S2_kruskal_wallis_by_", tolower(g)))
   cat("\n")
 }
 
@@ -71,7 +76,12 @@ if (!requireNamespace("FSA", quietly = TRUE)) {
 
     cat(sprintf("Dunn pairwise by %s: %d groups, %d comparisons, %d significant\n",
                 g, length(keep_lv), nrow(pw), sum(pw$significant, na.rm = TRUE)))
-    write_supp(pw, paste0("S3_pairwise_dunn_by_", tolower(g)))
+    # Show a fixed number of decimals so every row lines up.
+    pw_display <- pw
+    pw_display$Z             <- format_fixed(pw$Z, 3)
+    pw_display$p_unadjusted  <- format_fixed(pw$p_unadjusted, 4)
+    pw_display$p_adjusted_BH <- format_fixed(pw$p_adjusted_BH, 4)
+    write_supp(pw_display, paste0("S3_pairwise_dunn_by_", tolower(g)))
   }
 }
 

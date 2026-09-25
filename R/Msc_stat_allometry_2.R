@@ -44,9 +44,16 @@ allo$allometry <- ifelse(allo$p_adjusted_BH >= 0.05, "isometric",
 allo <- allo[order(-allo$slope), ]
 
 cat("Element allometry against the geometric-mean skeletal size:\n")
-print(allo[, c("element", "n", "slope", "ci_lower", "ci_upper", "r_squared",
+# Show a fixed number of decimals so every row lines up.
+allo_display <- allo
+allo_display$slope         <- format_fixed(allo$slope, 4)
+allo_display$ci_lower      <- format_fixed(allo$ci_lower, 4)
+allo_display$ci_upper      <- format_fixed(allo$ci_upper, 4)
+allo_display$r_squared     <- format_fixed(allo$r_squared, 4)
+allo_display$p_adjusted_BH <- format_fixed(allo$p_adjusted_BH, 4)
+print(allo_display[, c("element", "n", "slope", "ci_lower", "ci_upper", "r_squared",
                "p_adjusted_BH", "allometry")], row.names = FALSE)
-write_supp(allo, "S12_skeletal_allometry")
+write_supp(allo_display, "S12_skeletal_allometry")
 
 cat("\nSlope 1 = the element keeps its proportion as the animal grows.\n")
 cat("Above 1 = it grows faster than the skeleton as a whole; below 1, slower.\n")
@@ -103,6 +110,12 @@ if ("clade" %in% colnames(POSTCRANIAL)) {
     by_clade$p_adjusted_BH <- signif(p.adjust(by_clade$p_vs_isometry, "BH"), 4)
     cat(sprintf("Within-clade allometry: %d clades with n >= %d\n",
                 length(unique(by_clade$clade)), MIN_FIT))
+    # Show a fixed number of decimals so every row lines up.
+    by_clade$slope         <- format_fixed(by_clade$slope, 4)
+    by_clade$ci_lower      <- format_fixed(by_clade$ci_lower, 4)
+    by_clade$ci_upper      <- format_fixed(by_clade$ci_upper, 4)
+    by_clade$r_squared     <- format_fixed(by_clade$r_squared, 4)
+    by_clade$p_adjusted_BH <- format_fixed(by_clade$p_adjusted_BH, 4)
     write_supp(by_clade, "S13_skeletal_allometry_by_clade")
   } else {
     cat("No clade reached n >=", MIN_FIT, "for within-clade allometry.\n")

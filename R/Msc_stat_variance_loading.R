@@ -42,6 +42,11 @@ for (f in intersect(c("clade", "Order"), FACTORS)) {
 
   cat(sprintf("Pairwise PERMANOVA by %s: %d comparisons, %d significant after BH\n",
               f, nrow(pw), sum(pw$significant)))
+  # Show a fixed number of decimals so every row lines up.
+  pw$R2             <- format_fixed(pw$R2, 4)
+  pw$F_value        <- format_fixed(pw$F_value, 3)
+  pw$p_value        <- format_fixed(pw$p_value, 4)
+  pw$p_adjusted_BH  <- format_fixed(pw$p_adjusted_BH, 4)
   write_supp(pw, paste0("S8_pairwise_permanova_by_", tolower(f)))
 }
 
@@ -71,11 +76,20 @@ if (exists("pca_performance")) {
     dominant_metric = dominant,
     stringsAsFactors = FALSE)
 
-  cat("\nPCA loadings:\n"); print(load_tab, row.names = FALSE)
-  cat("\nVariance explained:\n"); print(var_tab, row.names = FALSE)
+  cat("\nPCA loadings:\n")
+  load_tab_display <- load_tab
+  pc_cols <- setdiff(colnames(load_tab), "metric")
+  for (col in pc_cols) load_tab_display[[col]] <- format_fixed(load_tab[[col]], 4)
+  print(load_tab_display, row.names = FALSE)
 
-  write_supp(load_tab, "S9_pca_loadings")
-  write_supp(var_tab, "S10_pca_variance_explained")
+  cat("\nVariance explained:\n")
+  var_tab_display <- var_tab
+  var_tab_display$proportion_variance <- format_fixed(var_tab$proportion_variance, 4)
+  var_tab_display$cumulative_variance <- format_fixed(var_tab$cumulative_variance, 4)
+  print(var_tab_display, row.names = FALSE)
+
+  write_supp(load_tab_display, "S9_pca_loadings")
+  write_supp(var_tab_display, "S10_pca_variance_explained")
 } else {
   cat("\npca_performance not found - loading tables skipped.\n")
 }

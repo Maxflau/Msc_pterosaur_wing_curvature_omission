@@ -83,7 +83,13 @@ if (is.null(pgls_tab)) stop("No factor produced a usable procD.pgls fit.")
 
 pgls_tab$p_adjusted_BH <- signif(p.adjust(pgls_tab$p_value, "BH"), 4)
 pgls_tab$significant <- pgls_tab$p_adjusted_BH < 0.05
-write_supp(pgls_tab, "S6b_perf_procD_pgls")
+# Show a fixed number of decimals so every row lines up.
+pgls_tab_display <- pgls_tab
+pgls_tab_display$Rsq            <- format_fixed(pgls_tab$Rsq, 4)
+pgls_tab_display$F_value        <- format_fixed(pgls_tab$F_value, 3)
+pgls_tab_display$Z              <- format_fixed(pgls_tab$Z, 3)
+pgls_tab_display$p_adjusted_BH  <- format_fixed(pgls_tab$p_adjusted_BH, 4)
+write_supp(pgls_tab_display, "S6b_perf_procD_pgls")
 
 # --------------------------------------------------------------------------------
 # 3. Compare the corrected and uncorrected results side by side
@@ -107,8 +113,15 @@ if (!is.null(ols_tab)) {
   cmp <- cmp[order(-cmp$Rsq_pgls), ]
 
   cat("\nOLS versus PGLS on the performance matrix:\n")
-  print(cmp, row.names = FALSE)
-  write_supp(cmp, "S6c_perf_ols_vs_pgls")
+  # Show a fixed number of decimals so every row lines up.
+  cmp_display <- cmp
+  cmp_display$Rsq_pgls           <- format_fixed(cmp$Rsq_pgls, 4)
+  cmp_display$p_adjusted_BH_pgls <- format_fixed(cmp$p_adjusted_BH_pgls, 4)
+  cmp_display$Rsq_ols            <- format_fixed(cmp$Rsq_ols, 4)
+  cmp_display$p_adjusted_BH_ols  <- format_fixed(cmp$p_adjusted_BH_ols, 4)
+  cmp_display$Rsq_drop           <- format_fixed(cmp$Rsq_drop, 4)
+  print(cmp_display, row.names = FALSE)
+  write_supp(cmp_display, "S6c_perf_ols_vs_pgls")
 
   n_lost <- sum(cmp$verdict == "lost after correction - phylogenetic, not ecological")
   if (n_lost > 0) {

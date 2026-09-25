@@ -52,7 +52,11 @@ if ("on_front" %in% colnames(d)) {
     cat(sprintf("Logistic slope on completeness = %+.4f, p = %.4g\n\n",
                 cf[2, 1], cf[2, 4]))
 
-    write_supp(front_rows, "S39_preservation_predicts_front")
+    # Show a fixed number of decimals so every row lines up.
+    front_rows_display <- front_rows
+    front_rows_display$statistic <- format_fixed(front_rows$statistic, 4)
+    front_rows_display$p_value   <- format_fixed(front_rows$p_value, 4)
+    write_supp(front_rows_display, "S39_preservation_predicts_front")
   }
 }
 
@@ -103,7 +107,11 @@ if (!is.null(sens)) {
     print(fragile[, c("group", "metric", "p_full_sample", "p_well_preserved",
                       "verdict")], row.names = FALSE)
   }
-  write_supp(sens, "S40_subset_sensitivity")
+  # Show a fixed number of decimals so every row lines up.
+  sens_display <- sens
+  sens_display$p_full_sample    <- format_fixed(sens$p_full_sample, 4)
+  sens_display$p_well_preserved <- format_fixed(sens$p_well_preserved, 4)
+  write_supp(sens_display, "S40_subset_sensitivity")
 }
 
 # --------------------------------------------------------------------------------
@@ -140,7 +148,13 @@ if (!is.na(SIZE_REF)) {
   if (!is.null(pc_tab)) {
     pc_tab$artefact_suspected <- abs(pc_tab$change) > 0.1
     cat("\nCorrelation with", SIZE_REF, "before and after controlling for completeness:\n")
-    print(pc_tab, row.names = FALSE)
-    write_supp(pc_tab, "S41_partial_correlations")
+    # Show a fixed number of decimals so every row lines up.
+    pc_tab_display <- pc_tab
+    pc_tab_display$rho_raw     <- format_fixed(pc_tab$rho_raw, 4)
+    pc_tab_display$rho_partial <- format_fixed(pc_tab$rho_partial, 4)
+    pc_tab_display$p_partial   <- format_fixed(pc_tab$p_partial, 4)
+    pc_tab_display$change      <- format_fixed(pc_tab$change, 4)
+    print(pc_tab_display, row.names = FALSE)
+    write_supp(pc_tab_display, "S41_partial_correlations")
   }
 }

@@ -68,12 +68,22 @@ perm_tab$interpretation <- ifelse(
          "groups differ in location"))
 
 cat("\nPERMANOVA SUMMARY:\n")
-print(perm_tab[, c("factor", "n", "levels", "R2", "F_value",
+# Show a fixed number of decimals so every row lines up.
+perm_tab_display <- perm_tab
+perm_tab_display$R2             <- format_fixed(perm_tab$R2, 4)
+perm_tab_display$F_value        <- format_fixed(perm_tab$F_value, 3)
+perm_tab_display$p_adjusted_BH  <- format_fixed(perm_tab$p_adjusted_BH, 4)
+perm_tab_display$dispersion_p   <- format_fixed(perm_tab$dispersion_p, 4)
+print(perm_tab_display[, c("factor", "n", "levels", "R2", "F_value",
                    "p_adjusted_BH", "dispersion_p", "interpretation")],
       row.names = FALSE)
 
-write_supp(perm_tab, "S6_permanova_summary")
-write_supp(do.call(rbind, disp_rows), "S7_dispersion_by_group")
+disp_tab <- do.call(rbind, disp_rows)
+disp_tab$mean_distance_to_centroid <- format_fixed(disp_tab$mean_distance_to_centroid, 4)
+disp_tab$sd_distance                <- format_fixed(disp_tab$sd_distance, 4)
+
+write_supp(perm_tab_display, "S6_permanova_summary")
+write_supp(disp_tab, "S7_dispersion_by_group")
 
 cat("\nRead every clade result against the phylANOVA in Msc_phylo_signal_v3.R:\n")
 cat("clades are defined on the tree, so a significant clade effect is expected\n")

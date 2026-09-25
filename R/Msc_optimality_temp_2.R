@@ -70,9 +70,20 @@ for (gg in GROUPINGS) {
   opt <- tab[tab$metric == "pareto_rank_ratio", ]
   opt <- opt[order(-opt$observed), ]
   cat(sprintf("\nPareto rank ratio by %s (%d groups):\n", gg$col, nrow(opt)))
-  print(opt[, c(gg$col, "n", "observed", "boot_ci_lower", "boot_ci_upper")],
+  # Show a fixed number of decimals so every row lines up.
+  opt_display <- opt
+  opt_display$observed      <- format_fixed(opt$observed, 5)
+  opt_display$boot_ci_lower <- format_fixed(opt$boot_ci_lower, 5)
+  opt_display$boot_ci_upper <- format_fixed(opt$boot_ci_upper, 5)
+  print(opt_display[, c(gg$col, "n", "observed", "boot_ci_lower", "boot_ci_upper")],
         row.names = FALSE)
-  write_supp(tab, gg$file)
+
+  tab_display <- tab
+  tab_display$observed      <- format_fixed(tab$observed, 5)
+  tab_display$boot_ci_lower <- format_fixed(tab$boot_ci_lower, 5)
+  tab_display$boot_ci_upper <- format_fixed(tab$boot_ci_upper, 5)
+  tab_display$boot_sd       <- format_fixed(tab$boot_sd, 5)
+  write_supp(tab_display, gg$file)
 }
 
 # --------------------------------------------------------------------------------
@@ -103,8 +114,14 @@ if (all(c("PC1", "PC2") %in% colnames(d)) && "Time_Bin" %in% colnames(d)) {
     mpd_tab$Time_Bin <- factor(mpd_tab$Time_Bin, levels = levels(d$Time_Bin))
     mpd_tab <- mpd_tab[order(mpd_tab$Time_Bin), ]
     cat("\nTrue mean pairwise distance by time bin (performance PCs):\n")
-    print(mpd_tab, row.names = FALSE)
-    write_supp(mpd_tab, "S36_boot_true_MPD_by_time_bin")
+    # Show a fixed number of decimals so every row lines up.
+    mpd_tab_display <- mpd_tab
+    mpd_tab_display$observed_mpd  <- format_fixed(mpd_tab$observed_mpd, 5)
+    mpd_tab_display$boot_ci_lower <- format_fixed(mpd_tab$boot_ci_lower, 5)
+    mpd_tab_display$boot_ci_upper <- format_fixed(mpd_tab$boot_ci_upper, 5)
+    mpd_tab_display$boot_sd       <- format_fixed(mpd_tab$boot_sd, 5)
+    print(mpd_tab_display, row.names = FALSE)
+    write_supp(mpd_tab_display, "S36_boot_true_MPD_by_time_bin")
   }
 }
 
