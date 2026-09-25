@@ -101,6 +101,7 @@ tidy_perm <- function(res, factor_label) {
   tbl <- as.data.frame(res); tbl$Term <- rownames(tbl); tbl$Factor <- factor_label
   tbl <- tbl[!is.na(tbl$F), c("Factor","Term","Df","SumOfSqs","R2","F","Pr(>F)")]
   names(tbl)[names(tbl)=="Pr(>F)"] <- "p_value"
+  names(tbl)[names(tbl)=="R2"] <- "R²"
   tbl
 }
 

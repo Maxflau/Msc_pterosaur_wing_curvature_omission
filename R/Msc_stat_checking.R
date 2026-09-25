@@ -68,14 +68,14 @@ run_perf <- function(fac, phylogenetic) {
 cat("procD.pgls on the performance metrics (Brownian covariance):\n")
 pgls_tab <- do.call(rbind, lapply(FACTORS, function(f) {
   r <- run_perf(f, TRUE)
-  if (!is.null(r)) cat(sprintf("  %-42s Rsq=%.4f  p=%.4g\n", f, r$Rsq, r$p_value))
+  if (!is.null(r)) cat(sprintf("  %-42s R²=%.4f  p=%.4g\n", f, r$Rsq, r$p_value))
   r
 }))
 
 cat("\nprocD.lm, no phylogenetic correction, for contrast:\n")
 ols_tab <- do.call(rbind, lapply(FACTORS, function(f) {
   r <- run_perf(f, FALSE)
-  if (!is.null(r)) cat(sprintf("  %-42s Rsq=%.4f  p=%.4g\n", f, r$Rsq, r$p_value))
+  if (!is.null(r)) cat(sprintf("  %-42s R²=%.4f  p=%.4g\n", f, r$Rsq, r$p_value))
   r
 }))
 
@@ -89,6 +89,7 @@ pgls_tab_display$Rsq            <- format_fixed(pgls_tab$Rsq, 4)
 pgls_tab_display$F_value        <- format_fixed(pgls_tab$F_value, 3)
 pgls_tab_display$Z              <- format_fixed(pgls_tab$Z, 3)
 pgls_tab_display$p_adjusted_BH  <- format_fixed(pgls_tab$p_adjusted_BH, 4)
+names(pgls_tab_display)[names(pgls_tab_display) == "Rsq"] <- "R²"
 write_supp(pgls_tab_display, "S6b_perf_procD_pgls")
 
 # --------------------------------------------------------------------------------
@@ -120,6 +121,9 @@ if (!is.null(ols_tab)) {
   cmp_display$Rsq_ols            <- format_fixed(cmp$Rsq_ols, 4)
   cmp_display$p_adjusted_BH_ols  <- format_fixed(cmp$p_adjusted_BH_ols, 4)
   cmp_display$Rsq_drop           <- format_fixed(cmp$Rsq_drop, 4)
+  names(cmp_display)[names(cmp_display) == "Rsq_pgls"] <- "R²_pgls"
+  names(cmp_display)[names(cmp_display) == "Rsq_ols"]  <- "R²_ols"
+  names(cmp_display)[names(cmp_display) == "Rsq_drop"] <- "R²_drop"
   print(cmp_display, row.names = FALSE)
   write_supp(cmp_display, "S6c_perf_ols_vs_pgls")
 

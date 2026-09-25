@@ -47,6 +47,7 @@ for (f in intersect(c("clade", "Order"), FACTORS)) {
   pw$F_value        <- format_fixed(pw$F_value, 3)
   pw$p_value        <- format_fixed(pw$p_value, 4)
   pw$p_adjusted_BH  <- format_fixed(pw$p_adjusted_BH, 4)
+  names(pw)[names(pw) == "R2"] <- "R²"
   write_supp(pw, paste0("S8_pairwise_permanova_by_", tolower(f)))
 }
 

@@ -105,7 +105,8 @@ tidy_pairwise <- function(pw_obj, group_label) {
     rename(p_adj=`Pr(>F)`) %>%
     mutate(Group=group_label,
            sig=case_when(p_adj<0.001~"***",p_adj<0.01~"**",
-                         p_adj<0.05~"*",  p_adj<0.1~".",TRUE~""))
+                         p_adj<0.05~"*",  p_adj<0.1~".",TRUE~"")) %>%
+    rename(`R²`=R2)
 }
 
 avail_groups <- GROUPS[GROUPS %in% names(sp)]

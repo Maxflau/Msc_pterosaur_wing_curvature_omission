@@ -23,11 +23,12 @@ lm_results <- do.call(rbind, lapply(allo_preds, function(pred) {
     m <- lm(as.formula(paste(resp,"~",pred)), data=d)
     s <- summary(m)
     data.frame(Response=resp, Predictor=pred,
-               R2=round(s$r.squared,4),
-               Adj_R2=round(s$adj.r.squared,4),
+               `R²`=round(s$r.squared,4),
+               `Adj_R²`=round(s$adj.r.squared,4),
                F_stat=round(s$fstatistic[1],3),
                p_value=round(pf(s$fstatistic[1],s$fstatistic[2],
-                                s$fstatistic[3],lower.tail=FALSE),6))
+                                s$fstatistic[3],lower.tail=FALSE),6),
+               check.names = FALSE)
   }))
 }))
 save_csv(lm_results, "EFA_lm_biomech_predictors_shapePC")
@@ -44,7 +45,7 @@ for (resp in c("shapePC1","shapePC2")) {
   coef_df$term <- rownames(coef_df)
   coef_df$Response <- resp
   save_csv(coef_df, paste0("EFA_multiple_regression_", resp))
-  cat(sprintf("  Multiple regression %s: R2=%.3f, adj-R2=%.3f, F-p=%.4f\n",
+  cat(sprintf("  Multiple regression %s: R²=%.3f, adj-R²=%.3f, F-p=%.4f\n",
               resp, s$r.squared, s$adj.r.squared,
               pf(s$fstatistic[1],s$fstatistic[2],s$fstatistic[3],lower.tail=FALSE)))
 }
@@ -88,7 +89,7 @@ for (resp in c("shapePC1","shapePC2")) {
       geom_abline(slope=1, intercept=0, linetype="dashed", colour="grey40") +
       geom_smooth(method="lm", se=FALSE, colour="black", linetype="dotted") +
       labs(title=paste("RF predicted vs actual:", resp),
-           subtitle=paste0("R2 = ", r2),
+           subtitle=paste0("R² = ", r2),
            x=paste("Actual", resp), y=paste("Predicted", resp)) +
       theme_bw(base_size=12)
     save_plot(p_pva, paste0("EFA_rf_predicted_vs_actual_", resp), w=8, h=7)

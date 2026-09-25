@@ -79,7 +79,7 @@ if (length(FORE) >= 3 && length(HIND) >= 2) {
   cf <- summary(m)$coefficients
   p_iso <- 2 * pt(abs((cf[2, 1] - 1) / cf[2, 2]), df = sum(ok) - 2, lower.tail = FALSE)
 
-  cat(sprintf("Forelimb on hindlimb: slope = %.3f (SE %.3f), R2 = %.3f, n = %d\n",
+  cat(sprintf("Forelimb on hindlimb: slope = %.3f (SE %.3f), R² = %.3f, n = %d\n",
               cf[2, 1], cf[2, 2], summary(m)$r.squared, sum(ok)))
   cat(sprintf("Against isometry (slope 1): p = %.4g -> %s\n\n", p_iso,
               ifelse(p_iso >= 0.05, "isometric",

@@ -114,6 +114,7 @@ perm_df_display$SumOfSqs <- format_fixed(perm_df$SumOfSqs, 4)
 perm_df_display$R2       <- format_fixed(perm_df$R2, 4)
 perm_df_display$F        <- format_fixed(perm_df$F, 3)
 perm_df_display$p_value  <- format_fixed(perm_df$p_value, 4)
+names(perm_df_display)[names(perm_df_display) == "R2"] <- "R²"
 print(perm_df_display)
 write.csv(perm_df_display, "output/results/Supplemental_performance/04_permanova_pc1pc2.csv", row.names = FALSE)
 
@@ -138,6 +139,7 @@ for (g in c("clade","Diet_combined")) {
   pw_df_display$R2       <- format_fixed(pw_df$R2, 4)
   pw_df_display$F        <- format_fixed(pw_df$F, 3)
   pw_df_display$p_adj    <- format_fixed(pw_df$p_adj, 4)
+  names(pw_df_display)[names(pw_df_display) == "R2"] <- "R²"
   print(pw_df_display)
   write.csv(pw_df_display, paste0("output/results/Supplemental_performance/05_pairwise_permanova_", g, ".csv"), row.names=FALSE)
 }

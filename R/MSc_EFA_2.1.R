@@ -55,14 +55,17 @@ for (v in c("r2_hat", "pareto_rank_ratio")) {
   }
 }
 
-perm_csv <- read.csv("output/results/04_permanova_pc1pc2.csv",
-                     stringsAsFactors = FALSE)
+perm_csv <- read.csv("output/results/Supplemental_performance/04_permanova_pc1pc2.csv",
+                     stringsAsFactors = FALSE, check.names = FALSE)
 
 get_perm <- function(factor_name) {
   r <- perm_csv[perm_csv$Factor == factor_name, ]
   if (nrow(r) == 0) return(list(r2 = NA, f = NA, p = NA, sig = ""))
-  list(r2 = round(r$R2[1], 3), f = round(r$F[1], 1),
-       p = r$p_value[1], sig = r$sig[1])
+  # R2, F and p_value are already fixed-decimal text in the CSV (see
+  # Msc_PCA_loading_2.R), so they are used as-is for display; p is also
+  # parsed back to a number so it can still be compared against 0.05, 0.001.
+  list(r2 = r[["R\u00b2"]][1], f = r$F[1],
+       p = as.numeric(r$p_value[1]), sig = r$sig[1])
 }
 
 PERF_JOIN_COLS <- c("species","aspect_ratio","wing_loading","von_mises_stress",

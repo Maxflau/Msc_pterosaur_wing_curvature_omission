@@ -103,6 +103,7 @@ results <- lapply(metrics, function(m) {
 }) %>% bind_rows() %>% mutate(across(where(is.numeric), ~round(.x, 4)))
 # Show a fixed number of decimals so every row lines up.
 results_display <- results %>% mutate(across(where(is.numeric), ~format_fixed(.x, 4)))
+names(results_display)[names(results_display) == "lm_adjR2"] <- "lm_adj_R²"
 cat("\n=== Biomechanics vs environment / deposition / time ===\n"); print(results_display)
 write.csv(results_display, "output/results/Supplemental_performance/biomech_env_time_tests.csv", row.names=FALSE)
 

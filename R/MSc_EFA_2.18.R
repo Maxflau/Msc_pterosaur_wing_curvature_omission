@@ -8,8 +8,9 @@ if (nrow(time_summary) >= 4) {
     Test       = "Centroid_distance ~ mean_optimality (temporal)",
     rho        = round(cor_exp$estimate, 4),
     rho_p      = round(cor_exp$p.value, 5),
-    LM_R2      = round(summary(lm_exp)$r.squared, 4),
-    LM_p       = round(pf(summary(lm_exp)$fstatistic[1],summary(lm_exp)$fstatistic[2],summary(lm_exp)$fstatistic[3],lower.tail=FALSE), 5)
+    `LM_R²`      = round(summary(lm_exp)$r.squared, 4),
+    LM_p       = round(pf(summary(lm_exp)$fstatistic[1],summary(lm_exp)$fstatistic[2],summary(lm_exp)$fstatistic[3],lower.tail=FALSE), 5),
+    check.names = FALSE
   ) %>% mutate(sig=case_when(rho_p<0.001~"***",rho_p<0.01~"**",rho_p<0.05~"*",  rho_p<0.1~".",TRUE~""))
   save_csv(k3_results, "EFA_K3_morphospace_expansion_optimality")
   p_k3 <- ggplot(time_summary, aes(Midpoint, centroid_dist)) + geom_line(colour="#2980B9", linewidth=0.9) + geom_point(aes(fill=mean_opt, size=n_species), shape=21, colour="grey20", stroke=0.7) +

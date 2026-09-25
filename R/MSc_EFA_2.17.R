@@ -91,6 +91,8 @@ if (has_time && "pareto_rank_ratio" %in% names(sp)) {
                                                                                                                                                                                                    summary(lm_disp_all)$fstatistic[2], summary(lm_disp_all)$fstatistic[3],lower.tail=FALSE),5))
     ) %>% mutate(sig=case_when(p_value<0.001~"***",p_value<0.01~"**",
                                p_value<0.05~"*",  p_value<0.1~".",TRUE~""))
+    names(k2_results)[names(k2_results) == "R2"]     <- "R\u00b2"
+    names(k2_results)[names(k2_results) == "Adj_R2"] <- "Adj_R\u00b2"
     save_csv(k2_results, "EFA_K2_disparity_regression_models")
     cat("  K2 results:\n"); print(k2_results)
     # Plot
@@ -98,7 +100,7 @@ if (has_time && "pareto_rank_ratio" %in% names(sp)) {
       geom_smooth(method="lm", se=TRUE, colour="#2980B9", fill="#AED6F1",
                   linewidth=1, alpha=0.3) +
       geom_point(aes(size=n_species, fill=Midpoint), shape=21, colour="grey20", stroke=0.7) + geom_text_repel(size=3, colour="grey30", max.overlaps=20) + scale_fill_viridis(name="Midpoint (Ma)", direction=-1) + scale_size_continuous(name="N species", range=c(3,10)) + annotate("text", x=Inf, y=Inf,
-                                                                                                                                                                                                                                                                                     label=sprintf("R2=%.3f  p=%s%.4g",summary(lm_disp_opt)$r.squared,ifelse(summary(lm_disp_opt)$coefficients[2,4]<0.001,"<","="), max(summary(lm_disp_opt)$coefficients[2,4],0.0001)),
+                                                                                                                                                                                                                                                                                     label=sprintf("R²=%.3f  p=%s%.4g",summary(lm_disp_opt)$r.squared,ifelse(summary(lm_disp_opt)$coefficients[2,4]<0.001,"<","="), max(summary(lm_disp_opt)$coefficients[2,4],0.0001)),
                                                                                                                                                                                                                                                                                      hjust=1.05, vjust=1.5, size=3.5, family="mono") + labs(title="Morphospace disparity ~ mean Pareto optimality through time", subtitle="Each point = one geological time bin | size = species richness", x="Mean Pareto optimality", y="Disparity (sum of variances, shapePC1+PC2)") +
       theme_bw(base_size=12) +
       theme(plot.title=element_text(face="bold"))

@@ -78,6 +78,7 @@ pca_perm_display$SumOfSqs <- format_fixed(pca_perm_df$SumOfSqs, 4)
 pca_perm_display$R2       <- format_fixed(pca_perm_df$R2, 4)
 pca_perm_display$F        <- format_fixed(pca_perm_df$F, 3)
 pca_perm_display$p_value  <- format_fixed(pca_perm_df$p_value, 4)
+names(pca_perm_display)[names(pca_perm_display) == "R2"] <- "R²"
 write.csv(pca_perm_display,
           file      = paste0(OUT, "03_permanova_pca.csv"),
           row.names = FALSE)
@@ -91,6 +92,7 @@ full_model_tbl$SumOfSqs <- format_fixed(full_model_tbl$SumOfSqs, 4)
 full_model_tbl$R2       <- format_fixed(full_model_tbl$R2, 4)
 full_model_tbl$F        <- format_fixed(full_model_tbl$F, 3)
 full_model_tbl$p_value  <- format_fixed(full_model_tbl$p_value, 4)
+names(full_model_tbl)[names(full_model_tbl) == "R2"] <- "R²"
 write.csv(full_model_tbl,
           file      = paste0(OUT, "04_permanova_pca_full_model.csv"),
           row.names = FALSE)

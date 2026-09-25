@@ -21,8 +21,8 @@ for (dname in names(dist_list)) {
     if (!is.null(res)) {
       row <- tidy_perm(res, g); row$Matrix <- dname
       all_perm_rows[[paste(dname, g)]] <- row
-      cat(sprintf("    %s: R2=%.3f F=%.1f p=%s\n",
-                  g, row$R2[1], row$F[1],
+      cat(sprintf("    %s: R\u00b2=%.3f F=%.1f p=%s\n",
+                  g, row[["R\u00b2"]][1], row$F[1],
                   ifelse(row$p_value[1]<0.001,"<0.001",round(row$p_value[1],3))))
     }
   }

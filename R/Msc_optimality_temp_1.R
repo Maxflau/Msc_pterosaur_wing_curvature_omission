@@ -72,7 +72,7 @@ if ("clade" %in% colnames(d)) {
 if ("Midpoint" %in% colnames(d)) {
   ols <- lm(pareto_rank_ratio ~ Midpoint, data = d)
   o <- summary(ols)$coefficients
-  cat(sprintf("\nOLS   : slope = %+.5f, p = %.4g, R2 = %.3f\n",
+  cat(sprintf("\nOLS   : slope = %+.5f, p = %.4g, R² = %.3f\n",
               o[2, 1], o[2, 4], summary(ols)$r.squared))
 
   rows <- data.frame(model = "OLS", n = nrow(d), slope = round(o[2, 1], 5),

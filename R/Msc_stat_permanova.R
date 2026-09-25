@@ -50,7 +50,7 @@ for (f in FACTORS) {
     sd_distance = round(as.numeric(tapply(bd$distances, g, sd)), 4),
     stringsAsFactors = FALSE)
 
-  cat(sprintf("%-42s R2=%.3f  p=%.4g  | dispersion p=%.4g\n",
+  cat(sprintf("%-42s R²=%.3f  p=%.4g  | dispersion p=%.4g\n",
               f, ad$R2[1], ad$`Pr(>F)`[1], bp$tab$`Pr(>F)`[1]))
 }
 
@@ -74,7 +74,8 @@ perm_tab_display$R2             <- format_fixed(perm_tab$R2, 4)
 perm_tab_display$F_value        <- format_fixed(perm_tab$F_value, 3)
 perm_tab_display$p_adjusted_BH  <- format_fixed(perm_tab$p_adjusted_BH, 4)
 perm_tab_display$dispersion_p   <- format_fixed(perm_tab$dispersion_p, 4)
-print(perm_tab_display[, c("factor", "n", "levels", "R2", "F_value",
+names(perm_tab_display)[names(perm_tab_display) == "R2"] <- "R²"
+print(perm_tab_display[, c("factor", "n", "levels", "R²", "F_value",
                    "p_adjusted_BH", "dispersion_p", "interpretation")],
       row.names = FALSE)
 

@@ -31,7 +31,7 @@ get_labels <- function(df, n_per_clade = 2) {
 }
 
 perm_text <- function(pv) {
-  sprintf("PERMANOVA: R2 = %s | F = %s | p %s %s", pv$r2, pv$f,
+  sprintf("PERMANOVA: R\u00b2 = %s | F = %s | p %s %s", pv$r2, pv$f,
           ifelse(pv$p < 0.001, "<", "="),
           ifelse(pv$p < 0.001, "0.001", sprintf("%.4f", pv$p)))
 }
