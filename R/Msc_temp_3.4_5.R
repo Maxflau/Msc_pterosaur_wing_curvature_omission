@@ -84,4 +84,4 @@ p_disp <- ggplot(disp_long, aes(x = Time_Bin, y = mean, group = 1)) +
 
 save_fig(p_disp, "TEMPORAL_03_disparity_optimality", nlevels(disp_long$label), ncol = 2)
 
-cat("\nBefore interpreting any trend, check the PGLS in Msc_phylo_signal_v3.R:\n")
+cat("\nBefore interpreting any trend, check the PGLS in Msc_PGLS_2.R:\n")

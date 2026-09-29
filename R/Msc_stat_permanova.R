@@ -86,6 +86,6 @@ disp_tab$sd_distance                <- format_fixed(disp_tab$sd_distance, 4)
 write_supp(perm_tab_display, "S6_permanova_summary")
 write_supp(disp_tab, "S7_dispersion_by_group")
 
-cat("\nRead every clade result against the phylANOVA in Msc_phylo_signal_v3.R:\n")
+cat("\nRead every clade result against the phylogenetic signal in Msc_phylo_v3.2.R:\n")
 cat("clades are defined on the tree, so a significant clade effect is expected\n")
 cat("regardless of function.\n\n")
