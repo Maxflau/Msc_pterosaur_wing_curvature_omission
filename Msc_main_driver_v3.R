@@ -60,6 +60,7 @@ source("R/MSc_EFA_2.11.R"); source("R/MSc_EFA_2.12.R")
 source("R/MSc_EFA_2.13.R"); source("R/MSc_EFA_2.14.R")
 source("R/MSc_EFA_2.15.R"); source("R/MSc_EFA_2.16.R")
 source("R/MSc_EFA_2.17.R"); source("R/MSc_EFA_2.18.R")
+source("R/MSc_EFA_2.19.R")
 # --- 12. Final results (morphospace, wing classification, PGLS) ---
 source("R/Msc_stacked_morphospace.R")
 source("R/Msc_wing_classification.R")
