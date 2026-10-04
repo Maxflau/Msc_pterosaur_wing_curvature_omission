@@ -8,13 +8,7 @@ metrics <- list(
        clade_col=TRUE,  transp=FALSE, dark_bg=FALSE),
   list(col="von_mises_stress",  label="Von Mises stress\n(log10)",
        log=TRUE,  pal="magma",   rev=FALSE, brk=NULL,
-       clade_col=TRUE,  transp=TRUE,  dark_bg=TRUE),
-  list(col="wing_curvature",    label="Wing curvature",
-       log=FALSE, pal="cividis", rev=TRUE,  brk=NULL,
-       clade_col=FALSE, transp=FALSE, dark_bg=FALSE),
-  list(col="pareto_rank_ratio", label="Pareto rank ratio",
-       log=FALSE, pal="Greens",  rev=FALSE, brk=NULL,
-       clade_col=FALSE, transp=FALSE, dark_bg=FALSE))
+       clade_col=TRUE,  transp=TRUE,  dark_bg=TRUE))
 
 # ── 7. PRODUCE FIGURES — one plot per data type, pipeline naming ──────────────
 # Save each finished figure in both PDF and PNG form.
@@ -34,8 +28,7 @@ save_plot <- function(p, name, w=11, h=8.5) {
 # Draw one morphospace map for each main biomechanical measure.
 # WAR (1A) and 2MA (1B): clade border + metric fill
 # SVM (1C): dark navy bg + transparent points + clade borders
-# Others (1D-1E): black hulls, grey point border
-metric_labels <- c("1A","1B","1C","1D","1E")
+metric_labels <- c("1A","1B","1C")
 
 for (i in seq_along(metrics)) {
   m    <- metrics[[i]]

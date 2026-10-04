@@ -3,6 +3,10 @@ if (!exists("phylo_sp") || !exists("make_phylo_v4")) {
   stop("phylo_sp / make_phylo_v4() not found - source Msc_EFA_2_6a.R first.")
 }
 
+# This script writes to Supplemental_EFA before Msc_efa_08_permanova_shape.R
+# (which normally creates it) has run, so the folder must be made here too.
+dir.create("output/results/Supplemental_EFA", showWarnings=FALSE, recursive=TRUE)
+
 violin_df <- phylo_sp %>%
   mutate(grade = case_when(
     clade %in% PTERODACT    ~ "Pterodactyliformes",
