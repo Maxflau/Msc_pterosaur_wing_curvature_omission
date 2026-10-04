@@ -82,13 +82,13 @@ if ("Palaeoenvironment" %in% names(sp) && "Depositional" %in% names(sp)) {
 
 # =============================================================================
 # SECTION G — CURVATURE DISTRIBUTION ANALYSIS (Msc_curvature_distri.R)
-# Wing curvature presence vs shapePC1/PC2 positions
+# Trailing edge presence vs shapePC1/PC2 positions
 # =============================================================================
 # Compare specimens with and without measured wing curvature.
 cat("\n── Section G: Curvature distribution ──\n")
 
-if ("wing_curvature" %in% names(sp)) {
-  sp$has_curvature <- !is.na(sp$wing_curvature) & sp$wing_curvature > 0
+if ("trailing_edge" %in% names(sp)) {
+  sp$has_curvature <- !is.na(sp$trailing_edge) & sp$trailing_edge > 0
 
   curv_summary <- sp %>%
     group_by(has_curvature) %>%

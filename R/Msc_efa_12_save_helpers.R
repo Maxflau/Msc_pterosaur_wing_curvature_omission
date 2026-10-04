@@ -18,7 +18,7 @@ efa_lab1 <- if (exists("lab1")) lab1 else "EFA PC1"
 efa_lab2 <- if (exists("lab2")) lab2 else "EFA PC2"
 
 BIO_VARS <- c("aspect_ratio","r2_hat","wing_loading",
-              "von_mises_stress","wing_curvature","shape_complexity")
+              "von_mises_stress","trailing_edge","shape_complexity")
 GROUPS   <- c("clade","Depositional","Palaeoenvironment",
               "Diet_primary","Diet_secondary","Diet_combo")
 

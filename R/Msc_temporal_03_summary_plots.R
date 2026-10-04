@@ -7,7 +7,7 @@ if (!exists("VAR_LABELS")) VAR_LABELS <- c(
   r2_hat            = "Second moment of area (r2-hat)",
   von_mises_stress  = "Von Mises stress (scale-invariant)",
   stress_index      = "Bending stress index (beam)",
-  wing_curvature    = "Wing curvature (camber)",
+  trailing_edge    = "Trailing edge (camber)",
   shape_complexity  = "Shape complexity",
   pareto_score_aspect_ratio     = "Pareto score - Aspect ratio",
   pareto_score_r2_hat           = "Pareto score - Second moment of area",

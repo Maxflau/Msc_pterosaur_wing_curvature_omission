@@ -84,7 +84,7 @@ calculate_aspect_ratio <- function(outline_coords) {
 # 4. Scale-invariant shape descriptors
 # --------------------------------------------------------------------------------
 
-calculate_wing_curvature <- function(outline_coords) {
+calculate_trailing_edge <- function(outline_coords) {
   le <- which.max(outline_coords$x)
   te <- which.min(outline_coords$x)
 

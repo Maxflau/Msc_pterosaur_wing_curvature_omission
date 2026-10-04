@@ -9,7 +9,7 @@ if (!exists("METRICS")) stop("Source Msc_stats_00_setup.R first.")
 
 LABELS <- c(aspect_ratio = "Aspect ratio", r2_hat = "Second moment of area",
             stress_root = "Root bending stress index",
-            wing_curvature = "Wing curvature", shape_complexity = "Shape complexity",
+            trailing_edge = "Trailing edge", shape_complexity = "Shape complexity",
             wing_loading = "Wing loading (N/m2)",
             pareto_rank_ratio = "Pareto rank ratio")
 

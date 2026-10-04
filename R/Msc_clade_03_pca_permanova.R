@@ -19,7 +19,7 @@ if (!"Diet_combined" %in% names(df) && all(c("Diet_primary", "Diet_secondary") %
 # in the multivariate PCA itself since Msc_impossible_regions_v3.R).
 # Choose the biomechanical columns and group columns used below.
 BIO_VARS <- c("aspect_ratio","r2_hat","wing_loading_ratio",
-              "von_mises_stress","wing_curvature","shape_complexity")
+              "von_mises_stress","trailing_edge","shape_complexity")
 GROUPS   <- c("clade","Depositional","Palaeoenvironment",
               "Diet_primary","Diet_secondary","Diet_combined")
 

@@ -155,7 +155,7 @@ cat("08 — Biomechanical betadisper CSV written.\n")
 # 09. Kruskal-Wallis tests, univariate, per metric x group.
 # --------------------------------------------------------------------------------
 KW_METRICS <- intersect(c("aspect_ratio", "r2_hat", "von_mises_stress",
-                          "wing_loading_ratio", "wing_curvature", "shape_complexity",
+                          "wing_loading_ratio", "trailing_edge", "shape_complexity",
                           "reynolds", "PC1", "PC2"), colnames(df))
 cat("\nKruskal-Wallis metrics:", paste(KW_METRICS, collapse = ", "), "\n\n")
 

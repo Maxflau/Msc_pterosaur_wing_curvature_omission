@@ -69,7 +69,7 @@ get_perm <- function(factor_name) {
 }
 
 PERF_JOIN_COLS <- c("species","aspect_ratio","wing_loading","von_mises_stress",
-                    "wing_curvature","shape_complexity","r2_hat",
+                    "trailing_edge","shape_complexity","r2_hat",
                     "pareto_rank_ratio","on_front","strategy",
                     "PC1","PC2","clade","Order","Diet.1","Diet.2",
                     "Environment","Depositional.settings.paleoenvironment",
@@ -140,7 +140,7 @@ if (!exists("shape_dist")) {
 
 if (!exists("bio_dist")) {
   BIO_FOR_DIST <- intersect(c("aspect_ratio", "r2_hat", "wing_loading",
-                              "von_mises_stress", "wing_curvature", "shape_complexity"),
+                              "von_mises_stress", "trailing_edge", "shape_complexity"),
                             names(shape_perf))
   M <- as.matrix(shape_perf[, BIO_FOR_DIST])
 

@@ -8,7 +8,7 @@ METRIC_LABELS <- c(
   r2_hat            = "Second moment\nof area",
   aspect_ratio      = "Aspect ratio",
   wing_loading_ratio      = "Wing loading\n(N/m\u00b2)",
-  wing_curvature    = "Wing curvature",
+  trailing_edge    = "Trailing edge",
   shape_complexity  = "Shape complexity",
   pareto_rank_ratio = "Pareto\nrank ratio")
 

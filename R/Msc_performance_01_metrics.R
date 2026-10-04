@@ -26,7 +26,7 @@ for (i in seq_along(outlines_list)) {
       # been removed entirely - no fallback, no diagnostic comparison.
       von_mises_stress = calculate_von_mises_stress(outline, MASS_KG, WSPAN_CM),
 
-      wing_curvature   = calculate_wing_curvature(outline),
+      trailing_edge   = calculate_trailing_edge(outline),
       shape_complexity = calculate_shape_complexity(outline),
       aspect_ratio_outline = calculate_aspect_ratio(outline),
       second_moment_DIAGNOSTIC = calculate_second_moment_DIAGNOSTIC(outline),

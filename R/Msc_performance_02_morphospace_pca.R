@@ -6,7 +6,7 @@ cat("===========================================================================
 ################################################################################################
 # Pick the measurements used to build the morphospace
 ################################################################################################
-CORE_VARS <- c("aspect_ratio", "r2_hat","von_mises_stress", "wing_curvature", "shape_complexity",
+CORE_VARS <- c("aspect_ratio", "r2_hat","von_mises_stress", "trailing_edge", "shape_complexity",
                "wing_loading_ratio")
 
 missing_vars <- setdiff(CORE_VARS, colnames(performance_data))
@@ -14,7 +14,7 @@ if (length(missing_vars) > 0) {
   stop("Missing performance columns: ", paste(missing_vars, collapse = ", "),
        "\n  Present: ", paste(intersect(
          c("aspect_ratio","r2_hat","von_mises_stress","wing_loading_ratio",
-           "wing_curvature","shape_complexity"),
+           "trailing_edge","shape_complexity"),
          colnames(performance_data)), collapse = ", "),
        "\n  Run Msc_performance_metrics_v3.R first.")
 }

@@ -32,7 +32,7 @@ boot_mean <- function(x, n_boot = N_BOOT) {
 # The raw metrics replace the deleted per-objective Pareto sub-scores: they are
 # what those sub-scores were derived from, on an interpretable scale.
 TRACK <- intersect(c("pareto_rank_ratio", "aspect_ratio", "r2_hat", "von_mises_stress",
-                     "wing_curvature", "shape_complexity", "wing_loading"),
+                     "trailing_edge", "shape_complexity", "wing_loading"),
                    colnames(d))
 
 boot_by_group <- function(group_col) {

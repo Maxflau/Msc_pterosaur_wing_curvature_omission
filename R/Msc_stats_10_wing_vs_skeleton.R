@@ -5,14 +5,14 @@ if (!exists("POSTCRANIAL")) stop("Source Msc_stats_06a_postcranial.R first.")
 
 MIN_FIT <- 10
 
-TARGETS <- intersect(c("aspect_ratio", "r2_hat", "von_mises_stress", "wing_curvature",
+TARGETS <- intersect(c("aspect_ratio", "r2_hat", "von_mises_stress", "trailing_edge",
                        "shape_complexity", "froude"),
                      colnames(POSTCRANIAL))
 
 # Dimensionless ratios should not scale with size: expected slope 0.
 # Wing loading is force per area and is expected to rise with size.
 EXPECTED <- c(aspect_ratio = 0, r2_hat = 0, von_mises_stress = 0,
-              wing_curvature = 0, shape_complexity = 0, froude = NA)
+              trailing_edge = 0, shape_complexity = 0, froude = NA)
 
 cat("Targets:", paste(TARGETS, collapse = ", "), "\n\n")
 

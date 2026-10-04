@@ -33,7 +33,7 @@ if (!all(CORE %in% names(performance_data_clean))) {
 }
 SET_NAME <- "von_mises_stress"
 
-VARS <- intersect(c(CORE, "wing_curvature","shape_complexity", "pareto_rank_ratio",
+VARS <- intersect(c(CORE, "trailing_edge","shape_complexity", "pareto_rank_ratio",
                     "optimality_mean", "optimality_geom", "PC1", "PC2"),
                   colnames(performance_data_clean))
 cat("Metric set:", SET_NAME, "\nVariables:", paste(VARS, collapse = ", "), "\n")

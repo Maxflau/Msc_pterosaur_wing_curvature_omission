@@ -16,8 +16,8 @@ summary_by_clade <- performance_data_clean %>%
     sd_WL_ratio = sd(wing_loading_ratio, na.rm = TRUE),
     mean_stress = mean(von_mises_stress, na.rm = TRUE),
     sd_stress = sd(von_mises_stress, na.rm = TRUE),
-    mean_curvature = mean(wing_curvature, na.rm = TRUE),
-    sd_curvature = sd(wing_curvature, na.rm = TRUE),
+    mean_curvature = mean(trailing_edge, na.rm = TRUE),
+    sd_curvature = sd(trailing_edge, na.rm = TRUE),
     mean_complexity = mean(shape_complexity, na.rm = TRUE),
     sd_complexity = sd(shape_complexity, na.rm = TRUE)
     # Add more measurements here only if later scripts also use them.
@@ -40,8 +40,8 @@ summary_by_order <- performance_data_clean %>%
     sd_WL_ratio = sd(wing_loading_ratio, na.rm = TRUE),
     mean_stress = mean(von_mises_stress, na.rm = TRUE),
     sd_stress = sd(von_mises_stress, na.rm = TRUE),
-    mean_curvature = mean(wing_curvature, na.rm = TRUE),
-    sd_curvature = sd(wing_curvature, na.rm = TRUE),
+    mean_curvature = mean(trailing_edge, na.rm = TRUE),
+    sd_curvature = sd(trailing_edge, na.rm = TRUE),
     mean_complexity = mean(shape_complexity, na.rm = TRUE),
     sd_complexity = sd(shape_complexity, na.rm = TRUE)
   )

@@ -8,13 +8,13 @@ for (d in c("output/plots", "output/plots_PDF")) {
 VIOLIN_LEVELS <- intersect(c("clade", "Order", "Diet_combined", "Diet.1"),
                            colnames(performance_data_clean))
 VIOLIN_METRICS <- intersect(c("aspect_ratio", "r2_hat", "stress_root",
-                              "wing_curvature", "shape_complexity",
+                              "trailing_edge", "shape_complexity",
                               "wing_loading", "pareto_rank_ratio"),
                             colnames(performance_data_clean))
 
 METRIC_LABELS <- c(aspect_ratio = "Aspect ratio", r2_hat = "Second moment of area",
                    stress_root = "Root bending stress index",
-                   wing_curvature = "Wing curvature", shape_complexity = "Shape complexity",
+                   trailing_edge = "Trailing edge", shape_complexity = "Shape complexity",
                    wing_loading = "Wing loading (N/m2)",
                    pareto_rank_ratio = "Pareto rank ratio")
 

@@ -31,7 +31,7 @@ p_violin <- ggplot(violin_df, aes(grade, pareto_rank_ratio, fill=grade)) +
        x="", y="Pareto Optimality") +
   theme_classic(base_size=12) + theme(plot.title=element_text(face="bold"))
 
-traits_K <- c("aspect_ratio","r2_hat","wing_loading","von_mises_stress","wing_curvature","shape_complexity")
+traits_K <- c("aspect_ratio","r2_hat","wing_loading","von_mises_stress","trailing_edge","shape_complexity")
 # Measure phylogenetic signal for the main traits and save the table.
 k_results <- lapply(traits_K, function(tr) {
   vals <- setNames(phylo_sp[[tr]], phylo_sp$tip)

@@ -66,7 +66,7 @@ if (!"von_mises_stress" %in% colnames(performance_data_clean)) {
 
 # The scale-invariant set. second_moment is deliberately absent; keep it out
 # of every downstream test.
-METRICS <- intersect(c("aspect_ratio", "r2_hat", "von_mises_stress", "wing_curvature",
+METRICS <- intersect(c("aspect_ratio", "r2_hat", "von_mises_stress", "trailing_edge",
  "shape_complexity", "wing_loading_ratio", "pareto_rank_ratio"),colnames(performance_data_clean))
 
 #################################################################################

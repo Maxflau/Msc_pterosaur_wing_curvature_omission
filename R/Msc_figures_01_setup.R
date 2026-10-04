@@ -66,7 +66,7 @@ stopifnot(is.character(BACKGROUND_VAR), length(BACKGROUND_VAR) == 1)
 if (!BACKGROUND_VAR %in% colnames(performance_data_clean)) {
   stop("BACKGROUND_VAR '", BACKGROUND_VAR, "' not in performance_data_clean. ",
        "Available: ", paste(intersect(c("von_mises_stress","r2_hat","aspect_ratio",
-                                        "wing_loading", "wing_curvature","shape_complexity","pareto_rank_ratio"),
+                                        "wing_loading", "trailing_edge","shape_complexity","pareto_rank_ratio"),
                                       colnames(performance_data_clean)), collapse = ", "))
 }
 
@@ -74,7 +74,7 @@ BACKGROUND_LABELS <- c(
   von_mises_stress  = "Von Mises stress\n(scale-invariant)",
   r2_hat            = "Second moment\nof area",
   aspect_ratio      = "Aspect ratio",
-  wing_curvature    = "Wing curvature",
+  trailing_edge    = "Trailing edge",
   shape_complexity  = "Shape complexity",
   wing_loading      = "Wing loading\n(N/m2)",
   pareto_rank_ratio = "Pareto\nrank ratio")

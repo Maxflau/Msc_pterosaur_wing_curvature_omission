@@ -55,7 +55,7 @@ if (!"Time_Bin" %in% names(stat_df)) {
 }
 
 BIO_VARS <- c("aspect_ratio","wing_loading","von_mises_stress",
-              "wing_curvature","shape_complexity","r2_hat","pareto_rank_ratio")
+              "trailing_edge","shape_complexity","r2_hat","pareto_rank_ratio")
 BIO_VARS <- BIO_VARS[BIO_VARS %in% names(stat_df)]
 
 # Only factors actually present, so no formula can reference a missing column

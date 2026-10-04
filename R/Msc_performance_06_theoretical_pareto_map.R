@@ -41,7 +41,7 @@ for (k in seq_len(nrow(grid))) {
     aspect_ratio     = if (impossible) NA_real_ else calculate_aspect_ratio(o),
     r2_hat           = if (impossible) NA_real_ else calculate_r2_hat(o),
     von_mises_stress = if (impossible) NA_real_ else calculate_von_mises_stress(o, NA_real_, NA_real_),
-    wing_curvature   = if (impossible) NA_real_ else calculate_wing_curvature(o),
+    trailing_edge   = if (impossible) NA_real_ else calculate_trailing_edge(o),
     shape_complexity = if (impossible) NA_real_ else calculate_shape_complexity(o))
 
   if (k %% 50 == 0) cat(paste("  ", k, "/", nrow(grid), "\n"))
@@ -60,7 +60,7 @@ cat(sprintf("Self-intersecting: %d (%.1f%%)\n", n_impossible, 100 * n_impossible
 cat(sprintf("Reconstruction failures: %d\n\n", n_failed))
 
 cat("Theoretical metric ranges (compare with the empirical ones):\n")
-print(summary(theoretical_data[, c("aspect_ratio", "r2_hat", "von_mises_stress", "wing_curvature", "shape_complexity")]))
+print(summary(theoretical_data[, c("aspect_ratio", "r2_hat", "von_mises_stress", "trailing_edge", "shape_complexity")]))
 cat("\n")
 
 ###################################################################################

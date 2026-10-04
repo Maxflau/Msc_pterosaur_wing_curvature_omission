@@ -24,7 +24,7 @@ if (!exists("shape_perf")) {
   # ── 11A. EXACT PC1/PC2 VIA ROTATION MATRIX ──────────────────────────────────
 # Get the two main PCA scores for each specimen.
   PCA_VARS <- c("aspect_ratio","r2_hat","wing_loading",
-                "von_mises_stress","wing_curvature","shape_complexity")
+                "von_mises_stress","trailing_edge","shape_complexity")
 
   missing_pca <- setdiff(PCA_VARS, names(shape_perf))
   if (length(missing_pca) > 0) {
@@ -136,7 +136,7 @@ if (!exists("shape_perf")) {
   # ── 11B. BUILD TABLE ────────────────────────────────────────────────────────
 # Assemble one output table with measurements, groups, and PC scores.
   ref_cols <- c("species","aspect_ratio","r2_hat","wing_loading",
-                "von_mises_stress","wing_curvature","shape_complexity",
+                "von_mises_stress","trailing_edge","shape_complexity",
                 "Order","clade","family","Environment","Diet.1","Diet.2",
                 "Midpoint","Period.Name",
                 "Depositional.settings.paleoenvironment","Flight_category",
@@ -160,7 +160,7 @@ if (!exists("shape_perf")) {
   sp_table$PC2 <- pc2_vals
 
   first_cols <- c("species","aspect_ratio","r2_hat","wing_loading",
-                  "von_mises_stress","wing_curvature","shape_complexity",
+                  "von_mises_stress","trailing_edge","shape_complexity",
                   "Order","clade","family","Environment","Diet.1","Diet.2",
                   "Midpoint","Period.Name",
                   "Depositional.settings.paleoenvironment","Flight_category",

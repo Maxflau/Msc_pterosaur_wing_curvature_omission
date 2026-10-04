@@ -9,17 +9,17 @@ for (d in c("output/plots", "output/plots_PDF")) {
 #####################################################################################
 # 1. Summarise the measured curvature values
 #####################################################################################
-d <- performance_data_clean[is.finite(performance_data_clean$wing_curvature), ]
+d <- performance_data_clean[is.finite(performance_data_clean$trailing_edge), ]
 cat(sprintf("Specimens with a curvature value: %d of %d\n",
             nrow(d), nrow(performance_data_clean)))
-print(summary(d$wing_curvature))
+print(summary(d$trailing_edge))
 
 CURV_LEVELS <- intersect(c("clade", "Order", "Diet_combined"), colnames(d))
 
 dist_tab <- do.call(rbind, lapply(CURV_LEVELS, function(g) {
   s <- d[!is.na(d[[g]]) & d[[g]] != "", ]
   do.call(rbind, lapply(unique(s[[g]]), function(lv) {
-    x <- s$wing_curvature[s[[g]] == lv]
+    x <- s$trailing_edge[s[[g]] == lv]
     if (length(x) < MIN_N) return(NULL)
     data.frame(level = g, group = lv, n = length(x),
                mean = round(mean(x), 5), sd = round(sd(x), 5),
@@ -40,7 +40,7 @@ hull_metrics <- function(o) {
   h <- chull(o$x, o$y)
   oh <- data.frame(x = o$x[h], y = o$y[h])
   oh <- rbind(oh, oh[1, ])
-  c(curv = calculate_wing_curvature(oh),
+  c(curv = calculate_trailing_edge(oh),
     r2   = calculate_r2_hat(oh),
     cplx = calculate_shape_complexity(oh),
     ar   = calculate_aspect_ratio(oh))
@@ -56,7 +56,7 @@ hm <- t(vapply(performance_data_clean$species, function(s) {
 cmp <- data.frame(
   species = performance_data_clean$species,
   clade = performance_data_clean$clade,
-  curvature_measured = performance_data_clean$wing_curvature,
+  curvature_measured = performance_data_clean$trailing_edge,
   curvature_hull = hm[, "curv"],
   r2_measured = performance_data_clean$r2_hat, r2_hull = hm[, "r2"],
   complexity_measured = performance_data_clean$shape_complexity,
@@ -78,7 +78,7 @@ cat(sprintf("Resulting shift in r2_hat: median %.2f%%, max %.2f%%\n",
 if (all(abs(cmp$curvature_lost[ok]) < 1e-8)) {
   cat("\nWARNING: hull and measured curvature are identical for every specimen.\n")
   cat("The outlines are ALREADY convex hulls (Msc_outline_extract_1.R applies\n")
-  cat("chull), so wing_curvature measures the bulge of a hull, not membrane\n")
+  cat("chull), so trailing_edge measures the bulge of a hull, not membrane\n")
   cat("camber. This must be stated in the methods.\n")
 }
 
@@ -87,29 +87,29 @@ write_supp(cmp, "S24_curvature_free_comparison")
 ##########################################################################################
 # 3. Save the summary figures
 ##########################################################################################
-p1 <- ggplot(d, aes(x = wing_curvature)) +
+p1 <- ggplot(d, aes(x = trailing_edge)) +
   geom_histogram(bins = 30, fill = "#2E8B57", colour = "grey30", linewidth = 0.25) +
-  geom_vline(xintercept = median(d$wing_curvature), linetype = "dashed",
+  geom_vline(xintercept = median(d$trailing_edge), linetype = "dashed",
              colour = "grey20") +
   labs(title = "Distribution of wing curvature across reconstructions",
        subtitle = sprintf("n = %d; dashed line: median %.4f",
-                          nrow(d), median(d$wing_curvature)),
-       x = "Wing curvature (camber ratio)", y = "Specimens") + theme_bw(base_size = 12) + theme(panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 0.5))
+                          nrow(d), median(d$trailing_edge)),
+       x = "Trailing edge (camber ratio)", y = "Specimens") + theme_bw(base_size = 12) + theme(panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 0.5))
 
 ggsave("output/plots/CURVATURE_01_distribution.png", p1, width = 8, height = 5, dpi = 300)
 ggsave("output/plots_PDF/CURVATURE_01_distribution.pdf", p1,
        width = 8, height = 5)
 
 if ("clade" %in% colnames(d)) {
-  p2 <- ggplot(d[!is.na(d$clade), ], aes(x = reorder(clade, wing_curvature,
+  p2 <- ggplot(d[!is.na(d$clade), ], aes(x = reorder(clade, trailing_edge,
                                                      FUN = median),
-                                         y = wing_curvature, fill = clade)) +
+                                         y = trailing_edge, fill = clade)) +
     geom_violin(alpha = 0.5, scale = "width", colour = "grey35", linewidth = 0.3) +
     geom_jitter(width = 0.1, size = 0.8, alpha = 0.5, colour = "grey20") +
     scale_fill_viridis_d(option = "mako", guide = "none", begin = 0.2, end = 0.9) +
     coord_flip() +
-    labs(title = "Wing curvature by clade", x = NULL,
-         y = "Wing curvature (camber ratio)") +
+    labs(title = "Trailing edge by clade", x = NULL,
+         y = "Trailing edge (camber ratio)") +
     theme_bw(base_size = 12) +
     theme(panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 0.5))
 

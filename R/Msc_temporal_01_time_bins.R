@@ -28,7 +28,7 @@ cat("\nNOTE: unbalanced bins. Interpret bin means with their intervals, never al
 # 2. List every variable that will be followed through time
 ######################################################################################
 SHAPE_VARS <- intersect(c("aspect_ratio", "r2_hat", "von_mises_stress",
-                          "wing_curvature", "shape_complexity",
+                          "trailing_edge", "shape_complexity",
                           "wing_loading_ratio"), colnames(temporal_data))
 
 SCORE_VARS <- intersect(c("pareto_score_aspect_ratio", "pareto_score_r2_hat",

@@ -7,7 +7,7 @@ library(nlme)
 # Pick the variables that can be tested on the tree.
 SIGNAL_VARS <- intersect(
   c("aspect_ratio", "r2_hat", "wing_loading", "von_mises_stress",
-    "wing_curvature", "shape_complexity", "PC1", "PC2", "pareto_rank_ratio"),
+    "trailing_edge", "shape_complexity", "PC1", "PC2", "pareto_rank_ratio"),
   colnames(phylo_data))
 
 # ####################################################################################

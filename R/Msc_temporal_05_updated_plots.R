@@ -11,7 +11,7 @@ VAR_LABELS <- c(
   aspect_ratio      = "Aspect ratio",
   r2_hat            = "Second moment of area",
   von_mises_stress  = "Von Mises stress (scale-invariant)",
-  wing_curvature    = "Wing curvature (camber)",
+  trailing_edge    = "Trailing edge (camber)",
   shape_complexity  = "Shape complexity",
   pareto_score_aspect_ratio     = "Pareto score - Aspect ratio",
   pareto_score_r2_hat           = "Pareto score - Second moment of area",
@@ -27,7 +27,7 @@ VAR_COLOURS <- c(
   r2_hat            = "#B5651D",   # ochre
   von_mises_stress  = "#8E3B8E",   # purple
   stress_index      = "#76EEC6",
-  wing_curvature    = "#2E8B57",   # green
+  trailing_edge    = "#2E8B57",   # green
   shape_complexity  = "#C1443C",   # red
   pareto_score_aspect_ratio     = "#1F6FB4",
   pareto_score_r2_hat           = "#B5651D",

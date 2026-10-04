@@ -16,7 +16,7 @@ if (length(missing_obj) > 0) {
   cat("Missing objective column(s):", paste(missing_obj, collapse = ", "), "\n")
   cat("Present metrics:", paste(intersect(
     c("aspect_ratio", "r2_hat", "von_mises_stress",
-      "wing_loading_ratio", "wing_curvature", "shape_complexity"),
+      "wing_loading_ratio", "trailing_edge", "shape_complexity"),
     colnames(performance_data_clean)), collapse = ", "), "\n")
 
   OBJECTIVES <- OBJECTIVES[!names(OBJECTIVES) %in% missing_obj]

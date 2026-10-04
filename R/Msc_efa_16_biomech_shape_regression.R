@@ -1,5 +1,5 @@
 # Link biomechanical measures to EFA shape positions and save the plots.
-allo_targets <- c("shapePC1","shapePC2","wing_curvature")
+allo_targets <- c("shapePC1","shapePC2","trailing_edge")
 allo_preds   <- BIO_VARS[BIO_VARS %in% names(sp)]
 
 # H1. Correlations: biomechanical metrics ↔ shape PC positions
@@ -96,19 +96,19 @@ for (resp in c("shapePC1","shapePC2")) {
   }
 }
 
-# H5. Wing curvature gap by clade (Msc_allo_3 adaptation)
-# H5. Wing curvature gap by clade (Msc_allo_3 adaptation)
+# H5. Trailing edge gap by clade (Msc_allo_3 adaptation)
+# H5. Trailing edge gap by clade (Msc_allo_3 adaptation)
 # Compare observed curvature with the value predicted from the other measures.
-if ("wing_curvature" %in% names(sp) && !is.null(rf_results$shapePC2)) {
-  d_curv <- sp[, c("shapePC2","wing_curvature","clade",allo_preds)] %>% drop_na()
+if ("trailing_edge" %in% names(sp) && !is.null(rf_results$shapePC2)) {
+  d_curv <- sp[, c("shapePC2","trailing_edge","clade",allo_preds)] %>% drop_na()
   rf_c <- tryCatch(
-    randomForest(wing_curvature ~ ., data=d_curv %>% select(-clade,-shapePC2),
+    randomForest(trailing_edge ~ ., data=d_curv %>% select(-clade,-shapePC2),
                  ntree=500, importance=TRUE),
     error=function(e) NULL
   )
   if (!is.null(rf_c)) {
     d_curv$curv_pred <- predict(rf_c, newdata=d_curv)
-    d_curv$curv_gap  <- d_curv$curv_pred - d_curv$wing_curvature
+    d_curv$curv_gap  <- d_curv$curv_pred - d_curv$trailing_edge
     p_gap <- ggplot(d_curv, aes(fct_infreq(as.factor(clade)), curv_gap)) +
       geom_boxplot(aes(fill=clade), alpha=0.55, outlier.shape=NA) +
       geom_jitter(size=1.2, alpha=0.45, width=0.2) +

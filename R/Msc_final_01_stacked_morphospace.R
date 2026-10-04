@@ -7,6 +7,12 @@ if (!"Midpoint" %in% names(temporal_data)) {
   stop("Midpoint absent")
 }
 
+# Point shape by grade: square = Pterodactyliformes, circle = everything else.
+if (!exists("PTERODACT")) {
+  PTERODACT <- c("Azhdarchoidea", "Ctenochasmatoidea", "Dsungaripteroidea",
+                 "Ornithocheiromorpha", "Pteranodontia", "basal pterodactyloidea")
+}
+
 # Set the shared layout options for every stacked plot.
 GROUP_VAR    <- "clade"
 PANEL_ASPECT <- 0.45   # plane height / width, in plot units
@@ -74,7 +80,8 @@ border = "grey25", lwd = 1.1,col = adjustcolor("grey97", alpha.f = 0.85))
     }
 
     cols <- PAL[gv]; cols[is.na(cols)] <- "grey70"
-    points(px, py, pch = 21, bg = cols, col = "grey15", cex = PT_CEX, lwd = 0.45)
+    pts_pch <- ifelse(gv %in% PTERODACT, 22, 21)   # square = Pterodactyliformes, circle = others
+    points(px, py, pch = pts_pch, bg = cols, col = "grey15", cex = PT_CEX, lwd = 0.45)
 
     text(-0.035, ty(PANEL_ASPECT / 2),
          labels = sprintf("%s (~%.0f Ma)", bins[k], bin_age[[bins[k]]]),

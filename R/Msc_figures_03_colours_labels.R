@@ -93,7 +93,7 @@ pc_lab <- function(k) {
 
 # Set readable labels for the measurement names used in legends.
 METRIC_LABELS <- c(
-  von_mises_stress = "Von Mises stress\n(scale-invariant)",r2_hat = "Second moment\nof area", aspect_ratio = "Aspect ratio", wing_curvature = "Wing curvature",
+  von_mises_stress = "Von Mises stress\n(scale-invariant)",r2_hat = "Second moment\nof area", aspect_ratio = "Aspect ratio", trailing_edge = "Trailing edge",
   shape_complexity = "Shape complexity", pareto_rank_ratio = "Pareto\nrank ratio")
 
 surf_label <- if (BACKGROUND_VAR %in% names(METRIC_LABELS)) {
