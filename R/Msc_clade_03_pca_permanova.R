@@ -71,6 +71,8 @@ p_biplot <- ggplot() +
   labs(title  = "Biomechanical morphospace — PC1 vs PC2",
        x = paste0("PC1 (",var_exp[["PC1"]],"%)"), y = paste0("PC2 (",var_exp[["PC2"]],"%)"),
        colour = "Clade") + theme_bw()
+# supplementals is not created earlier in the driver, so make it here.
+dir.create("output/plots_PDF/supplementals", showWarnings = FALSE, recursive = TRUE)
 ggsave("output/plots_PDF/supplementals/02_biplot_PC1_PC2.pdf", p_biplot, width=12, height=8)
 
 # --- 4. Summarise PC1 and PC2 within each group -------------------------------

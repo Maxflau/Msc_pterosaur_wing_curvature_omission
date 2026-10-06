@@ -1,3 +1,7 @@
+# This script saves figures to output/plots_PDF before Msc_figures_01_setup.R
+# (which normally creates it) has run, so the folder must be made here too.
+dir.create("output/plots_PDF", showWarnings = FALSE, recursive = TRUE)
+
 # --- Clean and standardise the wing outlines in the same way for every plot. ---
 close_loop <- function(c0){ n<-nrow(c0); per<-sum(sqrt(diff(c0[,1])^2+diff(c0[,2])^2))
 gap<-sqrt((c0[1,1]-c0[n,1])^2+(c0[1,2]-c0[n,2])^2)
